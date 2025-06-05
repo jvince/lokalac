@@ -1,0 +1,44 @@
+{
+  "lock": false,
+  "tasks": {
+    "check": "deno fmt --check && deno lint && deno check **/*.ts && deno check **/*.tsx",
+    "cli": "echo \"import '\\$fresh/src/dev/cli.ts'\" | deno run --unstable -A -",
+    "manifest": "deno task cli manifest $(pwd)",
+    "start": "deno run -A --watch=static/,routes/ dev.ts",
+    "build": "deno run -A dev.ts build",
+    "preview": "deno run -A main.ts",
+    "update": "deno run -A -r https://fresh.deno.dev/update ."
+  },
+  "lint": { "rules": { "tags": ["fresh", "recommended"] } },
+  "exclude": ["**/_fresh/*"],
+  "imports": {
+    "$fresh/": "https://deno.land/x/fresh@1.7.3/",
+    "@pakornv/fresh-plugin-tailwindcss": "jsr:@pakornv/fresh-plugin-tailwindcss@^1.0.2",
+    "@superstruct/core": "jsr:@superstruct/core@^2.0.2",
+    "clsx": "npm:clsx@^2.1.1",
+    "daisyui": "npm:daisyui@^5.0.40",
+    "exif-reader": "npm:exif-reader@^2.0.2",
+    "preact": "https://esm.sh/preact@10.22.0",
+    "preact/": "https://esm.sh/preact@10.22.0/",
+    "preact/compat": "https://esm.sh/preact@10.22.0/compat",
+    "preact/compat/": "https://esm.sh/preact@10.22.0/compat/",
+    "@preact/signals": "https://esm.sh/*@preact/signals@1.2.2",
+    "@preact/signals-core": "https://esm.sh/*@preact/signals-core@1.5.1",
+    "$std/": "https://deno.land/std@0.216.0/",
+    "sharp": "npm:sharp@^0.34.2",
+    "tailwindcss": "npm:tailwindcss@^4.1.8",
+    "zod": "https://deno.land/x/zod@v3.24.4/mod.ts",
+    "$types/": "./types/",
+    "$services/": "./services/",
+    "$models/": "./models/",
+    "$plugins/": "./plugins/"
+  },
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact",
+    "types": ["npm:@types/node"],
+    "lib": ["dom", "deno.unstable"]
+  },
+  "nodeModulesDir": "auto",
+  "unstable": ["kv"]
+}
