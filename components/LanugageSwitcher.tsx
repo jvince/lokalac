@@ -1,9 +1,10 @@
+import { useTranslation } from "$hooks/useTranslation.ts";
+import { clsx } from "clsx/lite";
 import IconLanguage from "https://deno.land/x/tabler_icons_tsx@0.0.7/tsx/language.tsx";
 import { useGlobalContext } from "../globalContext.ts";
-import { useTranslation } from "$hooks/useTranslation.ts";
 import { defaultLanguage } from "../languages.ts";
 
-function getLanguageUrl(code: string, path: string) {
+function getLanguageLinkProps(code: string, path: string) {
   if (code === defaultLanguage.code) {
     return path;
   }
@@ -13,7 +14,7 @@ function getLanguageUrl(code: string, path: string) {
 
 export function LanguageSwitcher() {
   const { path } = useGlobalContext();
-  const { t, supportedLanguages } = useTranslation();
+  const { t, supportedLanguages, language } = useTranslation();
 
   return (
     <div class="dropdown dropdown-end">
@@ -30,7 +31,12 @@ export function LanguageSwitcher() {
       <ul class="menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
         {supportedLanguages.map((lang) => (
           <li>
-            <a href={getLanguageUrl(lang.code, path)}>
+            <a
+              href={getLanguageLinkProps(lang.code, path)}
+              class={clsx(
+                lang.code === language.code && "menu-active",
+              )}
+            >
               {lang.localizedName}
             </a>
           </li>

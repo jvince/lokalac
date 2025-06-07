@@ -8,7 +8,7 @@ export function SiteHeader() {
 
   return (
     <header class="sticky top-4 mt-4 z-1">
-      <Partial name="main-navbar">
+      <Partial name="main-navigation">
         <nav
           class="navbar flex justify-between bg-base-200 shadow-sm"
           f-client-nav
@@ -48,7 +48,6 @@ export function SiteHeader() {
               </Link>
             </li>
           </ul>
-
           <LanguageSwitcher />
         </nav>
       </Partial>
