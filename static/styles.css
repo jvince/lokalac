@@ -1,4 +1,18 @@
 @import "tailwindcss";
+
+@theme {
+  --animate-appear: fade-in 0s ease-out 0.12s both;
+
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+}
+
 @plugin "daisyui";
 
 html {

@@ -17,6 +17,7 @@ import * as $submit_issue from "./routes/submit-issue.tsx";
 import * as $Countdown from "./islands/Countdown.tsx";
 import * as $Counter from "./islands/Counter.tsx";
 import * as $IssueForm from "./islands/IssueForm.tsx";
+import * as $LanugageSwitcher from "./islands/LanugageSwitcher.tsx";
 import type { Manifest } from "$fresh/server.ts";
 
 const manifest = {
@@ -38,6 +39,7 @@ const manifest = {
     "./islands/Countdown.tsx": $Countdown,
     "./islands/Counter.tsx": $Counter,
     "./islands/IssueForm.tsx": $IssueForm,
+    "./islands/LanugageSwitcher.tsx": $LanugageSwitcher,
   },
   baseUrl: import.meta.url,
 } satisfies Manifest;

@@ -1,6 +1,8 @@
-import type { JSX } from "preact";
 import { clsx } from "clsx/lite";
+import type { JSX } from "preact";
 import { useGlobalContext } from "../globalContext.ts";
+import { useTranslation } from "../hooks/useTranslation.ts";
+import { useURL } from "../hooks/useURL.ts";
 
 type Color =
   | "neutral"
@@ -53,7 +55,6 @@ interface LinkProps extends JSX.HTMLAttributes<HTMLAnchorElement> {
   as?: "link" | "btn";
   color?: Color;
   href?: string;
-  lang?: string;
   variant?: Variant;
   withHover?: boolean;
 }
@@ -62,21 +63,25 @@ export function Link(props: LinkProps) {
   const {
     as = "link",
     color = "primary",
-    lang,
-    href = "#",
+    href,
     variant,
     withHover = true,
     ...rest
   } = props;
+  const asButton = as === "btn";
+  const asLink = as === "link";
 
-  const { lang: contextLang } = useGlobalContext();
+  const { baseURL } = useGlobalContext();
+  const { language } = useTranslation();
+  const { valid, url } = useURL(href, language.code, baseURL);
 
   const className = clsx(
     as,
     as !== "link" && variant && variantToClass[variant],
-    as === "btn" && colorToClass[color],
-    as === "link" && linkColorToClass[color],
-    as === "link" && withHover && "link-hover",
+    asLink && valid && linkColorToClass[color],
+    asLink && !valid && linkColorToClass.error,
+    asLink && withHover && "link-hover",
+    asButton && colorToClass[color],
     "aria-[current=page]:underline",
     props.class,
   );
@@ -84,7 +89,7 @@ export function Link(props: LinkProps) {
   return (
     <a
       {...rest}
-      href={`${href}?lang=${lang ?? contextLang}`}
+      href={url}
       class={className}
     >
       {props.children}

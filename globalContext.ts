@@ -1,14 +1,19 @@
-import { IS_BROWSER } from "$fresh/runtime.ts";
 import { createContext } from "preact";
 import { useContext } from "preact/hooks";
+import { i18nLanguage } from "$plugins/i18n/src/types.ts";
+import supportedLanguages from "./supportedLanguages.ts";
 
 export interface GlobalContext {
-  lang: string;
+  language: i18nLanguage;
+  translation: Record<string, Record<string, string>>;
+  baseURL: URL;
 }
 
 const defaultGlobalContext: GlobalContext = {
-  lang: "rs",
-}
+  language: supportedLanguages[0],
+  translation: {},
+  baseURL: null!,
+};
 
 const Context = createContext<GlobalContext>(null!);
 

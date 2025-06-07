@@ -9,7 +9,9 @@ export default [
         type: "set",
         value: {
           id: "aleksandrovo",
-          name: "MZ Aleksandrovo",
+          name: "Aleksandrovo",
+          name_sr_Cyrl_RS: "Александрово",
+          name_hu: "Aleksandrovo",
           phone: ["024/566-070"],
           link: "https://subotica.ls.gov.rs/mz-aleksandrovo/",
         },
@@ -19,7 +21,9 @@ export default [
         type: "set",
         value: {
           id: "bajmok",
-          name: "MZ Bajmok",
+          name: "Bajmok",
+          name_sr_Cyrl_RS: "Бајмок",
+          name_hu: "Bajmok",
           phone: ["024/762-038"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-bajmok/",
@@ -30,7 +34,8 @@ export default [
         type: "set",
         value: {
           id: "bajnat",
-          name: "MZ Bajnat",
+          name: "Bajnat",
+          name_sr_Cyrl_RS: "Бајнат",
           phone: ["024/524-775"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-bajnat/",
@@ -41,7 +46,8 @@ export default [
         type: "set",
         value: {
           id: "backi_vinogradi",
-          name: "MZ Bački Vinogradi",
+          name: "Bački Vinogradi",
+          name_sr_Cyrl_RS: "Бачки Виногради",
           phone: ["024/4757-003"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-backi-vinogradi/",
@@ -52,7 +58,8 @@ export default [
         type: "set",
         value: {
           id: "backo_dusanovo",
-          name: "MZ Bačko Dušanovo",
+          name: "Bačko Dušanovo",
+          name_sr_Cyrl_RS: "Бачко Душаново",
           phone: ["024/782-243"],
           link: "https://subotica.ls.gov.rs/mesne-zajednice/mz-bikovo/",
         },
@@ -62,7 +69,8 @@ export default [
         type: "set",
         value: {
           id: "bikovo",
-          name: "MZ Bikovo",
+          name: "Bikovo",
+          name_sr_Cyrl_RS: "Биково",
           phone: ["024/4797-049"],
           link: "https://subotica.ls.gov.rs/mesne-zajednice/mz-bikovo/",
         },
@@ -72,7 +80,8 @@ export default [
         type: "set",
         value: {
           id: "centar_i",
-          name: "MZ Centar I",
+          name: "Centar I",
+          name_sr_Cyrl_RS: "Центар I",
           phone: ["024/558-699"],
           link: "https://subotica.ls.gov.rs/mz-centar-i/",
         },
@@ -82,7 +91,8 @@ export default [
         type: "set",
         value: {
           id: "centar_ii",
-          name: "MZ Centar II",
+          name: "Centar II",
+          name_sr_Cyrl_RS: "Центар II",
           phone: ["024/558-166"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-centar-ii/",
@@ -93,7 +103,8 @@ export default [
         type: "set",
         value: {
           id: "centar_iii",
-          name: "MZ Centar III",
+          name: "Centar III",
+          name_sr_Cyrl_RS: "Центар III",
           phone: ["024/556-141"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-centar-iii/",
@@ -104,7 +115,8 @@ export default [
         type: "set",
         value: {
           id: "cantavir",
-          name: "MZ Čantavir",
+          name: "Čantavir",
+          name_sr_Cyrl_RS: "Чантавир",
           phone: ["024/782-294"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-cantavir/",
@@ -115,7 +127,8 @@ export default [
         type: "set",
         value: {
           id: "dudova_suma",
-          name: "MZ Dudova šuma",
+          name: "Dudova šuma",
+          name_sr_Cyrl_RS: "Дудова шума",
           phone: ["024/529-730"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-dudova-suma/",
@@ -126,7 +139,8 @@ export default [
         type: "set",
         value: {
           id: "djurdjin",
-          name: "MZ Đurđin",
+          name: "Đurđin",
+          name_sr_Cyrl_RS: "Ђурђин",
           phone: ["024/4768-050"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-djurdjin/",
@@ -137,7 +151,8 @@ export default [
         type: "set",
         value: {
           id: "gat",
-          name: "MZ Gat",
+          name: "Gat",
+          name_sr_Cyrl_RS: "Гат",
           phone: ["024/4562-570"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-gat/",
@@ -148,7 +163,8 @@ export default [
         type: "set",
         value: {
           id: "hajdukovo",
-          name: "MZ Hajdukovo",
+          name: "Hajdukovo",
+          name_sr_Cyrl_RS: "Хајдуковано",
           phone: ["024/4758-021"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-hajdukovo/",
@@ -159,7 +175,8 @@ export default [
         type: "set",
         value: {
           id: "kelebija",
-          name: "MZ Kelebija",
+          name: "Kelebija",
+          name_sr_Cyrl_RS: "Келебија",
           phone: ["024/4780-205"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-kelebija/",
@@ -170,7 +187,8 @@ export default [
         type: "set",
         value: {
           id: "ker",
-          name: "MZ Ker",
+          name: "Ker",
+          name_sr_Cyrl_RS: "Кер",
           phone: ["024/552-106"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-ker/",
@@ -181,7 +199,8 @@ export default [
         type: "set",
         value: {
           id: "kertvaros",
-          name: "MZ Kertvaroš",
+          name: "Kertvaroš",
+          name_sr_Cyrl_RS: "Кертварош",
           phone: ["024/546-484"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-kertvaros/",
@@ -192,7 +211,8 @@ export default [
         type: "set",
         value: {
           id: "ljutovo",
-          name: "MZ Ljutovo",
+          name: "Ljutovo",
+          name_sr_Cyrl_RS: "Љутово",
           phone: ["024/4767-552"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-ljutovo/",
@@ -203,7 +223,8 @@ export default [
         type: "set",
         value: {
           id: "makova_sedmica",
-          name: "MZ Makova sedmica",
+          name: "Makova sedmica",
+          name_sr_Cyrl_RS: "Макова седмица",
           phone: ["024/550-015"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-makova-sedmica/",
@@ -214,7 +235,8 @@ export default [
         type: "set",
         value: {
           id: "mala_bosna",
-          name: "MZ Mala Bosna",
+          name: "Mala Bosna",
+          name_sr_Cyrl_RS: "Мала Босна",
           phone: ["024/4796-026"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-kancelarije/mz-mala-bosna/",
@@ -225,7 +247,8 @@ export default [
         type: "set",
         value: {
           id: "mali_bajmok",
-          name: "MZ Mali Bajmok",
+          name: "Mali Bajmok",
+          name_sr_Cyrl_RS: "Мали Бајмок",
           phone: ["024/561-661"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-mali-bajmok/",
@@ -236,7 +259,8 @@ export default [
         type: "set",
         value: {
           id: "mali_radanovac",
-          name: "MZ Mali Radanovac",
+          name: "Mali Radanovac",
+          name_sr_Cyrl_RS: "Мали Радановац",
           phone: ["024/546-149"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-mali-radanovac/",
@@ -247,7 +271,8 @@ export default [
         type: "set",
         value: {
           id: "misicevo",
-          name: "MZ Mišićevo",
+          name: "Mišićevo",
+          name_sr_Cyrl_RS: "Мишићево",
           phone: ["024/4760-098"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-misicevo/",
@@ -258,7 +283,8 @@ export default [
         type: "set",
         value: {
           id: "novi_grad",
-          name: "MZ Novi grad",
+          name: "Novi grad",
+          name_sr_Cyrl_RS: "Нови град",
           phone: ["024/547-551"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-novi-grad/",
@@ -269,7 +295,8 @@ export default [
         type: "set",
         value: {
           id: "novi_zednik",
-          name: "MZ Novi Žednik",
+          name: "Novi Žednik",
+          name_sr_Cyrl_RS: "Нови Жедник",
           phone: ["024/785-009"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-novi-zednik/",
@@ -280,7 +307,8 @@ export default [
         type: "set",
         value: {
           id: "novo_selo",
-          name: "MZ Novo Selo",
+          name: "Novo Selo",
+          name_sr_Cyrl_RS: "Ново Село",
           phone: ["024/556-796"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-novo-selo/",
@@ -291,7 +319,8 @@ export default [
         type: "set",
         value: {
           id: "palic",
-          name: "MZ Palić",
+          name: "Palić",
+          name_sr_Cyrl_RS: "Палић",
           phone: ["024/754-037"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-palic/",
@@ -302,7 +331,8 @@ export default [
         type: "set",
         value: {
           id: "pescara",
-          name: "MZ Peščara",
+          name: "Peščara",
+          name_sr_Cyrl_RS: "Пешчара",
           phone: ["024/516-124"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-pescara/",
@@ -313,7 +343,8 @@ export default [
         type: "set",
         value: {
           id: "prozivka",
-          name: "MZ Prozivka",
+          name: "Prozivka",
+          name_sr_Cyrl_RS: "Прозивка",
           phone: ["024/524-807"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-prozivka/",
@@ -324,7 +355,8 @@ export default [
         type: "set",
         value: {
           id: "radanovac",
-          name: "MZ Radanovac",
+          name: "Radanovac",
+          name_sr_Cyrl_RS: "Радановац",
           phone: ["024/596-002"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-radanovac/",
@@ -335,7 +367,8 @@ export default [
         type: "set",
         value: {
           id: "stari_zednik",
-          name: "MZ Stari Žednik",
+          name: "Stari Žednik",
+          name_sr_Cyrl_RS: "Стари Жедник",
           phone: ["024/787-040"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-stari-zednik/",
@@ -346,7 +379,8 @@ export default [
         type: "set",
         value: {
           id: "supljak",
-          name: "MZ Šupljak",
+          name: "Šupljak",
+          name_sr_Cyrl_RS: "Шупљак",
           phone: ["024/753-050"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-supljak/",
@@ -357,7 +391,8 @@ export default [
         type: "set",
         value: {
           id: "tavankut",
-          name: "MZ Tavankut",
+          name: "Tavankut",
+          name_sr_Cyrl_RS: "Таванкут",
           phone: ["024/4767-006"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-tavankut/",
@@ -368,7 +403,8 @@ export default [
         type: "set",
         value: {
           id: "verusic",
-          name: "MZ Verušić",
+          name: "Verušić",
+          name_sr_Cyrl_RS: "Верушић",
           phone: ["024/552-723", "024/552-701"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-verusic/",
@@ -379,7 +415,8 @@ export default [
         type: "set",
         value: {
           id: "visnjevac",
-          name: "MZ Višnjevac",
+          name: "Višnjevac",
+          name_sr_Cyrl_RS: "Вишњевац",
           phone: ["024/4782-040"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-visnjevac/",
@@ -390,7 +427,8 @@ export default [
         type: "set",
         value: {
           id: "zorka",
-          name: "MZ Zorka",
+          name: "Zorka",
+          name_sr_Cyrl_RS: "Зорка",
           phone: ["024/527-491"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-zorka/",
@@ -401,7 +439,8 @@ export default [
         type: "set",
         value: {
           id: "zeleznicko_naselje",
-          name: "MZ Železničko naselje",
+          name: "Železničko naselje",
+          name_sr_Cyrl_RS: "Железничко насеље",
           phone: ["024/576-795"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-zeljeznicko-naselje/",

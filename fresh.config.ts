@@ -1,12 +1,14 @@
-import { defineConfig, RenderFunction } from "$fresh/server.ts";
+import "$std/dotenv/load.ts";
+
+import { defineConfig } from "$fresh/server.ts";
 import { context } from "$plugins/context/mod.ts";
 import { cookies } from "$plugins/cookies/mod.ts";
 import { i18n } from "$plugins/i18n/mod.ts";
-import "$std/dotenv/load.ts";
 import tailwind from "@pakornv/fresh-plugin-tailwindcss";
 import { Context } from "./globalContext.ts";
 import { migrate } from "./migrate.ts";
 import migrations from "./migrations.ts";
+import supportedLanguages, { defaultLanguage } from "./supportedLanguages.ts";
 
 const env = Deno.env.toObject();
 
@@ -24,15 +26,15 @@ export default defineConfig({
   plugins: [
     tailwind(),
     cookies(),
-    i18n({
-      defaultLanguage: "rs",
-      languages: ["rs", "hu"],
-      languagesDir: "./translations",
-    }),
     context(
       Context,
       new URL("./globalContext.ts", import.meta.url).href,
     ),
+    i18n<typeof supportedLanguages>({
+      defaultLanguage: defaultLanguage,
+      languages: supportedLanguages,
+      languagesDir: `${import.meta.dirname}/translations`,
+    }),
   ],
   server: {
     signal: abortController.signal,

@@ -98,5 +98,8 @@ export default function hydrate(Context: any, state: { id: string }) {
   );
   provider = new Context.Provider({ value });
   provider.props = { value };
-  el?.remove();
+
+  setTimeout(() => {
+    el?.remove();
+  }, 0);
 }

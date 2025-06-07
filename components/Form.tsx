@@ -4,7 +4,7 @@ import { useGlobalContext } from "../globalContext.ts";
 interface FormProps extends JSX.HTMLAttributes<HTMLFormElement> {}
 
 export function Form(props: FormProps) {
-  const { lang } = useGlobalContext();
+  const { language: lang } = useGlobalContext();
 
   return (
     <form

@@ -1,7 +1,27 @@
 import type { MiddlewareHandler } from "$fresh/server.ts";
-import { Head } from "$fresh/runtime.ts";
-import type { i18nPluginConfig } from "./types.ts";
+import { } from "$std/fs/mod.ts";
+import { join } from "$std/path/join.ts";
+import type { i18nLanguage, i18nPluginConfig } from "./types.ts";
 import { i18nState } from "./types.ts";
+
+async function readJSONFile(path: string): Promise<Record<string, string>> {
+  try {
+    const data = await Deno.readTextFile(path);
+    return JSON.parse(data);
+  } catch {
+    console.error(`Error reading JSON file at ${path}.`);
+    return {};
+  }
+}
+
+async function loadTranslations(
+  rootDir: string,
+  translationPackage: string,
+  language: string,
+) {
+  const translationPath = join(rootDir, language, `${translationPackage}.json`);
+  return await readJSONFile(translationPath);
+}
 
 export function createHandler(
   config: i18nPluginConfig,
@@ -10,28 +30,31 @@ export function createHandler(
 
   const { defaultLanguage, languages, languagesDir } = config;
 
+  if (languages.find((lang) => lang.code !== defaultLanguage) === undefined) {
+    throw new Error(
+      `Default language "${defaultLanguage}" not found in the provided languages.`,
+    );
+  }
+
+  const languageMap = new Map(
+    languages.map((lang) => [lang.code, lang]),
+  );
+
   return async (req, ctx) => {
     if (ctx.destination !== "route" && ctx.destination !== "notFound") {
       return await ctx.next();
     }
+    const urlLang = new URL(req.url).searchParams.get("lang");
+    const languageObj = languageMap.get(urlLang || "") ?? languageMap.get(defaultLanguage) as i18nLanguage;
 
-    
+    ctx.state.language = languageObj;
+    ctx.state.translation = {};
+    ctx.state.translation.common = await loadTranslations(
+      languagesDir,
+      "common",
+      languageObj.package,
+    );
 
-    // const path = ctx.url.pathname;
-    // const lang = ctx.url.pathname.split(".").pop() ?? defaultLanguage;
-
-    // ctx.state.language = languages.includes(lang) ? lang : defaultLanguage;
-
-    // if (languages.includes(lang)) {
-    //   ctx.state.language = lang;
-    //   ctx.state.i18nPath = path;
-    // } else {
-    //   ctx.state.language = defaultLanguage;
-    //   ctx.state.i18nPath = `${path}.${defaultLanguage}`;
-    // }
-
-    const res = await ctx.next();
-
-    return res;
+    return await ctx.next();
   };
 }

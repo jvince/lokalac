@@ -1,17 +1,22 @@
 import { defineApp } from "$fresh/server.ts";
 import { AppState } from "$types/app.ts";
 import { signal } from "@preact/signals";
-import { Context } from "../globalContext.ts";
+import { Context, GlobalContext } from "../globalContext.ts";
 
 export const theme = signal("light");
 
-export default defineApp<AppState>((req, { Component, state }) => {
-  const lang = new URL(req.url).searchParams.get("lang") || "rs";
-  console.log("Language set to:", lang);
+export default defineApp<AppState>((_, { Component, state, url }) => {
+  const { language, translation } = state;
+
+  const contextValue: GlobalContext = {
+    language,
+    translation,
+    baseURL: new URL(url.origin),
+  };
 
   return (
-    <Context.Provider value={{ lang }}>
-      <html data-theme={`${theme.value}`} lang={state.language}>
+    <Context.Provider value={contextValue}>
+      <html data-theme={`${theme.value}`} lang={state.language.code}>
         <head>
           <meta charset="utf-8" />
           <meta
@@ -21,6 +26,7 @@ export default defineApp<AppState>((req, { Component, state }) => {
           <title>fresh-project</title>
           <link rel="stylesheet" href="/styles.css" />
         </head>
+
         <body class="bg-base-100 min-h-dvh">
           <Component />
         </body>

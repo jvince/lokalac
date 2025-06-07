@@ -13,6 +13,7 @@
   "exclude": ["**/_fresh/*"],
   "imports": {
     "$fresh/": "https://deno.land/x/fresh@1.7.3/",
+    "@es-toolkit/es-toolkit": "jsr:@es-toolkit/es-toolkit@^1.39.0",
     "@pakornv/fresh-plugin-tailwindcss": "jsr:@pakornv/fresh-plugin-tailwindcss@^1.0.2",
     "@superstruct/core": "jsr:@superstruct/core@^2.0.2",
     "clsx": "npm:clsx@^2.1.1",

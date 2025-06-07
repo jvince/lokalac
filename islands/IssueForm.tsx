@@ -1,9 +1,9 @@
 import type { LocalCommunity } from "$models/local-community.ts";
 import { signal, useSignal } from "@preact/signals";
 import type { ComponentChildren } from "https://esm.sh/preact@10.25.4/src/index.d.ts";
-import { useGlobalContext } from "../globalContext.ts";
-import { IssueCategory } from "../routes/submit-issue.tsx";
 import { Form } from "../components/Form.tsx";
+import { useTranslation } from "../hooks/useTranslation.ts";
+import { IssueCategory } from "../routes/submit-issue.tsx";
 
 interface IssueFormProps {
   categories: IssueCategory[];
@@ -24,6 +24,8 @@ const state = signal<IssueFormState>({
   issue: undefined,
 });
 
+
+
 export function IssueForm(props: IssueFormProps) {
   const state = useSignal<IssueFormState>({
     localCommunity: undefined,
@@ -31,7 +33,7 @@ export function IssueForm(props: IssueFormProps) {
     issue: undefined,
   });
 
-  const t = useGlobalContext();
+  const { t, fromObject } = useTranslation();
 
   return (
     <Form method="POST" action="/submit-issue">
@@ -40,7 +42,6 @@ export function IssueForm(props: IssueFormProps) {
           Create an Issue
         </legend>
 
-        Context length: {t.length}
         {JSON.stringify(state.value)}
 
         <select
@@ -55,11 +56,11 @@ export function IssueForm(props: IssueFormProps) {
           }}
         >
           <option readOnly disabled selected value="">
-            Select a community
+            {t("common.local_community")}
           </option>
           {props.communities.map((community) => (
             <option value={community.id} key={community.id}>
-              {community.name}
+              {fromObject(community, "name")}
             </option>
           ))}
         </select>

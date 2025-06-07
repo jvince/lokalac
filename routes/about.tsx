@@ -1,4 +1,4 @@
-import { Handlers, PageProps } from "$fresh/server.ts";
+import { defineRoute, Handlers } from "$fresh/server.ts";
 import { getIssues, IssueDTO } from "$models/issue.ts";
 import { AppState } from "$types/app.ts";
 
@@ -14,22 +14,6 @@ interface PageData {
   issues: IssueDTO[];
 }
 
-export default function AboutPage(
-  { data }: PageProps<PageData, AppState>,
-) {
-  return (
-    <>
-      <h1>About</h1>
-      <p>This is the about page of our application.</p>
-      <ul>
-        {data.issues.map((issue) => (
-          <li key={issue.id}>
-            <pre>
-            {JSON.stringify(issue, null, 2)}
-            </pre>
-          </li>
-        ))}
-      </ul>
-    </>
-  );
-}
+export default defineRoute(() => {
+  return <div>Kesa</div>;
+});
