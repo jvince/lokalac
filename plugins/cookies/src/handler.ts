@@ -19,7 +19,7 @@ export function createHandler() {
     if (ctx.destination !== "route" && ctx.destination !== "notFound") {
       return await ctx.next();
     }
-    
+
     const headers = new Headers();
     ctx.state.cookies = getCookies(req.headers);
     ctx.state.setCookie = _setCookie(headers);

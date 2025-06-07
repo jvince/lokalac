@@ -1,5 +1,6 @@
+import { Partial } from "$fresh/runtime.ts";
 import { useTranslation } from "../../hooks/useTranslation.ts";
-import { LanguageSwitcher } from "../../islands/LanugageSwitcher.tsx";
+import { LanguageSwitcher } from "../LanugageSwitcher.tsx";
 import { Link } from "../Link.tsx";
 
 export function SiteHeader() {
@@ -10,7 +11,7 @@ export function SiteHeader() {
       <nav class="navbar flex justify-between bg-base-200 shadow-sm">
         <ul class="flex space-x-4 px-8" f-client-nav>
           <li>
-            <Link href="asd">Home</Link>
+            <Link href="/">Home</Link>
           </li>
           <li>
             <Link href="/issues">
@@ -44,7 +45,9 @@ export function SiteHeader() {
           </li>
         </ul>
 
-        <LanguageSwitcher />
+        <Partial name="language-switcher">
+          <LanguageSwitcher />
+        </Partial>
       </nav>
     </header>
   );

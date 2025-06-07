@@ -1,5 +1,5 @@
 import type { MiddlewareHandler } from "$fresh/server.ts";
-import { } from "$std/fs/mod.ts";
+import {} from "$std/fs/mod.ts";
 import { join } from "$std/path/join.ts";
 import type { i18nLanguage, i18nPluginConfig } from "./types.ts";
 import { i18nState } from "./types.ts";
@@ -41,11 +41,13 @@ export function createHandler(
   );
 
   return async (req, ctx) => {
-    if (ctx.destination !== "route" && ctx.destination !== "notFound") {
+    if ((ctx.destination !== "route" && ctx.destination !== "notFound")) {
       return await ctx.next();
     }
+
     const urlLang = new URL(req.url).searchParams.get("lang");
-    const languageObj = languageMap.get(urlLang || "") ?? languageMap.get(defaultLanguage) as i18nLanguage;
+    const languageObj = languageMap.get(urlLang || "") ??
+      languageMap.get(defaultLanguage) as i18nLanguage;
 
     ctx.state.language = languageObj;
     ctx.state.translation = {};

@@ -39,7 +39,9 @@ export default function LocalCommunitiesPage(
           {list.map((item) => (
             <tr>
               <td>
-                <Link href={item.link} target="_blank">{fromObject(item, 'name') as string}</Link>
+                <Link href={item.link} target="_blank">
+                  {fromObject(item, "name") as string}
+                </Link>
               </td>
               <td>{item.phone.map((item) => <div key={item}>{item}</div>)}</td>
             </tr>

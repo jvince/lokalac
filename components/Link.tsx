@@ -1,7 +1,5 @@
 import { clsx } from "clsx/lite";
 import type { JSX } from "preact";
-import { useGlobalContext } from "../globalContext.ts";
-import { useTranslation } from "../hooks/useTranslation.ts";
 import { useURL } from "../hooks/useURL.ts";
 
 type Color =
@@ -63,7 +61,7 @@ export function Link(props: LinkProps) {
   const {
     as = "link",
     color = "primary",
-    href,
+    href = "",
     variant,
     withHover = true,
     ...rest
@@ -71,15 +69,12 @@ export function Link(props: LinkProps) {
   const asButton = as === "btn";
   const asLink = as === "link";
 
-  const { baseURL } = useGlobalContext();
-  const { language } = useTranslation();
-  const { valid, url } = useURL(href, language.code, baseURL);
+  const { url } = useURL(href);
 
   const className = clsx(
     as,
     as !== "link" && variant && variantToClass[variant],
-    asLink && valid && linkColorToClass[color],
-    asLink && !valid && linkColorToClass.error,
+    asLink && linkColorToClass[color],
     asLink && withHover && "link-hover",
     asButton && colorToClass[color],
     "aria-[current=page]:underline",

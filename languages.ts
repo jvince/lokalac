@@ -1,4 +1,4 @@
-export default [
+const languages = [
   {
     code: "sr-Latn-RS",
     localizedName: "Srpski (latinica)",
@@ -16,4 +16,6 @@ export default [
   },
 ] as const;
 
-export const defaultLanguage = "sr-Latn-RS";
+export const defaultLanguage = languages[0];
+
+export default languages;

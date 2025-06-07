@@ -1,7 +1,7 @@
 import { i18nLanguage, i18nTranslation } from "$plugins/i18n/mod.ts";
 import { get } from "@es-toolkit/es-toolkit/compat";
 import { useGlobalContext } from "../globalContext.ts";
-import supportedLanguages, { defaultLanguage } from "../supportedLanguages.ts";
+import supportedLanguages, { defaultLanguage } from "../languages.ts";
 
 function isValidValue(value: unknown) {
   return typeof value === "string" || typeof value === "number";
@@ -20,7 +20,7 @@ function fromObject(
 ) {
   const { code } = this;
 
-  if (code === defaultLanguage) {
+  if (code === defaultLanguage.code) {
     return get(object, key, key);
   }
 

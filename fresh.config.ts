@@ -6,9 +6,9 @@ import { cookies } from "$plugins/cookies/mod.ts";
 import { i18n } from "$plugins/i18n/mod.ts";
 import tailwind from "@pakornv/fresh-plugin-tailwindcss";
 import { Context } from "./globalContext.ts";
+import supportedLanguages, { defaultLanguage } from "./languages.ts";
 import { migrate } from "./migrate.ts";
 import migrations from "./migrations.ts";
-import supportedLanguages, { defaultLanguage } from "./supportedLanguages.ts";
 
 const env = Deno.env.toObject();
 
@@ -31,7 +31,7 @@ export default defineConfig({
       new URL("./globalContext.ts", import.meta.url).href,
     ),
     i18n<typeof supportedLanguages>({
-      defaultLanguage: defaultLanguage,
+      defaultLanguage: defaultLanguage.code,
       languages: supportedLanguages,
       languagesDir: `${import.meta.dirname}/translations`,
     }),

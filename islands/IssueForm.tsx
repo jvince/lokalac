@@ -24,8 +24,6 @@ const state = signal<IssueFormState>({
   issue: undefined,
 });
 
-
-
 export function IssueForm(props: IssueFormProps) {
   const state = useSignal<IssueFormState>({
     localCommunity: undefined,

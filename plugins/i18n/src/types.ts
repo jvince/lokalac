@@ -4,7 +4,9 @@ export interface i18nLanguage {
   package: string;
 }
 
-export interface i18nPluginConfig<T extends readonly i18nLanguage[] = readonly i18nLanguage[]> {
+export interface i18nPluginConfig<
+  T extends readonly i18nLanguage[] = readonly i18nLanguage[],
+> {
   languages: T;
   defaultLanguage: T[number]["code"];
   languagesDir: string;

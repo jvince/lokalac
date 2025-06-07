@@ -7,11 +7,11 @@ export const theme = signal("light");
 
 export default defineApp<AppState>((_, { Component, state, url }) => {
   const { language, translation } = state;
-
   const contextValue: GlobalContext = {
     language,
     translation,
-    baseURL: new URL(url.origin),
+    baseURL: url.origin,
+    path: url.pathname,
   };
 
   return (
