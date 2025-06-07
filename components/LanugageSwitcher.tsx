@@ -32,7 +32,7 @@ export function LanguageSwitcher() {
       >
         {supportedLanguages.map((lang) => (
           <li>
-            <a href={getLanguageUrl(lang.code, path)}>
+             <a href={getLanguageUrl(lang.code, path)}>
               {lang.localizedName}
             </a>
           </li>

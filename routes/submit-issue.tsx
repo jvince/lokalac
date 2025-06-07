@@ -128,7 +128,7 @@ export const handler: Handlers<Props, AppState> = {
       return new Response(null, {
         status: 303,
         headers: {
-          Location: `/about?lang=${formData.get("lang")}`,
+          Location: `/issues?lang=${formData.get("lang")}`,
         },
       });
     }

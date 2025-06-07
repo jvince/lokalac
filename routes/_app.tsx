@@ -3,7 +3,7 @@ import { AppState } from "$types/app.ts";
 import { signal } from "@preact/signals";
 import { Context, GlobalContext } from "../globalContext.ts";
 
-export const theme = signal("light");
+export const theme = signal("winter");
 
 export default defineApp<AppState>((_, { Component, state, url }) => {
   const { language, translation } = state;
