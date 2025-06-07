@@ -5,8 +5,7 @@ import {
 } from "$models/local-community.ts";
 import type { AppState } from "$types/app.ts";
 import { Link } from "../components/Link.tsx";
-import { useGlobalContext } from "../globalContext.ts";
-import { useTranslation } from "../hooks/useTranslation.ts";
+import { useTranslation } from "$hooks/useTranslation.ts";
 
 interface PageData {
   list: LocalCommunity[];

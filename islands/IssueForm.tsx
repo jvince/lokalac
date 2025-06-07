@@ -2,7 +2,7 @@ import type { LocalCommunity } from "$models/local-community.ts";
 import { signal, useSignal } from "@preact/signals";
 import type { ComponentChildren } from "https://esm.sh/preact@10.25.4/src/index.d.ts";
 import { Form } from "../components/Form.tsx";
-import { useTranslation } from "../hooks/useTranslation.ts";
+import { useTranslation } from "$hooks/useTranslation.ts";
 import { IssueCategory } from "../routes/submit-issue.tsx";
 
 interface IssueFormProps {
