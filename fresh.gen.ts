@@ -11,6 +11,7 @@ import * as $api_random_uuid from "./routes/api/random-uuid.ts";
 import * as $countdown from "./routes/countdown.tsx";
 import * as $greet_name_ from "./routes/greet/[name].tsx";
 import * as $index from "./routes/index.tsx";
+import * as $issues_index from "./routes/issues/index.tsx";
 import * as $local_communities from "./routes/local-communities.tsx";
 import * as $search from "./routes/search.tsx";
 import * as $submit_issue from "./routes/submit-issue.tsx";
@@ -31,6 +32,7 @@ const manifest = {
     "./routes/countdown.tsx": $countdown,
     "./routes/greet/[name].tsx": $greet_name_,
     "./routes/index.tsx": $index,
+    "./routes/issues/index.tsx": $issues_index,
     "./routes/local-communities.tsx": $local_communities,
     "./routes/search.tsx": $search,
     "./routes/submit-issue.tsx": $submit_issue,

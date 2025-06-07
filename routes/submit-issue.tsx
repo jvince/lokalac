@@ -1,20 +1,13 @@
-import { Handlers, PageProps, STATUS_CODE } from "$fresh/server.ts";
-import z from "zod";
-import sharp from "sharp";
-import exif from "exif-reader";
-import { AppState } from "$types/app.ts";
+import { Handlers, PageProps } from "$fresh/server.ts";
+import { getIssueCategories } from "$models/issue-category.ts";
+import { getIssueTypes, IssueType } from "$models/issue-type.ts";
+import { insertIssue, IssueStatus } from "$models/issue.ts";
 import {
   getLocalCommunities,
   LocalCommunity,
 } from "$models/local-community.ts";
-import { STATUS_CODES } from "node:http";
-import { stat } from "node:fs";
-import { insertIssue, IssueStatus } from "$models/issue.ts";
-import { getIssueCategories } from "$models/issue-category.ts";
-import { getIssueTypes, IssueType } from "$models/issue-type.ts";
+import { AppState } from "$types/app.ts";
 import { IssueForm } from "../islands/IssueForm.tsx";
-import { Button } from "../components/Button.tsx";
-import { useMZContext } from "./_app.tsx";
 
 export interface IssueCategory {
   id: string;

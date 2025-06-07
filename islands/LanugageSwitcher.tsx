@@ -1,38 +1,27 @@
-import { IS_BROWSER } from "$fresh/runtime.ts";
-import type { JSX } from "preact";
+import IconLanguage from "https://deno.land/x/tabler_icons_tsx@0.0.7/tsx/language.tsx";
 import { useTranslation } from "../hooks/useTranslation.ts";
+import { Link } from "../components/index.ts";
 
 export function LanguageSwitcher() {
   const { language, t, supportedLanguages } = useTranslation();
 
-  const onChange = (event: JSX.TargetedEvent<HTMLSelectElement, Event>) => {
-    const selectedLanguage = event.currentTarget.value;
-
-    const url = new URL(globalThis.location.href);
-    url.searchParams.set("lang", selectedLanguage);
-    globalThis.location.assign(url.toString());
-  };
-
   return (
-    <form
-      method={!IS_BROWSER ? "GET" : undefined}
-      class="flex items-center gap-4"
-    >
-      <select name="lang" className="select" onChange={onChange}>
+    <div class="dropdown dropdown-end" title={t("common.change_language")}>
+      <div tabIndex={0} role="button" class="btn btn-square btn-soft">
+        <IconLanguage />
+      </div>
+
+      <ul tabindex={0} class="menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
         {supportedLanguages.map((lang) => (
-          <option
-            selected={language.code === lang.code}
-            value={lang.code}
-          >
-            {lang.localizedName}
-          </option>
+          <li>
+            <a
+              href={`?lang=${lang.code}`}
+            >
+              {lang.localizedName}
+            </a>
+          </li>
         ))}
-      </select>
-      {!IS_BROWSER && (
-        <button class="animate-appear btn btn-small btn-soft" type="submit">
-          {t("common.change_language")}
-        </button>
-      )}
-    </form>
+      </ul>
+    </div>
   );
 }

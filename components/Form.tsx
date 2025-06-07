@@ -4,14 +4,14 @@ import { useGlobalContext } from "../globalContext.ts";
 interface FormProps extends JSX.HTMLAttributes<HTMLFormElement> {}
 
 export function Form(props: FormProps) {
-  const { language: lang } = useGlobalContext();
+  const { language } = useGlobalContext();
 
   return (
     <form
       {...props}
     >
       {props.children}
-      <input type="hidden" name="lang" value={lang} />
+      <input type="hidden" name="lang" value={language.code} />
     </form>
   );
 }
