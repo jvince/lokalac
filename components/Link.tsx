@@ -69,7 +69,7 @@ export function Link(props: LinkProps) {
   const asButton = as === "btn";
   const asLink = as === "link";
 
-  const { url } = useURL(href);
+  const { active, url } = useURL(href);
 
   const className = clsx(
     as,
@@ -77,7 +77,7 @@ export function Link(props: LinkProps) {
     asLink && linkColorToClass[color],
     asLink && withHover && "link-hover",
     asButton && colorToClass[color],
-    "aria-[current=page]:underline",
+    active && "underline",
     props.class,
   );
 

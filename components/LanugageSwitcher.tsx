@@ -18,6 +18,7 @@ export function LanguageSwitcher() {
   return (
     <div class="dropdown dropdown-end">
       <div
+        id="test"
         class="btn btn-square btn-soft"
         role="button"
         tabIndex={0}
@@ -27,12 +28,11 @@ export function LanguageSwitcher() {
       </div>
 
       <ul
-        tabindex={0}
         class="menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
       >
         {supportedLanguages.map((lang) => (
           <li>
-             <a href={getLanguageUrl(lang.code, path)}>
+            <a href={getLanguageUrl(lang.code, path)}>
               {lang.localizedName}
             </a>
           </li>

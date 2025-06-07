@@ -2,7 +2,7 @@ import { useGlobalContext } from "../globalContext.ts";
 import { defaultLanguage } from "../languages.ts";
 
 export function useURL(href: string) {
-  const { baseURL, language } = useGlobalContext();
+  const { baseURL, language, path } = useGlobalContext();
 
   try {
     const url = new URL(href, baseURL);
@@ -15,10 +15,15 @@ export function useURL(href: string) {
     }
 
     return {
+      active: url.pathname === path,
       external,
       url: url.toString(),
     };
   } catch {
-    return { external: false, url: href };
+    return {
+      active: false,
+      external: false,
+      url: "/404",
+    };
   }
 }
