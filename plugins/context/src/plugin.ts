@@ -18,10 +18,12 @@ export function context(
     name: "context",
     entrypoints: { "main": main },
     render: (ctx) => {
-      ctx.render();
+      const result = ctx.render();
       const scripts = [];
 
-      scripts.push({ entrypoint: "main", state: { id: SHARED_CONTEXT_ID } });
+      // if (result.requiresHydration) {
+        scripts.push({ entrypoint: "main", state: { id: SHARED_CONTEXT_ID } });
+      // }
 
       return {
         scripts,

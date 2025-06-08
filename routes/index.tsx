@@ -1,8 +1,10 @@
 import { useSignal } from "@preact/signals";
 import Counter from "../islands/Counter.tsx";
+import { useTranslation } from "$hooks/useTranslation.ts";
 
 export default function Home() {
   const count = useSignal(3);
+  const { t, language } = useTranslation();
 
   return (
     <div class="px-4 py-8 mx-auto bg-[#86efac]">
@@ -19,7 +21,7 @@ export default function Home() {
           Try updating this message in the
           <code class="mx-2">./routes/index.tsx</code> file, and refresh.
         </p>
-        <Counter count={count} />
+        <Counter count={count} text={language.code} />
       </div>
     </div>
   );

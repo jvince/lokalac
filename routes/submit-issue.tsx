@@ -1,4 +1,4 @@
-import { Handlers, PageProps } from "$fresh/server.ts";
+import { Handlers, PageProps, RouteConfig } from "$fresh/server.ts";
 import { getIssueCategories } from "$models/issue-category.ts";
 import { getIssueTypes, IssueType } from "$models/issue-type.ts";
 import { insertIssue, IssueStatus } from "$models/issue.ts";
@@ -7,7 +7,9 @@ import {
   LocalCommunity,
 } from "$models/local-community.ts";
 import { AppState } from "$types/app.ts";
+import { useTranslation } from "$hooks/useTranslation.ts";
 import { IssueForm } from "../islands/IssueForm.tsx";
+import { useGlobalContext } from "../globalContext.ts";
 
 export interface IssueCategory {
   id: string;
@@ -151,7 +153,6 @@ export default function SubmitIssuePage(props: PageProps<Props>) {
       issues={issues}
       categories={categories}
       communities={communities}
-    >
-    </IssueForm>
+    />
   );
 }

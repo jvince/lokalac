@@ -4,6 +4,8 @@ import type { ComponentChildren } from "https://esm.sh/preact@10.25.4/src/index.
 import { Form } from "../components/Form.tsx";
 import { useTranslation } from "$hooks/useTranslation.ts";
 import { IssueCategory } from "../routes/submit-issue.tsx";
+import { Partial } from "$fresh/runtime.ts";
+import { useGlobalContext } from "../globalContext.ts";
 
 interface IssueFormProps {
   categories: IssueCategory[];
@@ -34,7 +36,7 @@ export function IssueForm(props: IssueFormProps) {
   const { t, fromObject } = useTranslation();
 
   return (
-    <Form method="POST" action="/submit-issue">
+    <Form method="POST" action="/submit-issue" f-client-nav={false}>
       <fieldset class="fieldset">
         <legend class="fieldset-legend">
           Create an Issue
@@ -47,6 +49,7 @@ export function IssueForm(props: IssueFormProps) {
           name="local_community"
           required
           onChange={(e) => {
+            console.log("Changed");
             state.value = {
               ...state.value,
               localCommunity: e.currentTarget.value,
