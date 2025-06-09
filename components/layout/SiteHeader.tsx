@@ -10,9 +10,6 @@ export function SiteHeader() {
       <nav class="navbar flex justify-between bg-base-200 shadow-sm">
         <ul class="flex space-x-4 px-8">
           <li>
-            <Link href="/">Home</Link>
-          </li>
-          <li>
             <Link href="/issues">
               {t("common.submitted_issues")}
             </Link>
