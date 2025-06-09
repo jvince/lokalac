@@ -8,7 +8,7 @@ export default [
         key: ["local_community", "aleksandrovo"],
         type: "set",
         value: {
-          id: "aleksandrovo",
+          id: "805432",
           name: "Aleksandrovo",
           name_sr_Cyrl_RS: "Александрово",
           name_hu: "Aleksandrovo",
@@ -20,7 +20,7 @@ export default [
         key: ["local_community", "bajmok"],
         type: "set",
         value: {
-          id: "bajmok",
+          id: "805459",
           name: "Bajmok",
           name_sr_Cyrl_RS: "Бајмок",
           name_hu: "Bajmok",
@@ -33,7 +33,7 @@ export default [
         key: ["local_community", "bajnat"],
         type: "set",
         value: {
-          id: "bajnat",
+          id: "805467",
           name: "Bajnat",
           name_sr_Cyrl_RS: "Бајнат",
           phone: ["024/524-775"],
@@ -45,7 +45,7 @@ export default [
         key: ["local_community", "backi_vinogradi"],
         type: "set",
         value: {
-          id: "backi_vinogradi",
+          id: "805475",
           name: "Bački Vinogradi",
           name_sr_Cyrl_RS: "Бачки Виногради",
           phone: ["024/4757-003"],
@@ -57,7 +57,7 @@ export default [
         key: ["local_community", "backo_dusanovo"],
         type: "set",
         value: {
-          id: "backo_dusanovo",
+          id: "806498",
           name: "Bačko Dušanovo",
           name_sr_Cyrl_RS: "Бачко Душаново",
           phone: ["024/782-243"],
@@ -68,7 +68,7 @@ export default [
         key: ["local_community", "bikovo"],
         type: "set",
         value: {
-          id: "bikovo",
+          id: "805483",
           name: "Bikovo",
           name_sr_Cyrl_RS: "Биково",
           phone: ["024/4797-049"],
@@ -79,7 +79,7 @@ export default [
         key: ["local_community", "centar_i"],
         type: "set",
         value: {
-          id: "centar_i",
+          id: "805734",
           name: "Centar I",
           name_sr_Cyrl_RS: "Центар I",
           phone: ["024/558-699"],
@@ -90,7 +90,7 @@ export default [
         key: ["local_community", "centar_ii"],
         type: "set",
         value: {
-          id: "centar_ii",
+          id: "805742",
           name: "Centar II",
           name_sr_Cyrl_RS: "Центар II",
           phone: ["024/558-166"],
@@ -102,7 +102,7 @@ export default [
         key: ["local_community", "centar_iii"],
         type: "set",
         value: {
-          id: "centar_iii",
+          id: "805769",
           name: "Centar III",
           name_sr_Cyrl_RS: "Центар III",
           phone: ["024/556-141"],
@@ -114,7 +114,7 @@ export default [
         key: ["local_community", "cantavir"],
         type: "set",
         value: {
-          id: "cantavir",
+          id: "806501",
           name: "Čantavir",
           name_sr_Cyrl_RS: "Чантавир",
           phone: ["024/782-294"],
@@ -126,7 +126,7 @@ export default [
         key: ["local_community", "dudova_suma"],
         type: "set",
         value: {
-          id: "dudova_suma",
+          id: "805513",
           name: "Dudova šuma",
           name_sr_Cyrl_RS: "Дудова шума",
           phone: ["024/529-730"],
@@ -138,7 +138,7 @@ export default [
         key: ["local_community", "djurdjin"],
         type: "set",
         value: {
-          id: "djurdjin",
+          id: "805521",
           name: "Đurđin",
           name_sr_Cyrl_RS: "Ђурђин",
           phone: ["024/4768-050"],
@@ -150,7 +150,7 @@ export default [
         key: ["local_community", "gat"],
         type: "set",
         value: {
-          id: "gat",
+          id: "805491",
           name: "Gat",
           name_sr_Cyrl_RS: "Гат",
           phone: ["024/4562-570"],
@@ -162,9 +162,9 @@ export default [
         key: ["local_community", "hajdukovo"],
         type: "set",
         value: {
-          id: "hajdukovo",
+          id: "805726",
           name: "Hajdukovo",
-          name_sr_Cyrl_RS: "Хајдуковано",
+          name_sr_Cyrl_RS: "Хајдуково",
           phone: ["024/4758-021"],
           link:
             "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-hajdukovo/",
@@ -174,7 +174,7 @@ export default [
         key: ["local_community", "kelebija"],
         type: "set",
         value: {
-          id: "kelebija",
+          id: "805556",
           name: "Kelebija",
           name_sr_Cyrl_RS: "Келебија",
           phone: ["024/4780-205"],
@@ -186,7 +186,7 @@ export default [
         key: ["local_community", "ker"],
         type: "set",
         value: {
-          id: "ker",
+          id: "805564",
           name: "Ker",
           name_sr_Cyrl_RS: "Кер",
           phone: ["024/552-106"],
@@ -198,7 +198,7 @@ export default [
         key: ["local_community", "kertvaros"],
         type: "set",
         value: {
-          id: "kertvaros",
+          id: "805572",
           name: "Kertvaroš",
           name_sr_Cyrl_RS: "Кертварош",
           phone: ["024/546-484"],
@@ -210,7 +210,7 @@ export default [
         key: ["local_community", "ljutovo"],
         type: "set",
         value: {
-          id: "ljutovo",
+          id: "806510",
           name: "Ljutovo",
           name_sr_Cyrl_RS: "Љутово",
           phone: ["024/4767-552"],
@@ -222,7 +222,7 @@ export default [
         key: ["local_community", "makova_sedmica"],
         type: "set",
         value: {
-          id: "makova_sedmica",
+          id: "805505",
           name: "Makova sedmica",
           name_sr_Cyrl_RS: "Макова седмица",
           phone: ["024/550-015"],
@@ -234,7 +234,7 @@ export default [
         key: ["local_community", "mala_bosna"],
         type: "set",
         value: {
-          id: "mala_bosna",
+          id: "806692",
           name: "Mala Bosna",
           name_sr_Cyrl_RS: "Мала Босна",
           phone: ["024/4796-026"],
@@ -246,7 +246,7 @@ export default [
         key: ["local_community", "mali_bajmok"],
         type: "set",
         value: {
-          id: "mali_bajmok",
+          id: "805602",
           name: "Mali Bajmok",
           name_sr_Cyrl_RS: "Мали Бајмок",
           phone: ["024/561-661"],
@@ -258,7 +258,7 @@ export default [
         key: ["local_community", "mali_radanovac"],
         type: "set",
         value: {
-          id: "mali_radanovac",
+          id: "805629",
           name: "Mali Radanovac",
           name_sr_Cyrl_RS: "Мали Радановац",
           phone: ["024/546-149"],
@@ -267,22 +267,10 @@ export default [
         },
       },
       {
-        key: ["local_community", "misicevo"],
-        type: "set",
-        value: {
-          id: "misicevo",
-          name: "Mišićevo",
-          name_sr_Cyrl_RS: "Мишићево",
-          phone: ["024/4760-098"],
-          link:
-            "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-misicevo/",
-        },
-      },
-      {
         key: ["local_community", "novi_grad"],
         type: "set",
         value: {
-          id: "novi_grad",
+          id: "805637",
           name: "Novi grad",
           name_sr_Cyrl_RS: "Нови град",
           phone: ["024/547-551"],
@@ -294,7 +282,7 @@ export default [
         key: ["local_community", "novi_zednik"],
         type: "set",
         value: {
-          id: "novi_zednik",
+          id: "805645",
           name: "Novi Žednik",
           name_sr_Cyrl_RS: "Нови Жедник",
           phone: ["024/785-009"],
@@ -306,7 +294,7 @@ export default [
         key: ["local_community", "novo_selo"],
         type: "set",
         value: {
-          id: "novo_selo",
+          id: "805653",
           name: "Novo Selo",
           name_sr_Cyrl_RS: "Ново Село",
           phone: ["024/556-796"],
@@ -318,7 +306,7 @@ export default [
         key: ["local_community", "palic"],
         type: "set",
         value: {
-          id: "palic",
+          id: "805661",
           name: "Palić",
           name_sr_Cyrl_RS: "Палић",
           phone: ["024/754-037"],
@@ -330,7 +318,7 @@ export default [
         key: ["local_community", "pescara"],
         type: "set",
         value: {
-          id: "pescara",
+          id: "805670",
           name: "Peščara",
           name_sr_Cyrl_RS: "Пешчара",
           phone: ["024/516-124"],
@@ -342,7 +330,7 @@ export default [
         key: ["local_community", "prozivka"],
         type: "set",
         value: {
-          id: "prozivka",
+          id: "805688",
           name: "Prozivka",
           name_sr_Cyrl_RS: "Прозивка",
           phone: ["024/524-807"],
@@ -354,7 +342,7 @@ export default [
         key: ["local_community", "radanovac"],
         type: "set",
         value: {
-          id: "radanovac",
+          id: "805696",
           name: "Radanovac",
           name_sr_Cyrl_RS: "Радановац",
           phone: ["024/596-002"],
@@ -366,7 +354,7 @@ export default [
         key: ["local_community", "stari_zednik"],
         type: "set",
         value: {
-          id: "stari_zednik",
+          id: "805700",
           name: "Stari Žednik",
           name_sr_Cyrl_RS: "Стари Жедник",
           phone: ["024/787-040"],
@@ -378,7 +366,7 @@ export default [
         key: ["local_community", "supljak"],
         type: "set",
         value: {
-          id: "supljak",
+          id: "805785",
           name: "Šupljak",
           name_sr_Cyrl_RS: "Шупљак",
           phone: ["024/753-050"],
@@ -390,7 +378,7 @@ export default [
         key: ["local_community", "tavankut"],
         type: "set",
         value: {
-          id: "tavankut",
+          id: "806528",
           name: "Tavankut",
           name_sr_Cyrl_RS: "Таванкут",
           phone: ["024/4767-006"],
@@ -402,7 +390,7 @@ export default [
         key: ["local_community", "verusic"],
         type: "set",
         value: {
-          id: "verusic",
+          id: "806480",
           name: "Verušić",
           name_sr_Cyrl_RS: "Верушић",
           phone: ["024/552-723", "024/552-701"],
@@ -414,7 +402,7 @@ export default [
         key: ["local_community", "visnjevac"],
         type: "set",
         value: {
-          id: "visnjevac",
+          id: "806340",
           name: "Višnjevac",
           name_sr_Cyrl_RS: "Вишњевац",
           phone: ["024/4782-040"],
@@ -426,7 +414,7 @@ export default [
         key: ["local_community", "zorka"],
         type: "set",
         value: {
-          id: "zorka",
+          id: "805548",
           name: "Zorka",
           name_sr_Cyrl_RS: "Зорка",
           phone: ["024/527-491"],
@@ -438,7 +426,7 @@ export default [
         key: ["local_community", "zeleznicko_naselje"],
         type: "set",
         value: {
-          id: "zeleznicko_naselje",
+          id: "805530",
           name: "Železničko naselje",
           name_sr_Cyrl_RS: "Железничко насеље",
           phone: ["024/576-795"],
