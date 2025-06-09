@@ -150,7 +150,7 @@ export default function SubmitIssuePage(props: PageProps<Props>) {
 
   return (
     <IssueForm
-      issues={issues}
+      issueTypes={issues}
       categories={categories}
       communities={communities}
     />

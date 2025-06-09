@@ -5,15 +5,11 @@
 import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
 import * as $_layout from "./routes/_layout.tsx";
-import * as $about from "./routes/about.tsx";
-import * as $api_joke from "./routes/api/joke.ts";
-import * as $api_random_uuid from "./routes/api/random-uuid.ts";
-import * as $countdown from "./routes/countdown.tsx";
-import * as $greet_name_ from "./routes/greet/[name].tsx";
 import * as $index from "./routes/index.tsx";
+import * as $issues_issue_edit from "./routes/issues/[issue]/edit.tsx";
 import * as $issues_index from "./routes/issues/index.tsx";
+import * as $issues_submit from "./routes/issues/submit.tsx";
 import * as $local_communities from "./routes/local-communities.tsx";
-import * as $search from "./routes/search.tsx";
 import * as $submit_issue from "./routes/submit-issue.tsx";
 import * as $Countdown from "./islands/Countdown.tsx";
 import * as $Counter from "./islands/Counter.tsx";
@@ -25,15 +21,11 @@ const manifest = {
     "./routes/_404.tsx": $_404,
     "./routes/_app.tsx": $_app,
     "./routes/_layout.tsx": $_layout,
-    "./routes/about.tsx": $about,
-    "./routes/api/joke.ts": $api_joke,
-    "./routes/api/random-uuid.ts": $api_random_uuid,
-    "./routes/countdown.tsx": $countdown,
-    "./routes/greet/[name].tsx": $greet_name_,
     "./routes/index.tsx": $index,
+    "./routes/issues/[issue]/edit.tsx": $issues_issue_edit,
     "./routes/issues/index.tsx": $issues_index,
+    "./routes/issues/submit.tsx": $issues_submit,
     "./routes/local-communities.tsx": $local_communities,
-    "./routes/search.tsx": $search,
     "./routes/submit-issue.tsx": $submit_issue,
   },
   islands: {

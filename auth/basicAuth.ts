@@ -21,7 +21,6 @@ function isValid(authHEader: string) {
 
 export function basicAuth(request: Request, realm: string = "Restricted Area") {
   const authHeader = request.headers.get("Authorization");
-  console.log(authHeader);
 
   if (isValid(authHeader ?? "")) {
     return;

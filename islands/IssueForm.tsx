@@ -1,60 +1,69 @@
-import type { LocalCommunity } from "$models/local-community.ts";
-import { signal, useSignal } from "@preact/signals";
-import type { ComponentChildren } from "https://esm.sh/preact@10.25.4/src/index.d.ts";
-import { Form } from "../components/Form.tsx";
+import { Form } from "$components/Form.tsx";
 import { useTranslation } from "$hooks/useTranslation.ts";
-import { IssueCategory } from "../routes/submit-issue.tsx";
-import { Partial } from "$fresh/runtime.ts";
-import { useGlobalContext } from "../globalContext.ts";
+import { IssueCategory } from "$models/issue-category.ts";
+import { IssueType } from "$models/issue-type.ts";
+import type { LocalCommunity } from "$models/local-community.ts";
+import { AppState } from "$types/app.ts";
+import { computed, useSignal } from "@preact/signals";
+import type { ComponentChildren, JSX } from "preact";
+import { useCallback } from "preact/hooks";
+import { Button } from "$components/Button.tsx";
+import { Select } from "$components/Select.tsx";
 
 interface IssueFormProps {
+  appState: AppState;
   categories: IssueCategory[];
   children?: ComponentChildren;
   communities: LocalCommunity[];
-  issues: any[];
+  issueTypes: IssueType[];
 }
 
 interface IssueFormState {
-  localCommunity?: string;
-  issueCategory?: string;
-  issue?: string;
+  localCommunity: string | null;
+  issueCategory: string | null;
+  issueType: string | null;
 }
 
-const state = signal<IssueFormState>({
-  localCommunity: undefined,
-  issueCategory: undefined,
-  issue: undefined,
-});
-
 export function IssueForm(props: IssueFormProps) {
+  const { t, fromObject } = useTranslation(props.appState);
+
   const state = useSignal<IssueFormState>({
-    localCommunity: undefined,
-    issueCategory: undefined,
-    issue: undefined,
+    localCommunity: null,
+    issueCategory: null,
+    issueType: null,
   });
 
-  const { t, fromObject } = useTranslation();
+  const canSubmit = computed(() => (
+    Object.values(state.value).every(Boolean)
+  ));
+
+  const onChangeHandler = useCallback(
+    (field: keyof IssueFormState) =>
+    (e: JSX.TargetedEvent<HTMLSelectElement>) => {
+      console.log(e.currentTarget);
+
+      const value = e.currentTarget.value;
+      state.value = {
+        ...state.value,
+        [field]: value === "" ? null : value,
+      };
+    },
+    [],
+  );
 
   return (
-    <Form method="POST" action="/submit-issue" f-client-nav={false}>
+    <Form method="POST" action="/submit-issue" f-client-nav={false} onChange={(e) => {
+      console.log("Tra");
+    }}>
       <fieldset class="fieldset">
         <legend class="fieldset-legend">
           Create an Issue
         </legend>
 
-        {JSON.stringify(state.value)}
-
-        <select
-          class="select validator"
+        <Select
           name="local_community"
           required
-          onChange={(e) => {
-            console.log("Changed");
-            state.value = {
-              ...state.value,
-              localCommunity: e.currentTarget.value,
-            };
-          }}
+          onChange={onChangeHandler("localCommunity")}
         >
           <option readOnly disabled selected value="">
             {t("common.local_community")}
@@ -64,17 +73,12 @@ export function IssueForm(props: IssueFormProps) {
               {fromObject(community, "name")}
             </option>
           ))}
-        </select>
+        </Select>
 
-        <select
-          class="select validator"
+        <Select
           name="issue_category"
           required
-          onChange={(e) =>
-            state.value = {
-              ...state.value,
-              issueCategory: e.currentTarget.value,
-            }}
+          onChange={onChangeHandler("issueCategory")}
         >
           <option readOnly disabled selected value="">
             Select a category
@@ -84,29 +88,33 @@ export function IssueForm(props: IssueFormProps) {
               {category.name}
             </option>
           ))}
-        </select>
+        </Select>
 
-        <select
-          class="select validator"
+        <Select
           name="issue_type"
           required
           disabled={!state.value.issueCategory}
+          onChange={onChangeHandler("issueType")}
         >
           <option readOnly disabled selected value="">
             Select a issue
           </option>
-          {props.issues
-            .filter((issue) => issue.category === state.value.issueCategory)
+          {props.issueTypes
+            .filter((issueType) =>
+              issueType.category === state.value.issueCategory
+            )
             .map((issue) => (
               <option value={issue.id} key={issue.id}>
                 {issue.name}
               </option>
             ))}
-        </select>
+        </Select>
 
         <textarea class="textarea" placeholder="note" name="note" />
 
-        <button class="btn btn-primary" type="submit">Submit</button>
+        <Button disabled={!canSubmit.value} type="submit">
+          {t("common.submit")}
+        </Button>
       </fieldset>
     </Form>
   );

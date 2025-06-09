@@ -6,6 +6,7 @@ export interface IssueType {
   id: string;
   name: string;
   description: string;
+  category: string;
 }
 
 export async function* getIssueTypes(options?: Deno.KvListOptions) {

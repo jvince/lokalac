@@ -1,4 +1,3 @@
-import { Partial } from "$fresh/runtime.ts";
 import { useTranslation } from "$hooks/useTranslation.ts";
 import { LanguageSwitcher } from "../LanugageSwitcher.tsx";
 import { Link } from "../Link.tsx";
@@ -15,26 +14,12 @@ export function SiteHeader() {
           </li>
           <li>
             <Link href="/issues">
-              {t("common.issues")}
+              {t("common.submitted_issues")}
             </Link>
           </li>
           <li>
-            <Link href="/about">About</Link>
-          </li>
-          <li>
-            <Link href="/search">
-              Contact
-            </Link>
-          </li>
-          <li>
-            <Link href="/countdown">
-              Countdown
-            </Link>
-          </li>
-
-          <li>
-            <Link href="/submit-issue">
-              Submit Issue
+            <Link href="/issues/submit">
+              {t("common.submit_issue")}
             </Link>
           </li>
 
@@ -44,6 +29,7 @@ export function SiteHeader() {
             </Link>
           </li>
         </ul>
+
         <LanguageSwitcher />
       </nav>
     </header>
