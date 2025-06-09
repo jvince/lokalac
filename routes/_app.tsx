@@ -1,7 +1,7 @@
 import { defineApp } from "$fresh/server.ts";
 import { AppState } from "$types/app.ts";
 import { signal } from "@preact/signals";
-import { Context, GlobalContext } from "../globalContext.ts";
+import { Context, type GlobalContext } from "../globalContext.ts";
 import { Partial } from "$fresh/runtime.ts";
 
 export const theme = signal("winter");

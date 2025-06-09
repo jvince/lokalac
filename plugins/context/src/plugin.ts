@@ -21,9 +21,9 @@ export function context(
       const result = ctx.render();
       const scripts = [];
 
-      // if (result.requiresHydration) {
+      if (result.requiresHydration) {
         scripts.push({ entrypoint: "main", state: { id: SHARED_CONTEXT_ID } });
-      // }
+      }
 
       return {
         scripts,
