@@ -1,15 +1,14 @@
+import { Button } from "$components/Button.tsx";
 import { Form } from "$components/Form.tsx";
+import { Select } from "$components/Select.tsx";
 import { useTranslation } from "$hooks/useTranslation.ts";
 import { IssueCategory } from "$models/issue-category.ts";
 import { IssueType } from "$models/issue-type.ts";
 import type { LocalCommunity } from "$models/local-community.ts";
-import { AppState } from "$types/app.ts";
+import { i18nState } from "$plugins/i18n/mod.ts";
 import { computed, useSignal } from "@preact/signals";
 import type { ComponentChildren, JSX } from "preact";
 import { useCallback } from "preact/hooks";
-import { Button } from "$components/Button.tsx";
-import { Select } from "$components/Select.tsx";
-import { i18nState } from "$plugins/i18n/mod.ts";
 
 interface IssueFormProps {
   i18nState: i18nState;
@@ -83,7 +82,7 @@ export function IssueForm(props: IssueFormProps) {
           </option>
           {props.categories.map((category) => (
             <option value={category.id} key={category.id}>
-              {category.name}
+              {fromObject(category, "name")}
             </option>
           ))}
         </Select>
@@ -103,7 +102,7 @@ export function IssueForm(props: IssueFormProps) {
             )
             .map((issue) => (
               <option value={issue.id} key={issue.id}>
-                {issue.name}
+                {fromObject(issue, "name")}
               </option>
             ))}
         </Select>

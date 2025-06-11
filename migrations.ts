@@ -5,7 +5,7 @@ export default [
     "local_communities",
     () => [
       {
-        key: ["local_community", "aleksandrovo"],
+        key: ["local_community", "805432"],
         type: "set",
         value: {
           id: "805432",
@@ -17,7 +17,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "bajmok"],
+        key: ["local_community", "805459"],
         type: "set",
         value: {
           id: "805459",
@@ -30,7 +30,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "bajnat"],
+        key: ["local_community", "805467"],
         type: "set",
         value: {
           id: "805467",
@@ -42,7 +42,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "backi_vinogradi"],
+        key: ["local_community", "805475"],
         type: "set",
         value: {
           id: "805475",
@@ -54,7 +54,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "backo_dusanovo"],
+        key: ["local_community", "806498"],
         type: "set",
         value: {
           id: "806498",
@@ -65,7 +65,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "bikovo"],
+        key: ["local_community", "805483"],
         type: "set",
         value: {
           id: "805483",
@@ -76,7 +76,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "centar_i"],
+        key: ["local_community", "805734"],
         type: "set",
         value: {
           id: "805734",
@@ -87,7 +87,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "centar_ii"],
+        key: ["local_community", "805742"],
         type: "set",
         value: {
           id: "805742",
@@ -99,7 +99,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "centar_iii"],
+        key: ["local_community", "805769"],
         type: "set",
         value: {
           id: "805769",
@@ -111,7 +111,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "cantavir"],
+        key: ["local_community", "806501"],
         type: "set",
         value: {
           id: "806501",
@@ -123,7 +123,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "dudova_suma"],
+        key: ["local_community", "805513"],
         type: "set",
         value: {
           id: "805513",
@@ -135,7 +135,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "djurdjin"],
+        key: ["local_community", "805521"],
         type: "set",
         value: {
           id: "805521",
@@ -147,7 +147,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "gat"],
+        key: ["local_community", "805491"],
         type: "set",
         value: {
           id: "805491",
@@ -159,7 +159,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "hajdukovo"],
+        key: ["local_community", "805726"],
         type: "set",
         value: {
           id: "805726",
@@ -171,7 +171,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "kelebija"],
+        key: ["local_community", "805556"],
         type: "set",
         value: {
           id: "805556",
@@ -183,7 +183,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "ker"],
+        key: ["local_community", "805564"],
         type: "set",
         value: {
           id: "805564",
@@ -195,7 +195,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "kertvaros"],
+        key: ["local_community", "805572"],
         type: "set",
         value: {
           id: "805572",
@@ -207,7 +207,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "ljutovo"],
+        key: ["local_community", "806510"],
         type: "set",
         value: {
           id: "806510",
@@ -219,7 +219,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "makova_sedmica"],
+        key: ["local_community", "805505"],
         type: "set",
         value: {
           id: "805505",
@@ -231,7 +231,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "mala_bosna"],
+        key: ["local_community", "806692"],
         type: "set",
         value: {
           id: "806692",
@@ -243,7 +243,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "mali_bajmok"],
+        key: ["local_community", "805602"],
         type: "set",
         value: {
           id: "805602",
@@ -255,7 +255,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "mali_radanovac"],
+        key: ["local_community", "805629"],
         type: "set",
         value: {
           id: "805629",
@@ -267,7 +267,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "novi_grad"],
+        key: ["local_community", "805637"],
         type: "set",
         value: {
           id: "805637",
@@ -279,7 +279,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "novi_zednik"],
+        key: ["local_community", "805645"],
         type: "set",
         value: {
           id: "805645",
@@ -291,7 +291,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "novo_selo"],
+        key: ["local_community", "805653"],
         type: "set",
         value: {
           id: "805653",
@@ -303,7 +303,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "palic"],
+        key: ["local_community", "805661"],
         type: "set",
         value: {
           id: "805661",
@@ -315,7 +315,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "pescara"],
+        key: ["local_community", "805670"],
         type: "set",
         value: {
           id: "805670",
@@ -327,7 +327,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "prozivka"],
+        key: ["local_community", "805688"],
         type: "set",
         value: {
           id: "805688",
@@ -339,7 +339,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "radanovac"],
+        key: ["local_community", "805696"],
         type: "set",
         value: {
           id: "805696",
@@ -351,7 +351,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "stari_zednik"],
+        key: ["local_community", "805700"],
         type: "set",
         value: {
           id: "805700",
@@ -363,7 +363,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "supljak"],
+        key: ["local_community", "805785"],
         type: "set",
         value: {
           id: "805785",
@@ -375,7 +375,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "tavankut"],
+        key: ["local_community", "806528"],
         type: "set",
         value: {
           id: "806528",
@@ -387,7 +387,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "verusic"],
+        key: ["local_community", "806480"],
         type: "set",
         value: {
           id: "806480",
@@ -399,7 +399,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "visnjevac"],
+        key: ["local_community", "806340"],
         type: "set",
         value: {
           id: "806340",
@@ -411,7 +411,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "zorka"],
+        key: ["local_community", "805548"],
         type: "set",
         value: {
           id: "805548",
@@ -423,7 +423,7 @@ export default [
         },
       },
       {
-        key: ["local_community", "zeleznicko_naselje"],
+        key: ["local_community", "805530"],
         type: "set",
         value: {
           id: "805530",
@@ -444,7 +444,9 @@ export default [
         type: "set",
         value: {
           id: "infrastructure_public_works",
-          name: "Infrastructure and Public Works",
+          name: "Infrastruktura i javni radovi",
+          name_sr_Cyrl_RS: "Инфраструктура и јавни радови",
+          name_hu: "Infrastruktúra és közmunkák",
           description: "Infrastructure and Public Works",
         },
       },
@@ -453,7 +455,9 @@ export default [
         type: "set",
         value: {
           id: "environmental_concerns",
-          name: "Environmental Concerns",
+          name: "Ekološki problemi",
+          name_sr_Cyrl_RS: "Еколошки проблеми",
+          name_hu: "Környezetvédelmi problémák",
           description: "Environmental Concerns",
         },
       },
@@ -462,7 +466,9 @@ export default [
         type: "set",
         value: {
           id: "public_safety",
-          name: "Public Safety",
+          name: "Javna bezbednost",
+          name_sr_Cyrl_RS: "Јавна безбедност",
+          name_hu: "Közbiztonság",
           description: "Public Safety",
         },
       },
@@ -471,7 +477,9 @@ export default [
         type: "set",
         value: {
           id: "city_services",
-          name: "City Services",
+          name: "Gradske usluge",
+          name_sr_Cyrl_RS: "Градске услуге",
+          name_hu: "Városi szolgáltatások",
           description: "City Services",
         },
       },
@@ -480,7 +488,9 @@ export default [
         type: "set",
         value: {
           id: "other",
-          name: "Other",
+          name: "Ostalo",
+          name_sr_Cyrl_RS: "Остало",
+          name_hu: "Egyéb",
           description: "Other",
         },
       },
@@ -495,7 +505,9 @@ export default [
         value: {
           id: "potholes",
           category: "infrastructure_public_works",
-          name: "Potholes",
+          name: "Rupe na putu",
+          name_sr_Cyrl_RS: "Рупе на путу",
+          name_hu: "Kátyúk az úton",
           description: "Potholes on the road",
         },
       },
@@ -505,7 +517,9 @@ export default [
         value: {
           id: "road_damage",
           category: "infrastructure_public_works",
-          name: "Road Damage",
+          name: "Šteta na putu",
+          name_sr_Cyrl_RS: "Штета на путу",
+          name_hu: "Út károsodása",
           description: "Damage to the road surface",
         },
       },
@@ -515,7 +529,9 @@ export default [
         value: {
           id: "road_signs",
           category: "infrastructure_public_works",
-          name: "Road Signs",
+          name: "Saobraćajni znakovi",
+          name_sr_Cyrl_RS: "Саобраћајни знакови",
+          name_hu: "Közlekedési táblák",
           description: "Missing or damaged road signs",
         },
       },
@@ -525,7 +541,9 @@ export default [
         value: {
           id: "street_lights",
           category: "infrastructure_public_works",
-          name: "Street Lights",
+          name: "Ulična rasveta",
+          name_sr_Cyrl_RS: "Улична расвета",
+          name_hu: "Utcai világítás",
           description: "Broken or non-functional street lights",
         },
       },
@@ -535,7 +553,9 @@ export default [
         value: {
           id: "sidewalks",
           category: "infrastructure_public_works",
-          name: "Sidewalks",
+          name: "Trotoari",
+          name_sr_Cyrl_RS: "Trotoari",
+          name_hu: "Járdák",
           description: "Damaged or obstructed sidewalks",
         },
       },
@@ -550,7 +570,9 @@ export default [
         value: {
           id: "littering",
           category: "environmental_concerns",
-          name: "Littering",
+          name: "Semeće na javnim mestima",
+          name_sr_Cyrl_RS: "Смеће на јавним местима",
+          name_hu: "Szemét a közterületeken",
           description: "Littering in public spaces",
         },
       },
@@ -560,8 +582,9 @@ export default [
         value: {
           id: "illegal_dumping",
           category: "environmental_concerns",
-          name: "Illegal Dumping",
-          description: "Illegal dumping of waste",
+          name: "Nedozvoljeno odlaganje otpada",
+          name_sr_Cyrl_RS: "Нелегално одлагање отпада",
+          name_hu: "Illegális hulladéklerakás",
         },
       },
       {
@@ -570,7 +593,9 @@ export default [
         value: {
           id: "water_quality",
           category: "environmental_concerns",
-          name: "Water Quality",
+          name: "Kvalitet vode",
+          name_sr_Cyrl_RS: "Квалитет воде",
+          name_hu: "Vízminőség",
           description: "Concerns about water quality (contamination, etc.)",
         },
       },
@@ -580,7 +605,9 @@ export default [
         value: {
           id: "air_quality",
           category: "environmental_concerns",
-          name: "Air Quality",
+          name: "Kvalitet vazduha",
+          name_sr_Cyrl_RS: "Квалитет ваздуха",
+          name_hu: "Levegőminőség",
           description: "Concerns about air quality (pollution, etc.)",
         },
       },
@@ -590,7 +617,9 @@ export default [
         value: {
           id: "noise_pollution",
           category: "environmental_concerns",
-          name: "Noise Pollution",
+          name: "Zagađenje bukom",
+          name_sr_Cyrl_RS: "Загађење буком",
+          name_hu: "Zajárási szennyezés",
           description: "Noise pollution in the area",
         },
       },
@@ -600,7 +629,9 @@ export default [
         value: {
           id: "green_spaces",
           category: "environmental_concerns",
-          name: "Green Spaces",
+          name: "Zelene površine",
+          name_sr_Cyrl_RS: "Зеленe површине",
+          name_hu: "Zöld területek",
           description: "Issues with green spaces (maintenance, etc.)",
         },
       },
@@ -615,7 +646,9 @@ export default [
         value: {
           id: "crime",
           category: "public_safety",
-          name: "Crime",
+          name: "Kriminal",
+          name_sr_Cyrl_RS: "Криминал",
+          name_hu: "Bűnözés",
           description: "Crime in the area",
         },
       },
@@ -625,7 +658,9 @@ export default [
         value: {
           id: "vandalism",
           category: "public_safety",
-          name: "Vandalism",
+          name: "Vandalizam",
+          name_sr_Cyrl_RS: "Вандализам",
+          name_hu: "Vandalizmus",
           description: "Vandalism in public spaces",
         },
       },
@@ -640,7 +675,9 @@ export default [
         value: {
           id: "waste_collection",
           category: "city_services",
-          name: "Waste Collection",
+          name: "Odnošenje smeća",
+          name_sr_Cyrl_RS: "Одношење смећа",
+          name_hu: "Hulladékgyűjtés",
           description: "Issues with waste collection (missed pickups, etc.)",
         },
       },
@@ -650,7 +687,9 @@ export default [
         value: {
           id: "water_supply",
           category: "city_services",
-          name: "Water Supply",
+          name: "Vodosnabdevanje",
+          name_sr_Cyrl_RS: "Водоснабдевање",
+          name_hu: "Vízellátás",
           description:
             "Issues with water supply (low pressure, contamination, etc.)",
         },
@@ -661,7 +700,9 @@ export default [
         value: {
           id: "sewerage",
           category: "city_services",
-          name: "Sewerage",
+          name: "Kanalizacija",
+          name_sr_Cyrl_RS: "Канализација",
+          name_hu: "Csatornázás",
           description: "Issues with sewerage (blockages, leaks, etc.)",
         },
       },
@@ -671,7 +712,9 @@ export default [
         value: {
           id: "public_transport",
           category: "city_services",
-          name: "Public Transport",
+          name: "Javni prevoz",
+          name_sr_Cyrl_RS: "Јавни превоз",
+          name_hu: "Tömegközlekedés",
           description:
             "Issues with public transport (delays, route changes, etc.)",
         },
@@ -687,7 +730,9 @@ export default [
         value: {
           id: "community_event_suggestion",
           category: "other",
-          name: "Community Event Suggestion",
+          name: "Predlog za zajednički događaj",
+          name_sr_Cyrl_RS: "Предлог за заједнички догађај",
+          name_hu: "Közösségi esemény javaslat",
           description: "Suggestions for community events or activities",
         },
       },
@@ -697,7 +742,9 @@ export default [
         value: {
           id: "feedback",
           category: "other",
-          name: "Feedback",
+          name: "Povratne informacije",
+          name_sr_Cyrl_RS: "Повратнe информацијe",
+          name_hu: "Visszajelzés",
           description: "General feedback or suggestions",
         },
       },
@@ -707,7 +754,9 @@ export default [
         value: {
           id: "other",
           category: "other",
-          name: "Other",
+          name: "Ostalo",
+          name_sr_Cyrl_RS: "Остало",
+          name_hu: "Egyéb",
           description: "Other issues not covered by the above categories",
         },
       },
