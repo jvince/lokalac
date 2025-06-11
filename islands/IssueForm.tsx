@@ -9,9 +9,10 @@ import type { ComponentChildren, JSX } from "preact";
 import { useCallback } from "preact/hooks";
 import { Button } from "$components/Button.tsx";
 import { Select } from "$components/Select.tsx";
+import { i18nState } from "$plugins/i18n/mod.ts";
 
 interface IssueFormProps {
-  appState: AppState;
+  i18nState: i18nState;
   categories: IssueCategory[];
   children?: ComponentChildren;
   communities: LocalCommunity[];
@@ -25,7 +26,7 @@ interface IssueFormState {
 }
 
 export function IssueForm(props: IssueFormProps) {
-  const { t, fromObject } = useTranslation(props.appState);
+  const { t, fromObject } = useTranslation(props.i18nState);
 
   const state = useSignal<IssueFormState>({
     localCommunity: null,
@@ -40,7 +41,6 @@ export function IssueForm(props: IssueFormProps) {
   const onChangeHandler = useCallback(
     (field: keyof IssueFormState) =>
     (e: JSX.TargetedEvent<HTMLSelectElement>) => {
-      console.log(e.currentTarget);
 
       const value = e.currentTarget.value;
       state.value = {
@@ -52,9 +52,7 @@ export function IssueForm(props: IssueFormProps) {
   );
 
   return (
-    <Form method="POST" action="/submit-issue" f-client-nav={false} onChange={(e) => {
-      console.log("Tra");
-    }}>
+    <Form method="POST" action="/submit-issue" f-client-nav={false}>
       <fieldset class="fieldset">
         <legend class="fieldset-legend">
           Create an Issue

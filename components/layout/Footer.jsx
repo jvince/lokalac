@@ -1,8 +1,8 @@
 import { Link } from "$components/Link.tsx";
 
-export function SiteFooter() {
+export function Footer() {
   return (
-    <footer className="footer footer-center p-4">
+    <footer className="footer footer-center py-4">
       <a href="https://fresh.deno.dev">
         <img
           width="197"

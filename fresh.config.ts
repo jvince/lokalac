@@ -1,11 +1,8 @@
 import "$std/dotenv/load.ts";
 
 import { defineConfig } from "$fresh/server.ts";
-import { context } from "$plugins/context/mod.ts";
-import { cookies } from "$plugins/cookies/mod.ts";
 import { i18n } from "$plugins/i18n/mod.ts";
 import tailwind from "@pakornv/fresh-plugin-tailwindcss";
-import { Context } from "./globalContext.ts";
 import supportedLanguages, { defaultLanguage } from "./languages.ts";
 import { migrate } from "./migrate.ts";
 import migrations from "./migrations.ts";
@@ -25,11 +22,6 @@ Deno.addSignalListener("SIGTERM", cleanup);
 export default defineConfig({
   plugins: [
     tailwind(),
-    cookies(),
-    context(
-      Context,
-      new URL("./globalContext.ts", import.meta.url).href,
-    ),
     i18n<typeof supportedLanguages>({
       defaultLanguage: defaultLanguage.code,
       languages: supportedLanguages,

@@ -1,4 +1,4 @@
-import { i18nLanguage, i18nTranslation } from "$plugins/i18n/mod.ts";
+import { i18nLanguage, i18nState, i18nTranslation } from "$plugins/i18n/mod.ts";
 import { get } from "@es-toolkit/es-toolkit/compat";
 import { useGlobalContext } from "../globalContext.ts";
 import supportedLanguages, { defaultLanguage } from "../languages.ts";
@@ -38,7 +38,7 @@ function createTranslatorFromObject(language: i18nLanguage) {
   return fromObject.bind(language);
 }
 
-export function useTranslation(state?: AppState) {
+export function useTranslation(state?: i18nState) {
   // deno-lint-ignore react-rules-of-hooks
   const { language, translation } = state ?? useGlobalContext();
   const t = createTranslator(translation);

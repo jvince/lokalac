@@ -25,10 +25,10 @@ export function LanguageSwitcher() {
         tabIndex={0}
         title={t("common.change_language")}
       >
-        <IconLanguage />
+        <IconLanguage role="presentation" />
       </div>
 
-      <ul class="menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 gap-1.5 shadow-sm">
+      <ul class="menu dropdown-content bg-base-200 rounded-box z-1 w-52 p-2 gap-1.5 shadow-sm">
         {supportedLanguages.map((lang) => (
           <li>
             <a
