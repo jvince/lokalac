@@ -21,18 +21,27 @@
     "**/_fresh/*"
   ],
   "imports": {
-    "$fresh/": "https://deno.land/x/fresh@1.7.3/",
     "@es-toolkit/es-toolkit": "jsr:@es-toolkit/es-toolkit@^1.39.0",
     "@pakornv/fresh-plugin-tailwindcss": "jsr:@pakornv/fresh-plugin-tailwindcss@^1.0.2",
-    "@preact/signals": "npm:@preact/signals@^2.2.0",
-    "@preact/signals-core": "npm:@preact/signals-core@^1.10.0",
+    "@preact/signals-core": "https://esm.sh/*@preact/signals-core@1.10.0",
+    "@preact/signals": "https://esm.sh/*@preact/signals@2.2.0",
+    "@react-leaflet/core": "npm:@react-leaflet/core@^3.0.0",
     "@std/crypto": "jsr:@std/crypto@^1.0.5",
     "@superstruct/core": "jsr:@superstruct/core@^2.0.2",
+    "$fresh/": "https://deno.land/x/fresh@1.7.3/",
+    "$std/": "https://deno.land/std@0.216.0/",
     "clsx": "npm:clsx@^2.1.1",
     "daisyui": "npm:daisyui@^5.0.40",
     "exif-reader": "npm:exif-reader@^2.0.2",
-    "$std/": "https://deno.land/std@0.216.0/",
-    "preact": "npm:preact@^10.26.9",
+    "leaflet": "npm:leaflet@^1.9.4",
+    "preact": "https://esm.sh/preact@10.26.9",
+    "preact/": "https://esm.sh/preact@10.26.9/",
+    "preact/compat": "https://esm.sh/preact@10.26.9/compat",
+    "preact/compat/": "https://esm.sh/preact@10.26.9/compat/",
+    "react-dom": "https://esm.sh/preact@10.26.9/compat",
+    "react-leaflet": "https://esm.sh/react-leaflet@4.2.1?alias=react:preact/compat,react-dom:preact/compat&deps=preact@10.26.9",
+    "react": "https://esm.sh/preact@10.26.9/compat",
+    "react/jsx-runtime": "https://esm.sh/preact@10.26.9/compat/jsx-runtime",
     "sharp": "npm:sharp@^0.34.2",
     "tailwindcss": "npm:tailwindcss@^4.1.8",
     "$auth": "./auth.ts",
@@ -48,7 +57,7 @@
     "jsxImportSource": "preact",
     "types": [
       "npm:@types/node",
-      "preact"
+      "npm:@types/leaflet"
     ],
     "lib": [
       "dom",

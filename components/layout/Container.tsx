@@ -9,5 +9,5 @@ export function Container(props: ContainerProps) {
     <div class="max-w-[80rem] mx-auto px-6">
       {props.children}
     </div>
-  )
+  );
 }

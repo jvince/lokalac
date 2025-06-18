@@ -4,7 +4,7 @@ import { TableData } from "./types.ts";
 
 interface TableRowProps extends JSX.HTMLAttributes<HTMLTableRowElement> {
   children: (
-    arg: { render: (item: TableData) => ComponentChild, item: any },
+    arg: { render: (item: TableData) => ComponentChild; item: any },
   ) => ComponentChild;
 }
 

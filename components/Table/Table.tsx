@@ -1,14 +1,14 @@
 import { clsx } from "clsx/lite";
-import type { JSX, ComponentChildren } from "preact";
+import type { ComponentChildren, JSX } from "preact";
 import { TableContextProvider } from "./tableContext.ts";
 import type { TableColumn, TableData } from "./types.ts";
 
-interface TableProps<T extends TableData> extends JSX.HTMLAttributes<HTMLTableElement> {
+interface TableProps<T extends TableData>
+  extends JSX.HTMLAttributes<HTMLTableElement> {
   children?: ComponentChildren;
   columns?: TableColumn<T>[];
   items?: T[];
 }
-
 
 export function Table<T extends TableData>(props: TableProps<T>) {
   const {

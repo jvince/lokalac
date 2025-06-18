@@ -1,6 +1,7 @@
 import { Button } from "$components/Button.tsx";
 import { Form } from "$components/Form.tsx";
 import { Select } from "$components/Select.tsx";
+import { IS_BROWSER } from "$fresh/runtime.ts";
 import { useTranslation } from "$hooks/useTranslation.ts";
 import { IssueCategory } from "$models/issue-category.ts";
 import { IssueType } from "$models/issue-type.ts";
@@ -8,7 +9,12 @@ import type { LocalCommunity } from "$models/local-community.ts";
 import { i18nState } from "$plugins/i18n/mod.ts";
 import { computed, useSignal } from "@preact/signals";
 import type { ComponentChildren, JSX } from "preact";
+import { lazy, Suspense } from "preact/compat";
 import { useCallback } from "preact/hooks";
+
+const LazyMap = lazy(() =>
+  import("$components/LeafletMap.tsx").then((mod) => mod.LeafletMap)
+);
 
 interface IssueFormProps {
   i18nState: i18nState;
@@ -112,6 +118,10 @@ export function IssueForm(props: IssueFormProps) {
           {t("common.submit")}
         </Button>
       </fieldset>
+
+      <Suspense fallback="Loading map...">
+        {IS_BROWSER && <LazyMap />}
+      </Suspense>
     </Form>
   );
 }

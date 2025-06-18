@@ -4,9 +4,9 @@ import type { TableContextValue } from "./tableContext.ts";
 import type { TableData } from "./types.ts";
 
 interface TableRowContextValue<T extends TableData = TableData>
-  extends Omit<TableContextValue<T>, 'items'> {
+  extends Omit<TableContextValue<T>, "items"> {
   kind: "body" | "header" | "footer";
-  item: T
+  item: T;
 }
 
 const defaultRowContextValue: TableRowContextValue = {

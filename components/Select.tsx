@@ -1,9 +1,7 @@
 import clsx from "clsx/lite";
-import { ComponentChildren, JSX } from "preact";
+import { JSX } from "preact";
 
-interface SelectProps extends JSX.SelectHTMLAttributes<HTMLSelectElement> {
-  children?: ComponentChildren;
-}
+interface SelectProps extends JSX.SelectHTMLAttributes<HTMLSelectElement> {}
 
 export function Select(props: SelectProps) {
   const { children, ...restProps } = props;
@@ -18,7 +16,6 @@ export function Select(props: SelectProps) {
     <select
       {...restProps}
       class={className}
-    
     >
       {children}
     </select>
