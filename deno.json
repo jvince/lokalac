@@ -9,27 +9,32 @@
     "preview": "deno run -A main.ts",
     "update": "deno run -A -r https://fresh.deno.dev/update ."
   },
-  "lint": { "rules": { "tags": ["fresh", "recommended"] } },
-  "exclude": ["**/_fresh/*"],
+  "lint": {
+    "rules": {
+      "tags": [
+        "fresh",
+        "recommended"
+      ]
+    }
+  },
+  "exclude": [
+    "**/_fresh/*"
+  ],
   "imports": {
     "$fresh/": "https://deno.land/x/fresh@1.7.3/",
     "@es-toolkit/es-toolkit": "jsr:@es-toolkit/es-toolkit@^1.39.0",
     "@pakornv/fresh-plugin-tailwindcss": "jsr:@pakornv/fresh-plugin-tailwindcss@^1.0.2",
+    "@preact/signals": "npm:@preact/signals@^2.2.0",
+    "@preact/signals-core": "npm:@preact/signals-core@^1.10.0",
     "@std/crypto": "jsr:@std/crypto@^1.0.5",
     "@superstruct/core": "jsr:@superstruct/core@^2.0.2",
     "clsx": "npm:clsx@^2.1.1",
     "daisyui": "npm:daisyui@^5.0.40",
     "exif-reader": "npm:exif-reader@^2.0.2",
-    "preact": "https://esm.sh/preact@10.22.0",
-    "preact/": "https://esm.sh/preact@10.22.0/",
-    "preact/compat": "https://esm.sh/preact@10.22.0/compat",
-    "preact/compat/": "https://esm.sh/preact@10.22.0/compat/",
-    "@preact/signals": "https://esm.sh/*@preact/signals@1.2.2",
-    "@preact/signals-core": "https://esm.sh/*@preact/signals-core@1.5.1",
     "$std/": "https://deno.land/std@0.216.0/",
+    "preact": "npm:preact@^10.26.9",
     "sharp": "npm:sharp@^0.34.2",
     "tailwindcss": "npm:tailwindcss@^4.1.8",
-    "zod": "https://deno.land/x/zod@v3.24.4/mod.ts",
     "$auth": "./auth.ts",
     "$components/": "./components/",
     "$services/": "./services/",
@@ -41,9 +46,17 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "jsxImportSource": "preact",
-    "types": ["npm:@types/node"],
-    "lib": ["dom", "deno.unstable"]
+    "types": [
+      "npm:@types/node",
+      "preact"
+    ],
+    "lib": [
+      "dom",
+      "deno.unstable"
+    ]
   },
   "nodeModulesDir": "auto",
-  "unstable": ["kv"]
+  "unstable": [
+    "kv"
+  ]
 }

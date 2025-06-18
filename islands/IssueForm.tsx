@@ -40,7 +40,6 @@ export function IssueForm(props: IssueFormProps) {
   const onChangeHandler = useCallback(
     (field: keyof IssueFormState) =>
     (e: JSX.TargetedEvent<HTMLSelectElement>) => {
-
       const value = e.currentTarget.value;
       state.value = {
         ...state.value,
@@ -62,7 +61,7 @@ export function IssueForm(props: IssueFormProps) {
           required
           onChange={onChangeHandler("localCommunity")}
         >
-          <option readOnly disabled selected value="">
+          <option disabled selected value="">
             {t("common.local_community")}
           </option>
           {props.communities.map((community) => (
@@ -77,7 +76,7 @@ export function IssueForm(props: IssueFormProps) {
           required
           onChange={onChangeHandler("issueCategory")}
         >
-          <option readOnly disabled selected value="">
+          <option disabled selected value="">
             Select a category
           </option>
           {props.categories.map((category) => (
@@ -93,7 +92,7 @@ export function IssueForm(props: IssueFormProps) {
           disabled={!state.value.issueCategory}
           onChange={onChangeHandler("issueType")}
         >
-          <option readOnly disabled selected value="">
+          <option disabled selected value="">
             Select a issue
           </option>
           {props.issueTypes
