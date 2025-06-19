@@ -1,447 +1,14 @@
-import { createPolygonMigration } from "./import/communities/migrate.ts";
+import { IssueCategoryIndex } from "$models/issue-category.ts";
+import { IssueTypeIndex } from "$models/issue-type.ts";
+import { createCommunityMigration } from "./import/communities/migrate.ts";
 import type { Migration } from "./migrate.ts";
 
 export default [
   [
-    "local_communities",
-    () => [
-      {
-        key: ["local_community", "805432"],
-        type: "set",
-        value: {
-          id: "805432",
-          name: "Aleksandrovo",
-          name_sr_Cyrl_RS: "Александрово",
-          name_hu: "Aleksandrovo",
-          phone: ["024/566-070"],
-          link: "https://subotica.ls.gov.rs/mz-aleksandrovo/",
-        },
-      },
-      {
-        key: ["local_community", "805459"],
-        type: "set",
-        value: {
-          id: "805459",
-          name: "Bajmok",
-          name_sr_Cyrl_RS: "Бајмок",
-          name_hu: "Bajmok",
-          phone: ["024/762-038"],
-          link:
-            "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-bajmok/",
-        },
-      },
-      {
-        key: ["local_community", "805467"],
-        type: "set",
-        value: {
-          id: "805467",
-          name: "Bajnat",
-          name_sr_Cyrl_RS: "Бајнат",
-          phone: ["024/524-775"],
-          link:
-            "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-bajnat/",
-        },
-      },
-      {
-        key: ["local_community", "805475"],
-        type: "set",
-        value: {
-          id: "805475",
-          name: "Bački Vinogradi",
-          name_sr_Cyrl_RS: "Бачки Виногради",
-          phone: ["024/4757-003"],
-          link:
-            "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-backi-vinogradi/",
-        },
-      },
-      {
-        key: ["local_community", "806498"],
-        type: "set",
-        value: {
-          id: "806498",
-          name: "Bačko Dušanovo",
-          name_sr_Cyrl_RS: "Бачко Душаново",
-          phone: ["024/782-243"],
-          link: "https://subotica.ls.gov.rs/mesne-zajednice/mz-bikovo/",
-        },
-      },
-      {
-        key: ["local_community", "805483"],
-        type: "set",
-        value: {
-          id: "805483",
-          name: "Bikovo",
-          name_sr_Cyrl_RS: "Биково",
-          phone: ["024/4797-049"],
-          link: "https://subotica.ls.gov.rs/mesne-zajednice/mz-bikovo/",
-        },
-      },
-      {
-        key: ["local_community", "805734"],
-        type: "set",
-        value: {
-          id: "805734",
-          name: "Centar I",
-          name_sr_Cyrl_RS: "Центар I",
-          phone: ["024/558-699"],
-          link: "https://subotica.ls.gov.rs/mz-centar-i/",
-        },
-      },
-      {
-        key: ["local_community", "805742"],
-        type: "set",
-        value: {
-          id: "805742",
-          name: "Centar II",
-          name_sr_Cyrl_RS: "Центар II",
-          phone: ["024/558-166"],
-          link:
-            "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-centar-ii/",
-        },
-      },
-      {
-        key: ["local_community", "805769"],
-        type: "set",
-        value: {
-          id: "805769",
-          name: "Centar III",
-          name_sr_Cyrl_RS: "Центар III",
-          phone: ["024/556-141"],
-          link:
-            "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-centar-iii/",
-        },
-      },
-      {
-        key: ["local_community", "806501"],
-        type: "set",
-        value: {
-          id: "806501",
-          name: "Čantavir",
-          name_sr_Cyrl_RS: "Чантавир",
-          phone: ["024/782-294"],
-          link:
-            "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-cantavir/",
-        },
-      },
-      {
-        key: ["local_community", "805513"],
-        type: "set",
-        value: {
-          id: "805513",
-          name: "Dudova šuma",
-          name_sr_Cyrl_RS: "Дудова шума",
-          phone: ["024/529-730"],
-          link:
-            "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-dudova-suma/",
-        },
-      },
-      {
-        key: ["local_community", "805521"],
-        type: "set",
-        value: {
-          id: "805521",
-          name: "Đurđin",
-          name_sr_Cyrl_RS: "Ђурђин",
-          phone: ["024/4768-050"],
-          link:
-            "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-djurdjin/",
-        },
-      },
-      {
-        key: ["local_community", "805491"],
-        type: "set",
-        value: {
-          id: "805491",
-          name: "Gat",
-          name_sr_Cyrl_RS: "Гат",
-          phone: ["024/4562-570"],
-          link:
-            "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-gat/",
-        },
-      },
-      {
-        key: ["local_community", "805726"],
-        type: "set",
-        value: {
-          id: "805726",
-          name: "Hajdukovo",
-          name_sr_Cyrl_RS: "Хајдуково",
-          phone: ["024/4758-021"],
-          link:
-            "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-hajdukovo/",
-        },
-      },
-      {
-        key: ["local_community", "805556"],
-        type: "set",
-        value: {
-          id: "805556",
-          name: "Kelebija",
-          name_sr_Cyrl_RS: "Келебија",
-          phone: ["024/4780-205"],
-          link:
-            "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-kelebija/",
-        },
-      },
-      {
-        key: ["local_community", "805564"],
-        type: "set",
-        value: {
-          id: "805564",
-          name: "Ker",
-          name_sr_Cyrl_RS: "Кер",
-          phone: ["024/552-106"],
-          link:
-            "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-ker/",
-        },
-      },
-      {
-        key: ["local_community", "805572"],
-        type: "set",
-        value: {
-          id: "805572",
-          name: "Kertvaroš",
-          name_sr_Cyrl_RS: "Кертварош",
-          phone: ["024/546-484"],
-          link:
-            "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-kertvaros/",
-        },
-      },
-      {
-        key: ["local_community", "806510"],
-        type: "set",
-        value: {
-          id: "806510",
-          name: "Ljutovo",
-          name_sr_Cyrl_RS: "Љутово",
-          phone: ["024/4767-552"],
-          link:
-            "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-ljutovo/",
-        },
-      },
-      {
-        key: ["local_community", "805505"],
-        type: "set",
-        value: {
-          id: "805505",
-          name: "Makova sedmica",
-          name_sr_Cyrl_RS: "Макова седмица",
-          phone: ["024/550-015"],
-          link:
-            "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-makova-sedmica/",
-        },
-      },
-      {
-        key: ["local_community", "806692"],
-        type: "set",
-        value: {
-          id: "806692",
-          name: "Mala Bosna",
-          name_sr_Cyrl_RS: "Мала Босна",
-          phone: ["024/4796-026"],
-          link:
-            "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-kancelarije/mz-mala-bosna/",
-        },
-      },
-      {
-        key: ["local_community", "805602"],
-        type: "set",
-        value: {
-          id: "805602",
-          name: "Mali Bajmok",
-          name_sr_Cyrl_RS: "Мали Бајмок",
-          phone: ["024/561-661"],
-          link:
-            "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-mali-bajmok/",
-        },
-      },
-      {
-        key: ["local_community", "805629"],
-        type: "set",
-        value: {
-          id: "805629",
-          name: "Mali Radanovac",
-          name_sr_Cyrl_RS: "Мали Радановац",
-          phone: ["024/546-149"],
-          link:
-            "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-mali-radanovac/",
-        },
-      },
-      {
-        key: ["local_community", "805637"],
-        type: "set",
-        value: {
-          id: "805637",
-          name: "Novi grad",
-          name_sr_Cyrl_RS: "Нови град",
-          phone: ["024/547-551"],
-          link:
-            "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-novi-grad/",
-        },
-      },
-      {
-        key: ["local_community", "805645"],
-        type: "set",
-        value: {
-          id: "805645",
-          name: "Novi Žednik",
-          name_sr_Cyrl_RS: "Нови Жедник",
-          phone: ["024/785-009"],
-          link:
-            "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-novi-zednik/",
-        },
-      },
-      {
-        key: ["local_community", "805653"],
-        type: "set",
-        value: {
-          id: "805653",
-          name: "Novo Selo",
-          name_sr_Cyrl_RS: "Ново Село",
-          phone: ["024/556-796"],
-          link:
-            "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-novo-selo/",
-        },
-      },
-      {
-        key: ["local_community", "805661"],
-        type: "set",
-        value: {
-          id: "805661",
-          name: "Palić",
-          name_sr_Cyrl_RS: "Палић",
-          phone: ["024/754-037"],
-          link:
-            "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-palic/",
-        },
-      },
-      {
-        key: ["local_community", "805670"],
-        type: "set",
-        value: {
-          id: "805670",
-          name: "Peščara",
-          name_sr_Cyrl_RS: "Пешчара",
-          phone: ["024/516-124"],
-          link:
-            "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-pescara/",
-        },
-      },
-      {
-        key: ["local_community", "805688"],
-        type: "set",
-        value: {
-          id: "805688",
-          name: "Prozivka",
-          name_sr_Cyrl_RS: "Прозивка",
-          phone: ["024/524-807"],
-          link:
-            "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-prozivka/",
-        },
-      },
-      {
-        key: ["local_community", "805696"],
-        type: "set",
-        value: {
-          id: "805696",
-          name: "Radanovac",
-          name_sr_Cyrl_RS: "Радановац",
-          phone: ["024/596-002"],
-          link:
-            "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-radanovac/",
-        },
-      },
-      {
-        key: ["local_community", "805700"],
-        type: "set",
-        value: {
-          id: "805700",
-          name: "Stari Žednik",
-          name_sr_Cyrl_RS: "Стари Жедник",
-          phone: ["024/787-040"],
-          link:
-            "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-stari-zednik/",
-        },
-      },
-      {
-        key: ["local_community", "805785"],
-        type: "set",
-        value: {
-          id: "805785",
-          name: "Šupljak",
-          name_sr_Cyrl_RS: "Шупљак",
-          phone: ["024/753-050"],
-          link:
-            "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-supljak/",
-        },
-      },
-      {
-        key: ["local_community", "806528"],
-        type: "set",
-        value: {
-          id: "806528",
-          name: "Tavankut",
-          name_sr_Cyrl_RS: "Таванкут",
-          phone: ["024/4767-006"],
-          link:
-            "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-tavankut/",
-        },
-      },
-      {
-        key: ["local_community", "806480"],
-        type: "set",
-        value: {
-          id: "806480",
-          name: "Verušić",
-          name_sr_Cyrl_RS: "Верушић",
-          phone: ["024/552-723", "024/552-701"],
-          link:
-            "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-verusic/",
-        },
-      },
-      {
-        key: ["local_community", "806340"],
-        type: "set",
-        value: {
-          id: "806340",
-          name: "Višnjevac",
-          name_sr_Cyrl_RS: "Вишњевац",
-          phone: ["024/4782-040"],
-          link:
-            "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-visnjevac/",
-        },
-      },
-      {
-        key: ["local_community", "805548"],
-        type: "set",
-        value: {
-          id: "805548",
-          name: "Zorka",
-          name_sr_Cyrl_RS: "Зорка",
-          phone: ["024/527-491"],
-          link:
-            "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-zorka/",
-        },
-      },
-      {
-        key: ["local_community", "805530"],
-        type: "set",
-        value: {
-          id: "805530",
-          name: "Železničko naselje",
-          name_sr_Cyrl_RS: "Железничко насеље",
-          phone: ["024/576-795"],
-          link:
-            "https://subotica.ls.gov.rs/lokalna-samouprava/mesne-zajednice/mz-zeljeznicko-naselje/",
-        },
-      },
-    ],
-  ],
-  [
     "issue_categories",
     () => [
       {
-        key: ["issue_category", "infrastructure_public_works"],
+        key: [IssueCategoryIndex, "infrastructure_public_works"],
         type: "set",
         value: {
           id: "infrastructure_public_works",
@@ -452,7 +19,7 @@ export default [
         },
       },
       {
-        key: ["issue_category", "environmental_concerns"],
+        key: [IssueCategoryIndex, "environmental_concerns"],
         type: "set",
         value: {
           id: "environmental_concerns",
@@ -463,7 +30,7 @@ export default [
         },
       },
       {
-        key: ["issue_category", "public_safety"],
+        key: [IssueCategoryIndex, "public_safety"],
         type: "set",
         value: {
           id: "public_safety",
@@ -474,7 +41,7 @@ export default [
         },
       },
       {
-        key: ["issue_category", "city_services"],
+        key: [IssueCategoryIndex, "city_services"],
         type: "set",
         value: {
           id: "city_services",
@@ -485,7 +52,7 @@ export default [
         },
       },
       {
-        key: ["issue_category", "other"],
+        key: [IssueCategoryIndex, "other"],
         type: "set",
         value: {
           id: "other",
@@ -501,7 +68,7 @@ export default [
     "infrastructure_public_works_issues",
     () => [
       {
-        key: ["issue_type", "potholes"],
+        key: [IssueTypeIndex, "potholes"],
         type: "set",
         value: {
           id: "potholes",
@@ -513,7 +80,7 @@ export default [
         },
       },
       {
-        key: ["issue_type", "road_damage"],
+        key: [IssueTypeIndex, "road_damage"],
         type: "set",
         value: {
           id: "road_damage",
@@ -525,7 +92,7 @@ export default [
         },
       },
       {
-        key: ["issue_type", "road_signs"],
+        key: [IssueTypeIndex, "road_signs"],
         type: "set",
         value: {
           id: "road_signs",
@@ -537,7 +104,7 @@ export default [
         },
       },
       {
-        key: ["issue_type", "street_lights"],
+        key: [IssueTypeIndex, "street_lights"],
         type: "set",
         value: {
           id: "street_lights",
@@ -549,7 +116,7 @@ export default [
         },
       },
       {
-        key: ["issue_type", "sidewalks"],
+        key: [IssueTypeIndex, "sidewalks"],
         type: "set",
         value: {
           id: "sidewalks",
@@ -566,7 +133,7 @@ export default [
     "environmental_concerns_issues",
     () => [
       {
-        key: ["issue_type", "littering"],
+        key: [IssueTypeIndex, "littering"],
         type: "set",
         value: {
           id: "littering",
@@ -578,7 +145,7 @@ export default [
         },
       },
       {
-        key: ["issue_type", "illegal_dumping"],
+        key: [IssueTypeIndex, "illegal_dumping"],
         type: "set",
         value: {
           id: "illegal_dumping",
@@ -589,7 +156,7 @@ export default [
         },
       },
       {
-        key: ["issue_type", "water_quality"],
+        key: [IssueTypeIndex, "water_quality"],
         type: "set",
         value: {
           id: "water_quality",
@@ -601,7 +168,7 @@ export default [
         },
       },
       {
-        key: ["issue_type", "air_quality"],
+        key: [IssueTypeIndex, "air_quality"],
         type: "set",
         value: {
           id: "air_quality",
@@ -613,7 +180,7 @@ export default [
         },
       },
       {
-        key: ["issue_type", "noise_pollution"],
+        key: [IssueTypeIndex, "noise_pollution"],
         type: "set",
         value: {
           id: "noise_pollution",
@@ -625,7 +192,7 @@ export default [
         },
       },
       {
-        key: ["issue_type", "green_spaces"],
+        key: [IssueTypeIndex, "green_spaces"],
         type: "set",
         value: {
           id: "green_spaces",
@@ -642,7 +209,7 @@ export default [
     "public_safety_issues",
     () => [
       {
-        key: ["issue_type", "crime"],
+        key: [IssueTypeIndex, "crime"],
         type: "set",
         value: {
           id: "crime",
@@ -654,7 +221,7 @@ export default [
         },
       },
       {
-        key: ["issue_type", "vandalism"],
+        key: [IssueTypeIndex, "vandalism"],
         type: "set",
         value: {
           id: "vandalism",
@@ -671,7 +238,7 @@ export default [
     "city_services_issues",
     () => [
       {
-        key: ["issue_type", "waste_collection"],
+        key: [IssueTypeIndex, "waste_collection"],
         type: "set",
         value: {
           id: "waste_collection",
@@ -683,7 +250,7 @@ export default [
         },
       },
       {
-        key: ["issue_type", "water_supply"],
+        key: [IssueTypeIndex, "water_supply"],
         type: "set",
         value: {
           id: "water_supply",
@@ -696,7 +263,7 @@ export default [
         },
       },
       {
-        key: ["issue_type", "sewerage"],
+        key: [IssueTypeIndex, "sewerage"],
         type: "set",
         value: {
           id: "sewerage",
@@ -708,7 +275,7 @@ export default [
         },
       },
       {
-        key: ["issue_type", "public_transport"],
+        key: [IssueTypeIndex, "public_transport"],
         type: "set",
         value: {
           id: "public_transport",
@@ -726,7 +293,7 @@ export default [
     "other_issues",
     () => [
       {
-        key: ["issue_type", "community_event_suggestion"],
+        key: [IssueTypeIndex, "community_event_suggestion"],
         type: "set",
         value: {
           id: "community_event_suggestion",
@@ -738,7 +305,7 @@ export default [
         },
       },
       {
-        key: ["issue_type", "feedback"],
+        key: [IssueTypeIndex, "feedback"],
         type: "set",
         value: {
           id: "feedback",
@@ -750,7 +317,7 @@ export default [
         },
       },
       {
-        key: ["issue_type", "other"],
+        key: [IssueTypeIndex, "other"],
         type: "set",
         value: {
           id: "other",
@@ -764,7 +331,7 @@ export default [
     ],
   ],
   [
-    "local_community_polygons",
-    async () => await createPolygonMigration(),
+    "local_communities",
+    async () => await createCommunityMigration(),
   ],
 ] as Migration[];

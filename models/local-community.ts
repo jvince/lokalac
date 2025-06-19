@@ -1,6 +1,10 @@
 import { kv } from "$services/kv.ts";
 import type { LatLngTuple } from "leaflet";
 
+export const LocalCommunityIndex = "local_community";
+
+export const LocalCommunityPolygonIndex = "local_community_polygon";
+
 export interface LocalCommunity {
   id: string;
   name: string;
@@ -10,12 +14,8 @@ export interface LocalCommunity {
 
 export type LocalCommunityPolygon = LatLngTuple[];
 
-export const PrimaryKey = "local_community";
-
-export const PolygonPrimaryKey = "local_community_polygon";
-
 export async function getLocalCommunityById(id: string) {
-  const key = [PrimaryKey, id];
+  const key = [LocalCommunityIndex, id];
   const result = await kv.get<LocalCommunity>(key);
 
   if (!result.value || typeof result.value !== "object") {
@@ -27,7 +27,7 @@ export async function getLocalCommunityById(id: string) {
 
 export async function* getLocalCommunities(options?: Deno.KvListOptions) {
   const communities = await Array.fromAsync(
-    kv.list<LocalCommunity>({ prefix: [PrimaryKey] }, options),
+    kv.list<LocalCommunity>({ prefix: [LocalCommunityIndex] }, options),
   );
 
   for await (const item of communities) {
@@ -36,7 +36,7 @@ export async function* getLocalCommunities(options?: Deno.KvListOptions) {
 }
 
 export async function getLocalCommunityPolygonById(id: string) {
-  const key = [PolygonPrimaryKey, id];
+  const key = [LocalCommunityPolygonIndex, id];
   const result = await kv.get<LocalCommunityPolygon>(key);
 
   if (!result.value || !Array.isArray(result.value)) {

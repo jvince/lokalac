@@ -1,13 +1,24 @@
 import { kv } from "$services/kv.ts";
 import {
   IssueCategory,
-  PrimaryKey as IssueCategoryPrimaryKey,
+  IssueCategoryIndex as IssueCategoryPrimaryKey,
 } from "./issue-category.ts";
-import { IssueType, PrimaryKey as IssueTypePrimaryKey } from "./issue-type.ts";
+import {
+  IssueType,
+  IssueTypeIndex as IssueTypePrimaryKey,
+} from "./issue-type.ts";
 import {
   LocalCommunity,
-  PrimaryKey as LocalCommunityPrimaryKey,
+  LocalCommunityIndex as LocalCommunityIndex,
 } from "./local-community.ts";
+
+export const IssueIndex = "issue";
+
+export enum IssueSecondaryIndex {
+  ByCommunity = "issue_by_community",
+  ByCategory = "issue_by_category",
+  ByIssueType = "issue_by_type",
+}
 
 export interface Issue {
   id: string;
@@ -26,14 +37,6 @@ export interface IssueDTO extends Issue {
   type: IssueType;
 }
 
-export const PrimaryKey = "issue";
-
-export enum SecondaryKey {
-  ByCommunity = "issue_by_community",
-  ByCategory = "issue_by_category",
-  ByIssueType = "issue_by_type",
-}
-
 export enum IssueStatus {
   Open = "open",
   Reported = "reported",
@@ -42,9 +45,9 @@ export enum IssueStatus {
 }
 
 export async function insertIssue(issue: Issue) {
-  const primaryKey = [PrimaryKey, issue.id];
+  const primaryKey = [IssueIndex, issue.id];
   const byCommunityKey = [
-    SecondaryKey.ByCommunity,
+    IssueSecondaryIndex.ByCommunity,
     issue.communityId,
     issue.id,
   ];
@@ -64,7 +67,7 @@ export async function insertIssue(issue: Issue) {
 export async function getIssueById(
   id: string,
 ): Promise<IssueDTO | null> {
-  const primaryKey = [PrimaryKey, id];
+  const primaryKey = [IssueIndex, id];
   const result = await kv.get<Issue>(primaryKey);
 
   if (!result.value || typeof result.value !== "object") {
@@ -79,7 +82,7 @@ export async function* getIssuesByCommunity(
   options?: Deno.KvListOptions,
 ) {
   const result = kv.list<Issue>({
-    prefix: [SecondaryKey.ByCommunity, communityId],
+    prefix: [IssueSecondaryIndex.ByCommunity, communityId],
   }, options);
 
   for await (const item of result) {
@@ -88,7 +91,7 @@ export async function* getIssuesByCommunity(
 }
 
 export async function* getIssues(options?: Deno.KvListOptions) {
-  const result = kv.list<Issue>({ prefix: [PrimaryKey] }, options);
+  const result = kv.list<Issue>({ prefix: [IssueIndex] }, options);
 
   for await (const item of result) {
     yield await resolve(item.value);
@@ -97,7 +100,7 @@ export async function* getIssues(options?: Deno.KvListOptions) {
 
 async function resolve(obj: Issue): Promise<IssueDTO> {
   const data = await kv.getMany<[LocalCommunity, IssueCategory, IssueType]>([
-    [LocalCommunityPrimaryKey, obj.communityId],
+    [LocalCommunityIndex, obj.communityId],
     [IssueCategoryPrimaryKey, obj.categoryId],
     [IssueTypePrimaryKey, obj.typeId],
   ]);

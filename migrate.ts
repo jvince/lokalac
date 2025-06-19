@@ -19,7 +19,6 @@ function needsMigration(migrations: MigrationValue[], version: string) {
 }
 
 export async function migrate(migrations: Migration[], kv: Deno.Kv) {
-
   const migrationsResult =
     (await Array.fromAsync(kv.list<MigrationValue>({ prefix: ["migration"] })))
       .map((item) => item.value);

@@ -1,6 +1,6 @@
 import { kv } from "$services/kv.ts";
 
-export const PrimaryKey = "issue_type";
+export const IssueTypeIndex = "issue_type";
 
 export interface IssueType {
   id: string;
@@ -10,7 +10,7 @@ export interface IssueType {
 }
 
 export async function* getIssueTypes(options?: Deno.KvListOptions) {
-  const result = kv.list<IssueType>({ prefix: [PrimaryKey] }, options);
+  const result = kv.list<IssueType>({ prefix: [IssueTypeIndex] }, options);
 
   for await (const item of result) {
     yield item.value;
