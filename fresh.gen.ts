@@ -6,6 +6,7 @@ import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
 import * as $_layout from "./routes/_layout.tsx";
 import * as $_middleware from "./routes/_middleware.ts";
+import * as $api_polygon_id_ from "./routes/api/polygon/[id].tsx";
 import * as $issues_issue_edit from "./routes/issues/[issue]/edit.tsx";
 import * as $issues_index from "./routes/issues/index.tsx";
 import * as $issues_submit from "./routes/issues/submit.tsx";
@@ -22,6 +23,7 @@ const manifest = {
     "./routes/_app.tsx": $_app,
     "./routes/_layout.tsx": $_layout,
     "./routes/_middleware.ts": $_middleware,
+    "./routes/api/polygon/[id].tsx": $api_polygon_id_,
     "./routes/issues/[issue]/edit.tsx": $issues_issue_edit,
     "./routes/issues/index.tsx": $issues_index,
     "./routes/issues/submit.tsx": $issues_submit,

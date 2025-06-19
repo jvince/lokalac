@@ -2,7 +2,6 @@ import { i18nLanguage, i18nState, i18nTranslation } from "$plugins/i18n/mod.ts";
 import { get } from "@es-toolkit/es-toolkit/compat";
 import { useGlobalContext } from "../globalContext.ts";
 import supportedLanguages, { defaultLanguage } from "../languages.ts";
-import { AppState } from "$types/app.ts";
 
 function isValidValue(value: unknown) {
   return typeof value === "string" || typeof value === "number";

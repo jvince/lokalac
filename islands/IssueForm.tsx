@@ -2,15 +2,17 @@ import { Button } from "$components/Button.tsx";
 import { Form } from "$components/Form.tsx";
 import { Select } from "$components/Select.tsx";
 import { IS_BROWSER } from "$fresh/runtime.ts";
+import { useAbortableFetch } from "$hooks/useAbortableFetch.ts";
 import { useTranslation } from "$hooks/useTranslation.ts";
 import { IssueCategory } from "$models/issue-category.ts";
 import { IssueType } from "$models/issue-type.ts";
 import { type LocalCommunity } from "$models/local-community.ts";
 import { i18nState } from "$plugins/i18n/mod.ts";
 import { computed, useSignal } from "@preact/signals";
+import { LatLngTuple } from "leaflet";
 import type { ComponentChildren, JSX } from "preact";
-import { lazy, Suspense } from "preact/compat";
 import { useCallback } from "preact/hooks";
+import { lazy, Suspense } from "react-dom";
 
 const LazyMap = lazy(() =>
   import("$components/LeafletMap.tsx").then((mod) => mod.LeafletMap)
@@ -30,7 +32,7 @@ interface IssueFormState {
   issueType: string | null;
 }
 
-export async function IssueForm(props: IssueFormProps) {
+export function IssueForm(props: IssueFormProps) {
   const { t, fromObject } = useTranslation(props.i18nState);
 
   const state = useSignal<IssueFormState>({
@@ -38,6 +40,8 @@ export async function IssueForm(props: IssueFormProps) {
     issueCategory: null,
     issueType: null,
   });
+
+  const polygon = useSignal<LatLngTuple[] | []>([]);
 
   const canSubmit = computed(() => (
     Object.values(state.value).every(Boolean)
@@ -53,6 +57,16 @@ export async function IssueForm(props: IssueFormProps) {
       };
     },
     [],
+  );
+
+  const shouldFetch = IS_BROWSER && !!state.value.localCommunity;
+
+  const [data] = useAbortableFetch<LatLngTuple[]>(
+    `/api/polygon/${state.value.localCommunity}`,
+    {
+      enabled: shouldFetch,
+      defaultValue: [],
+    },
   );
 
   return (
@@ -120,7 +134,9 @@ export async function IssueForm(props: IssueFormProps) {
       </fieldset>
 
       <Suspense fallback="Loading map...">
-        {IS_BROWSER ? <LazyMap /> : <div>Enable JavaScript to see the map</div>}
+        {IS_BROWSER
+          ? <LazyMap polygon={data as LatLngTuple[]} />
+          : <div>Enable JavaScript to see the map</div>}
       </Suspense>
     </Form>
   );
