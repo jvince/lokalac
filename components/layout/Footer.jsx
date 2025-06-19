@@ -1,5 +1,3 @@
-import { Link } from "$components/Link.tsx";
-
 export function Footer() {
   return (
     <footer className="footer footer-center py-4">

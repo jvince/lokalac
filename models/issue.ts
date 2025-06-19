@@ -74,6 +74,19 @@ export async function getIssueById(
   return await resolve(result.value);
 }
 
+export async function* getIssuesByCommunity(
+  communityId: string,
+  options?: Deno.KvListOptions,
+) {
+  const result = kv.list<Issue>({
+    prefix: [SecondaryKey.ByCommunity, communityId],
+  }, options);
+
+  for await (const item of result) {
+    yield await resolve(item.value);
+  }
+}
+
 export async function* getIssues(options?: Deno.KvListOptions) {
   const result = kv.list<Issue>({ prefix: [PrimaryKey] }, options);
 

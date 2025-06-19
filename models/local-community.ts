@@ -1,4 +1,5 @@
 import { kv } from "$services/kv.ts";
+import type { LatLngTuple } from "leaflet";
 
 export interface LocalCommunity {
   id: string;
@@ -7,7 +8,11 @@ export interface LocalCommunity {
   link: string;
 }
 
+export type LocalCommunityPolygon = LatLngTuple[];
+
 export const PrimaryKey = "local_community";
+
+export const PolygonPrimaryKey = "local_community_polygon";
 
 export async function getLocalCommunityById(id: string) {
   const key = [PrimaryKey, id];

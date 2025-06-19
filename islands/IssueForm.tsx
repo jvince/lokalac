@@ -5,7 +5,7 @@ import { IS_BROWSER } from "$fresh/runtime.ts";
 import { useTranslation } from "$hooks/useTranslation.ts";
 import { IssueCategory } from "$models/issue-category.ts";
 import { IssueType } from "$models/issue-type.ts";
-import type { LocalCommunity } from "$models/local-community.ts";
+import { type LocalCommunity } from "$models/local-community.ts";
 import { i18nState } from "$plugins/i18n/mod.ts";
 import { computed, useSignal } from "@preact/signals";
 import type { ComponentChildren, JSX } from "preact";
@@ -30,7 +30,7 @@ interface IssueFormState {
   issueType: string | null;
 }
 
-export function IssueForm(props: IssueFormProps) {
+export async function IssueForm(props: IssueFormProps) {
   const { t, fromObject } = useTranslation(props.i18nState);
 
   const state = useSignal<IssueFormState>({
@@ -120,7 +120,7 @@ export function IssueForm(props: IssueFormProps) {
       </fieldset>
 
       <Suspense fallback="Loading map...">
-        {IS_BROWSER && <LazyMap />}
+        {IS_BROWSER ? <LazyMap /> : <div>Enable JavaScript to see the map</div>}
       </Suspense>
     </Form>
   );
