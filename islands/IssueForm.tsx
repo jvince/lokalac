@@ -1,5 +1,7 @@
 import { Button } from "$components/Button.tsx";
+import { CommunityVectorLayerSSR } from "$components/CommunityVectorLayerSSR.tsx";
 import { Form } from "$components/Form.tsx";
+import { LeafletMapSSR } from "$components/LeafletMapSSR.tsx";
 import { Select } from "$components/Select.tsx";
 import { IS_BROWSER } from "$fresh/runtime.ts";
 import { useAbortableFetch } from "$hooks/useAbortableFetch.ts";
@@ -12,11 +14,7 @@ import { computed, useSignal } from "@preact/signals";
 import { LatLngTuple } from "leaflet";
 import type { ComponentChildren, JSX } from "preact";
 import { useCallback } from "preact/hooks";
-import { lazy, Suspense } from "react-dom";
-
-const LazyMap = lazy(() =>
-  import("$components/LeafletMap.tsx").then((mod) => mod.LeafletMap)
-);
+import { Suspense } from "react-dom";
 
 interface IssueFormProps {
   i18nState: i18nState;
@@ -135,7 +133,13 @@ export function IssueForm(props: IssueFormProps) {
 
       <Suspense fallback="Loading map...">
         {IS_BROWSER
-          ? <LazyMap polygon={data as LatLngTuple[]} />
+          ? (
+            <LeafletMapSSR>
+              <Suspense fallback={null}>
+                <CommunityVectorLayerSSR positions={data as LatLngTuple[]} />
+              </Suspense>
+            </LeafletMapSSR>
+          )
           : <div>Enable JavaScript to see the map</div>}
       </Suspense>
     </Form>
