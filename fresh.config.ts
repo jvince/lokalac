@@ -2,16 +2,16 @@ import "$std/dotenv/load.ts";
 
 import { defineConfig } from "$fresh/server.ts";
 import { i18n } from "$plugins/i18n/mod.ts";
+import { kv } from "$services/kv.ts";
 import tailwind from "@pakornv/fresh-plugin-tailwindcss";
 import supportedLanguages, { defaultLanguage } from "./languages.ts";
 import { migrate } from "./migrate.ts";
 import migrations from "./migrations.ts";
 
-const env = Deno.env.toObject();
-
 const abortController = new AbortController();
 
-await migrate(migrations);
+await migrate(migrations, kv);
+
 function cleanup() {
   Deno.exit();
 }

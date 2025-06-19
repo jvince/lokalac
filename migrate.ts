@@ -18,8 +18,7 @@ function needsMigration(migrations: MigrationValue[], version: string) {
   return !migrations.some((item) => item.version === version && item.done);
 }
 
-export async function migrate(migrations: Migration[]) {
-  const kv = await Deno.openKv("issues");
+export async function migrate(migrations: Migration[], kv: Deno.Kv) {
 
   const migrationsResult =
     (await Array.fromAsync(kv.list<MigrationValue>({ prefix: ["migration"] })))
@@ -46,6 +45,4 @@ export async function migrate(migrations: Migration[]) {
       }
     }
   }
-
-  kv.close();
 }
