@@ -49,7 +49,7 @@ const variantToClass = {
   link: "btn-link",
 } as const;
 
-interface LinkProps extends JSX.HTMLAttributes<HTMLAnchorElement> {
+interface LinkProps extends JSX.AnchorHTMLAttributes<HTMLAnchorElement> {
   as?: "link" | "btn";
   color?: Color;
   href?: string;
