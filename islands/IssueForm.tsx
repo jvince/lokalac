@@ -39,8 +39,6 @@ export function IssueForm(props: IssueFormProps) {
     issueType: null,
   });
 
-  const polygon = useSignal<LatLngTuple[] | []>([]);
-
   const canSubmit = computed(() => (
     Object.values(state.value).every(Boolean)
   ));
