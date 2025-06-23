@@ -1,8 +1,8 @@
-import { type MapOptions } from "leaflet";
+import { type LatLngTuple } from "leaflet";
 import type { ComponentChildren } from "preact";
-import { MapContainer, TileLayer } from "react-leaflet";
+import { MapContainer, type MapContainerProps, TileLayer } from "react-leaflet";
 
-type TileLayerStyle =
+export type TileLayerStyle =
   | "light_all"
   | "dark_all"
   | "light_nolabels"
@@ -14,29 +14,35 @@ type TileLayerStyle =
   | "rastertiles/voyager_only_labels"
   | "rastertiles/voyager_labels_under";
 
-interface LeafletMapProps extends MapOptions {
+interface LeafletMapProps extends MapContainerProps {
   children?: ComponentChildren;
   tileLayerStyle?: TileLayerStyle;
 }
 
+const defaultCenter: LatLngTuple = [46.1011601, 19.6694994];
+const defaultZoom = 13;
+
 export function LeafletMap(props: LeafletMapProps) {
   const {
+    children,
+    center = defaultCenter,
     tileLayerStyle = "rastertiles/voyager",
+    zoom = defaultZoom,
+    ...restProps
   } = props;
 
   return (
     <MapContainer
-      style={{ height: 600 }}
-      center={[46.093847, 19.5089604]}
-      zoom={13}
-      scrollWheelZoom
+      center={center}
+      zoom={zoom}
+      {...restProps}
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
         crossOrigin="anonymous"
         url={`https://{s}.basemaps.cartocdn.com/${tileLayerStyle}/{z}/{x}/{y}{r}.png`}
       />
-      {props.children}
+      {children}
     </MapContainer>
   );
 }

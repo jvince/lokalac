@@ -7,23 +7,23 @@ export function Header() {
   const { t } = useTranslation();
 
   return (
-    <header class="sticky top-0 py-4 bg-[rgba(255,255,255,0.8)] backdrop-blur-lg backdrop-saturate-150 border-b border-base-300 z-1">
+    <header class="sticky top-0 py-4 bg-[rgba(255,255,255,0.8)] backdrop-blur-lg backdrop-saturate-150 border-b border-base-300 z-9998">
       <Container>
         <nav class="flex items-center justify-between">
           <ul class="flex space-x-4">
             <li>
-              <Link href="/issues">
+              <Link href="/issues" color="primary">
                 {t("common.submitted_issues")}
               </Link>
             </li>
             <li>
-              <Link href="/issues/submit">
+              <Link href="/issues/submit" color="primary">
                 {t("common.submit_issue")}
               </Link>
             </li>
 
             <li>
-              <Link href="/local-communities">
+              <Link href="/local-communities" color="primary">
                 {t("common.local_communities")}
               </Link>
             </li>

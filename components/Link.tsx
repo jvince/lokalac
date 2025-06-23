@@ -60,7 +60,7 @@ interface LinkProps extends JSX.AnchorHTMLAttributes<HTMLAnchorElement> {
 export function Link(props: LinkProps) {
   const {
     as = "link",
-    color = "primary",
+    color,
     href = "",
     variant,
     withHover = true,
@@ -74,11 +74,11 @@ export function Link(props: LinkProps) {
   const className = clsx(
     as,
     as !== "link" && variant && variantToClass[variant],
-    asLink && linkColorToClass[color],
+    color && asLink && linkColorToClass[color],
     asLink && withHover && "link-hover",
-    asButton && colorToClass[color],
+    color && asButton && colorToClass[color],
     active && "underline",
-    props.class,
+    props.class || props.className,
   );
 
   return (
