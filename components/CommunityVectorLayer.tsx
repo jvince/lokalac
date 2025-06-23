@@ -5,7 +5,7 @@ import type {
   LeafletMouseEvent,
   LeafletMouseEventHandlerFn,
 } from "leaflet";
-import { useCallback, useEffect, useLayoutEffect } from "preact/hooks";
+import { useCallback, useLayoutEffect } from "preact/hooks";
 import { Polygon, type PolygonProps, useMap } from "react-leaflet";
 
 interface CommunityVectorLayerProps extends PolygonProps {
