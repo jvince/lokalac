@@ -7,6 +7,7 @@ import { DialogContent } from "$components/Dialog/DialogContent.tsx";
 import { DialogTrigger } from "$components/Dialog/DialogTrigger.tsx";
 import { Form } from "$components/Form.tsx";
 import { LeafletMapSSR } from "$components/LeafletMapSSR.tsx";
+import { MarkerSSR } from "$components/MarkerSSR.ts";
 import { Select } from "$components/Select.tsx";
 import { IS_BROWSER } from "$fresh/runtime.ts";
 import { useAbortableFetch } from "$hooks/useAbortableFetch.ts";
@@ -15,8 +16,8 @@ import type { IssueCategory } from "$models/issue-category.ts";
 import type { IssueType } from "$models/issue-type.ts";
 import type { LocalCommunity } from "$models/local-community.ts";
 import { i18nState } from "$plugins/i18n/mod.ts";
-import { computed, useSignal } from "@preact/signals";
-import type { LatLngTuple } from "leaflet";
+import { computed, useSignal, useSignalEffect } from "@preact/signals";
+import type { LatLng, LatLngTuple } from "leaflet";
 import type { ComponentChildren, JSX } from "preact";
 import { useCallback } from "preact/hooks";
 import { Suspense } from "react-dom";
@@ -38,43 +39,49 @@ interface IssueFormState {
 export function IssueForm(props: IssueFormProps) {
   const { t, fromObject } = useTranslation(props.i18nState);
 
-  const state = useSignal<IssueFormState>({
+  const isDialogOpen = useSignal(false);
+
+  const location = useSignal<LatLng | null>(null);
+  const formState = useSignal<IssueFormState>({
     localCommunity: null,
     issueCategory: null,
     issueType: null,
   });
 
+  const shouldFetch = IS_BROWSER && !!formState.value.localCommunity;
+
   const canSubmit = computed(() => (
-    Object.values(state.value).every(Boolean)
+    Object.values(formState.value).every(Boolean)
   ));
 
   const onChangeHandler = useCallback(
     (field: keyof IssueFormState) =>
     (e: JSX.TargetedEvent<HTMLSelectElement>) => {
       const value = e.currentTarget.value;
-      state.value = {
-        ...state.value,
+      formState.value = {
+        ...formState.value,
         [field]: value === "" ? null : value,
       };
     },
     [],
   );
 
-  const shouldFetch = IS_BROWSER && !!state.value.localCommunity;
-
   const [data] = useAbortableFetch<LatLngTuple[]>(
-    `/api/polygon/${state.value.localCommunity}`,
+    `/api/polygon/${formState.value.localCommunity}`,
     {
       enabled: shouldFetch,
       defaultValue: [],
     },
   );
 
-  const isDialogOpen = useSignal(false);
+  useSignalEffect(() => {
+    if (formState.value.localCommunity) {
+      location.value = null;
+    }
+  });
 
   return (
     <>
-      <span>Signal: {JSON.stringify(isDialogOpen.value)}</span>
       <Dialog
         open={isDialogOpen}
         onOpenChange={(e) => isDialogOpen.value = e.detail.open}
@@ -91,7 +98,15 @@ export function IssueForm(props: IssueFormProps) {
                   <Suspense fallback={null}>
                     <CommunityVectorLayerSSR
                       positions={data as LatLngTuple[]}
+                      onClick={(_, data) => {
+                        location.value = data;
+                      }}
                     />
+                    {location.value && (
+                      <MarkerSSR position={location.value}>
+                        <span>Selected Location</span>
+                      </MarkerSSR>
+                    )}
                   </Suspense>
                 </LeafletMapSSR>
               )}
@@ -156,7 +171,7 @@ export function IssueForm(props: IssueFormProps) {
           <Select
             name="issue_type"
             required
-            disabled={!state.value.issueCategory}
+            disabled={!formState.value.issueCategory}
             onChange={onChangeHandler("issueType")}
           >
             <option disabled selected value="">
@@ -164,7 +179,7 @@ export function IssueForm(props: IssueFormProps) {
             </option>
             {props.issueTypes
               .filter((issueType) =>
-                issueType.category === state.value.issueCategory
+                issueType.category === formState.value.issueCategory
               )
               .map((issue) => (
                 <option value={issue.id} key={issue.id}>
