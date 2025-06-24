@@ -52,11 +52,11 @@ export function withTheme<
 
     const className = clsx(
       rootClass,
-      typeof color === "string" && color in classList.color &&
+      typeof color === "string" && color in (classList.color ?? {}) &&
         classList.color[color],
-      typeof size === "string" && size in classList.size &&
+      typeof size === "string" && size in (classList.size ?? {}) &&
         classList.size[size],
-      typeof variant === "string" && variant in classList.variant &&
+      typeof variant === "string" && variant in (classList.variant ?? {}) &&
         classList.variant[variant],
       props.class || props.className,
     );

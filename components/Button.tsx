@@ -3,6 +3,29 @@ import { defineThemeProps, withTheme } from "$utils/theme.tsx";
 import { clsx } from "clsx/lite";
 import type { JSX } from "preact";
 
+/**
+ * @fileoverview
+ * Tailwind class names:
+ * - btn
+ * - btn-primary
+ * - btn-secondary
+ * - btn-accent
+ * - btn-neutral
+ * - btn-info
+ * - btn-success
+ * - btn-warning
+ * - btn-error
+ * - btn-outline
+ * - btn-dash
+ * - btn-soft
+ * - btn-ghost
+ * - btn-xs
+ * - btn-sm
+ * - btn-md
+ * - btn-lg
+ * - btn-xl
+ */
+
 interface ButtonProps extends JSX.ButtonHTMLAttributes<HTMLButtonElement> {
   fullWidth?: boolean;
   iconOnly?: boolean;
