@@ -5,12 +5,16 @@ import type { JSX } from "preact";
 
 interface ButtonProps extends JSX.ButtonHTMLAttributes<HTMLButtonElement> {
   fullWidth?: boolean;
+  iconOnly?: boolean;
+  shape?: "circle" | "square";
 }
 
 function ButtonBase(props: ButtonProps) {
   const {
     children,
     fullWidth = false,
+    iconOnly = false,
+    shape,
     type = "button",
     ...restProps
   } = props;
@@ -19,7 +23,10 @@ function ButtonBase(props: ButtonProps) {
     props.class || props.className,
     "inline-flex",
     "w-fit",
+    shape === "circle" && "btn-circle",
+    shape === "square" && "btn-square",
     fullWidth && "w-full",
+    iconOnly && "aspect-square",
   );
 
   return (

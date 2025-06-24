@@ -6,6 +6,7 @@ import { DialogBody } from "$components/Dialog/DialogBody.tsx";
 import { DialogContent } from "$components/Dialog/DialogContent.tsx";
 import { DialogTrigger } from "$components/Dialog/DialogTrigger.tsx";
 import { Form } from "$components/Form.tsx";
+import { Input } from "$components/Input.tsx";
 import { LeafletMapSSR } from "$components/LeafletMapSSR.tsx";
 import { MarkerSSR } from "$components/MarkerSSR.ts";
 import { Select } from "$components/Select.tsx";
@@ -22,7 +23,6 @@ import type { LatLng, LatLngTuple } from "leaflet";
 import type { ComponentChildren, JSX } from "preact";
 import { useCallback } from "preact/hooks";
 import { Suspense } from "react-dom";
-import { Input } from "$components/Input.tsx";
 
 interface IssueFormProps {
   i18nState: i18nState;
@@ -147,7 +147,7 @@ export function IssueForm(props: IssueFormProps) {
             onOpenChange={(e) => isDialogOpen.value = e.detail.open}
           >
             <DialogTrigger>
-              <Button>
+              <Button iconOnly shape="circle">
                 <PinIcon />
               </Button>
             </DialogTrigger>
