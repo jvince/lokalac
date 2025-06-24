@@ -1,15 +1,40 @@
 import clsx from "clsx/lite";
 import { JSX } from "preact";
+import { defineThemeProps, withTheme } from "$utils/theme.tsx";
+import { colorsUI, sizesUI } from "$types/daisyui.ts";
 
-interface SelectProps extends JSX.SelectHTMLAttributes<HTMLSelectElement> {}
+/**
+ * @fileoverview
+ * Tailwind class names:
+ * - select
+ * - select-ghost
+ * - select-neutral
+ * - select-primary
+ * - select-secondary
+ * - select-accent
+ * - select-info
+ * - select-success
+ * - select-warning
+ * - select-error
+ * - select-xs
+ * - select-sm
+ * - select-md
+ * - select-lg
+ * - select-xl
+ */
 
-export function Select(props: SelectProps) {
-  const { children, ...restProps } = props;
+interface SelectProps
+  extends Omit<JSX.SelectHTMLAttributes<HTMLSelectElement>, "size"> {}
+
+export function SelectBase(props: SelectProps) {
+  const {
+    children,
+    ...restProps
+  } = props;
 
   const className = clsx(
-    "select",
-    props.required && "validator",
     props.class || props.className,
+    props.required && "validator",
   );
 
   return (
@@ -21,3 +46,13 @@ export function Select(props: SelectProps) {
     </select>
   );
 }
+
+export const Select = withTheme(
+  SelectBase,
+  "select",
+  defineThemeProps({
+    color: colorsUI,
+    size: sizesUI,
+    variant: ["ghost"],
+  }),
+);

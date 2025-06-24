@@ -27,7 +27,7 @@ interface InputProps
   extends Omit<JSX.InputHTMLAttributes<HTMLInputElement>, "size"> {
 }
 
-function BaseInput(props: InputProps) {
+function InputBase(props: InputProps) {
   const rootClassName = clsx(
     "flex",
   );
@@ -48,7 +48,7 @@ function BaseInput(props: InputProps) {
 }
 
 export const Input = withTheme(
-  BaseInput,
+  InputBase,
   "input",
   defineThemeProps({
     color: colorsUI,
