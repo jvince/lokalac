@@ -1,81 +1,48 @@
+import {
+  colorsUI,
+  sizesUI,
+  variantsUI
+} from "$types/daisyui.ts";
+import { defineThemeProps, withDaisyUIMappedClass } from "$utils/theme.tsx";
 import { clsx } from "clsx/lite";
 import type { JSX } from "preact";
 
-type Color =
-  | "neutral"
-  | "primary"
-  | "secondary"
-  | "accent"
-  | "success"
-  | "info"
-  | "warning"
-  | "error";
-
-type Variant =
-  | "outline"
-  | "dash"
-  | "soft"
-  | "ghost"
-  | "link";
-
-type Size =
-  | "xs"
-  | "sm"
-  | "md"
-  | "lg"
-  | "xl";
-
-const colorToClass = {
-  neutral: "btn-neutral",
-  primary: "btn-primary",
-  secondary: "btn-secondary",
-  accent: "btn-accent",
-  success: "btn-success",
-  info: "btn-info",
-  warning: "btn-warning",
-  error: "btn-error",
-};
-
-const variantToClass = {
-  outline: "btn-outline",
-  dash: "btn-dash",
-  soft: "btn-soft",
-  ghost: "btn-ghost",
-  link: "btn-link",
-};
-
-const sizeToClass = {
-  xs: "btn-xs",
-  sm: "btn-sm",
-  md: "btn-md",
-  lg: "btn-lg",
-  xl: "btn-xl",
-};
-
 interface ButtonProps extends JSX.ButtonHTMLAttributes<HTMLButtonElement> {
-  color?: Color;
-  variant?: Variant;
-  size?: Size;
+  fullWidth?: boolean;
 }
 
-export function Button(props: ButtonProps) {
+function ButtonBase(props: ButtonProps) {
   const {
-    color,
-    size,
-    variant,
+    children,
+    fullWidth = false,
+    type = "button",
     ...restProps
   } = props;
+
   const className = clsx(
-    "btn",
-    color && colorToClass[color],
-    size && sizeToClass[size],
-    variant && variantToClass[variant],
     props.class || props.className,
+    "inline-flex",
+    "w-fit",
+    fullWidth && "w-full",
   );
+
   return (
     <button
       {...restProps}
       class={className}
-    />
+      type={type}
+    >
+      {children}
+    </button>
   );
 }
+
+export const Button = withDaisyUIMappedClass(
+  ButtonBase,
+  "btn",
+  defineThemeProps({
+    color: colorsUI,
+    size: sizesUI,
+    variant: variantsUI,
+  }),
+)

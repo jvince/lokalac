@@ -17,10 +17,12 @@ import type { IssueType } from "$models/issue-type.ts";
 import type { LocalCommunity } from "$models/local-community.ts";
 import { i18nState } from "$plugins/i18n/mod.ts";
 import { computed, useSignal, useSignalEffect } from "@preact/signals";
+import PinIcon from "https://deno.land/x/tabler_icons_tsx@0.0.7/tsx/pin-filled.tsx";
 import type { LatLng, LatLngTuple } from "leaflet";
 import type { ComponentChildren, JSX } from "preact";
 import { useCallback } from "preact/hooks";
 import { Suspense } from "react-dom";
+import { Input } from "$components/Input.tsx";
 
 interface IssueFormProps {
   i18nState: i18nState;
@@ -82,56 +84,6 @@ export function IssueForm(props: IssueFormProps) {
 
   return (
     <>
-      <Dialog
-        open={isDialogOpen}
-        onOpenChange={(e) => isDialogOpen.value = e.detail.open}
-      >
-        <DialogTrigger>
-          <Button>Open</Button>
-        </DialogTrigger>
-
-        <DialogBody>
-          <DialogContent>
-            <Suspense fallback="Loading map...">
-              {IS_BROWSER && (
-                <LeafletMapSSR style={{ height: "100%" }}>
-                  <Suspense fallback={null}>
-                    <CommunityVectorLayerSSR
-                      positions={data as LatLngTuple[]}
-                      onClick={(_, data) => {
-                        location.value = data;
-                      }}
-                    />
-                    {location.value && (
-                      <MarkerSSR position={location.value}>
-                        <span>Selected Location</span>
-                      </MarkerSSR>
-                    )}
-                  </Suspense>
-                </LeafletMapSSR>
-              )}
-            </Suspense>
-          </DialogContent>
-
-          <DialogActions>
-            <DialogTrigger triggerAction="close">
-              <Button size="lg">Close</Button>
-            </DialogTrigger>
-            <Button
-              autoFocus
-              color="primary"
-              size="lg"
-              onClick={() => {
-                // Do something on Ok
-                isDialogOpen.value = false;
-              }}
-            >
-              Ok
-            </Button>
-          </DialogActions>
-        </DialogBody>
-      </Dialog>
-
       <Form method="POST" action="/submit-issue" f-client-nav={false}>
         <fieldset class="fieldset">
           <legend class="fieldset-legend">
@@ -187,6 +139,60 @@ export function IssueForm(props: IssueFormProps) {
                 </option>
               ))}
           </Select>
+
+          <Input placeholder="Lokacija" />
+
+          <Dialog
+            open={isDialogOpen}
+            onOpenChange={(e) => isDialogOpen.value = e.detail.open}
+          >
+            <DialogTrigger>
+              <Button>
+                <PinIcon />
+              </Button>
+            </DialogTrigger>
+
+            <DialogBody>
+              <DialogContent>
+                <Suspense fallback="Loading map...">
+                  {IS_BROWSER && (
+                    <LeafletMapSSR style={{ height: "100%" }}>
+                      <Suspense fallback={null}>
+                        <CommunityVectorLayerSSR
+                          positions={data as LatLngTuple[]}
+                          onClick={(_, data) => {
+                            location.value = data;
+                          }}
+                        />
+                        {location.value && (
+                          <MarkerSSR position={location.value}>
+                            <span>Selected Location</span>
+                          </MarkerSSR>
+                        )}
+                      </Suspense>
+                    </LeafletMapSSR>
+                  )}
+                </Suspense>
+              </DialogContent>
+
+              <DialogActions>
+                <DialogTrigger triggerAction="close">
+                  <Button size="lg">Close</Button>
+                </DialogTrigger>
+                <Button
+                  autoFocus
+                  color="primary"
+                  size="lg"
+                  onClick={() => {
+                    // Do something on Ok
+                    isDialogOpen.value = false;
+                  }}
+                >
+                  Ok
+                </Button>
+              </DialogActions>
+            </DialogBody>
+          </Dialog>
 
           <textarea class="textarea" placeholder="note" name="note" />
 
