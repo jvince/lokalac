@@ -177,10 +177,9 @@ export function IssueForm(props: IssueFormProps) {
 
               <DialogActions>
                 <DialogTrigger triggerAction="close">
-                  <Button size="lg">Close</Button>
+                  <Button autoFocus size="lg">Close</Button>
                 </DialogTrigger>
                 <Button
-                  autoFocus
                   color="primary"
                   size="lg"
                   onClick={() => {

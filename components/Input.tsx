@@ -1,13 +1,33 @@
-import { type JSX } from "preact";
+import { colorsUI, sizesUI } from "$types/daisyui.ts";
+import { defineThemeProps, withTheme } from "$utils/theme.tsx";
 import { clsx } from "clsx/lite";
-import { ColorUI, VariantUI } from "$types/daisyui.ts";
+import { type JSX } from "preact";
 
-interface InputProps extends JSX.InputHTMLAttributes<HTMLInputElement> {
-  color?: ColorUI;
-  variant?: Extract<VariantUI, "ghost">;
+/**
+ * @fileoverview
+ * Tailwind class names:
+ * - input
+ * - input-ghost
+ * - input-neutral
+ * - input-primary
+ * - input-secondary
+ * - input-accent
+ * - input-info
+ * - input-success
+ * - input-warning
+ * - input-error
+ * - input-xs
+ * - input-sm
+ * - input-md
+ * - input-lg
+ * - input-xl
+ */
+
+interface InputProps
+  extends Omit<JSX.InputHTMLAttributes<HTMLInputElement>, "size"> {
 }
 
-export function Input(props: InputProps) {
+function BaseInput(props: InputProps) {
   const rootClassName = clsx(
     "flex",
   );
@@ -26,3 +46,13 @@ export function Input(props: InputProps) {
     </span>
   );
 }
+
+export const Input = withTheme(
+  BaseInput,
+  "input",
+  defineThemeProps({
+    color: colorsUI,
+    size: sizesUI,
+    variant: ["ghost"],
+  }),
+);

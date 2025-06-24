@@ -122,7 +122,7 @@ export function Dialog(props: DialogProps) {
           >
             {slots.children}
           </dialog>,
-          globalThis.document?.body
+          globalThis.document?.body,
         )}
       </Show>
     </DialogContextProvider>
