@@ -1,9 +1,5 @@
-import {
-  colorsUI,
-  sizesUI,
-  variantsUI
-} from "$types/daisyui.ts";
-import { defineThemeProps, withDaisyUIMappedClass } from "$utils/theme.tsx";
+import { colorsUI, sizesUI, variantsUI } from "$types/daisyui.ts";
+import { defineThemeProps, withTheme } from "$utils/theme.tsx";
 import { clsx } from "clsx/lite";
 import type { JSX } from "preact";
 
@@ -37,7 +33,7 @@ function ButtonBase(props: ButtonProps) {
   );
 }
 
-export const Button = withDaisyUIMappedClass(
+export const Button = withTheme(
   ButtonBase,
   "btn",
   defineThemeProps({
@@ -45,4 +41,4 @@ export const Button = withDaisyUIMappedClass(
     size: sizesUI,
     variant: variantsUI,
   }),
-)
+);

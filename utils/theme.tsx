@@ -13,7 +13,7 @@ type InferThemeProps<T extends ThemePropMap> = {
     : never;
 };
 
-export function withDaisyUIMappedClass<
+export function withTheme<
   ThemeProps extends InferThemeProps<ThemePropMap>,
   T extends JSX.ElementType<
     ThemePropMap & { class?: string; className?: string }
@@ -24,7 +24,7 @@ export function withDaisyUIMappedClass<
   elClass: string | ((props: P) => string),
   classMap: ThemeProps,
 ) {
-  return (props: P & ThemeProps) => {
+  const ComponentWithTheme = (props: P & ThemeProps) => {
     const {
       color,
       variant,
@@ -63,11 +63,18 @@ export function withDaisyUIMappedClass<
 
     return (
       <Component
-        {...restProps as any}
+        {
+          // deno-lint-ignore no-explicit-any
+          ...restProps as any
+        }
         class={className}
       />
     );
   };
+
+  ComponentWithTheme.displayName = "withTheme";
+
+  return ComponentWithTheme;
 }
 
 export function defineThemeProps<T extends ThemePropMap>(props: T) {
