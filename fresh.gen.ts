@@ -12,8 +12,6 @@ import * as $issues_index from "./routes/issues/index.tsx";
 import * as $issues_submit from "./routes/issues/submit.tsx";
 import * as $local_communities from "./routes/local-communities.tsx";
 import * as $submit_issue from "./routes/submit-issue.tsx";
-import * as $Countdown from "./islands/Countdown.tsx";
-import * as $Counter from "./islands/Counter.tsx";
 import * as $IssueForm from "./islands/IssueForm.tsx";
 import type { Manifest } from "$fresh/server.ts";
 
@@ -31,8 +29,6 @@ const manifest = {
     "./routes/submit-issue.tsx": $submit_issue,
   },
   islands: {
-    "./islands/Countdown.tsx": $Countdown,
-    "./islands/Counter.tsx": $Counter,
     "./islands/IssueForm.tsx": $IssueForm,
   },
   baseUrl: import.meta.url,
