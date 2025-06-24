@@ -11,6 +11,7 @@ import {
 import { useCallback, useLayoutEffect, useMemo, useRef } from "preact/hooks";
 import { DialogContextProvider, DialogContextValue } from "./dialogContext.ts";
 import { DialogTrigger } from "./DialogTrigger.tsx";
+import { createPortal } from "preact/compat";
 
 export type DialogOpenChangeData = {
   open: boolean;
@@ -112,14 +113,17 @@ export function Dialog(props: DialogProps) {
       {slots.triggerElement}
 
       <Show when={internalOpen}>
-        <dialog
-          {...restProps}
-          ref={dialogRef}
-          class={className}
-          onClose={onDialogCloseHandler}
-        >
-          {slots.children}
-        </dialog>
+        {createPortal(
+          <dialog
+            {...restProps}
+            ref={dialogRef}
+            class={className}
+            onClose={onDialogCloseHandler}
+          >
+            {slots.children}
+          </dialog>,
+          globalThis.document?.body
+        )}
       </Show>
     </DialogContextProvider>
   );
