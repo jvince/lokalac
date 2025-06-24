@@ -1,6 +1,6 @@
 import { getBounds } from "$utils/geometry.ts";
 import type {
-  LatLng,
+  LatLngLiteral,
   LatLngTuple,
   LeafletMouseEvent,
   LeafletMouseEventHandlerFn,
@@ -9,7 +9,7 @@ import { useCallback, useLayoutEffect } from "preact/hooks";
 import { Polygon, type PolygonProps, useMap } from "react-leaflet";
 
 interface CommunityVectorLayerProps extends PolygonProps {
-  onClick?: (e: LeafletMouseEvent, data: LatLng) => void;
+  onClick?: (e: LeafletMouseEvent, data: LatLngLiteral) => void;
 }
 
 export function CommunityVectorLayer(props: CommunityVectorLayerProps) {
@@ -20,7 +20,7 @@ export function CommunityVectorLayer(props: CommunityVectorLayerProps) {
 
   const map = useMap();
   const onClickHandler: LeafletMouseEventHandlerFn = useCallback((e) => {
-    onClick?.(e, e.latlng);
+    onClick?.(e, { lat: e.latlng.lat, lng: e.latlng.lng });
   }, [onClick]);
 
   useLayoutEffect(() => {

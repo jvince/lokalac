@@ -32,6 +32,7 @@
     "$std/": "https://deno.land/std@0.216.0/",
     "clsx": "npm:clsx@^2.1.1",
     "daisyui": "npm:daisyui@^5.0.40",
+    "deepsignal": "https://esm.sh/*deepsignal@1.6.0",
     "exif-reader": "npm:exif-reader@^2.0.2",
     "leaflet": "npm:leaflet@^1.9.4",
     "preact": "https://esm.sh/preact@10.26.9",

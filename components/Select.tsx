@@ -24,17 +24,21 @@ import { colorsUI, sizesUI } from "$types/daisyui.ts";
  */
 
 interface SelectProps
-  extends Omit<JSX.SelectHTMLAttributes<HTMLSelectElement>, "size"> {}
+  extends Omit<JSX.SelectHTMLAttributes<HTMLSelectElement>, "size"> {
+  fullWidth?: boolean;
+}
 
 export function SelectBase(props: SelectProps) {
   const {
     children,
+    fullWidth = false,
     ...restProps
   } = props;
 
   const className = clsx(
     props.class || props.className,
     props.required && "validator",
+    fullWidth && "w-full",
   );
 
   return (
