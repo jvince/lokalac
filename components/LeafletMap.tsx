@@ -18,15 +18,13 @@ interface LeafletMapProps extends MapContainerProps {
   children?: ComponentChildren;
   tileLayerStyle?: TileLayerStyle;
 }
-
-const defaultCenter: LatLngTuple = [46.1011601, 19.6694994];
 const defaultZoom = 13;
 const maxZoom = 18;
 
 export function LeafletMap(props: LeafletMapProps) {
   const {
     children,
-    center = defaultCenter,
+    center,
     tileLayerStyle = "rastertiles/voyager",
     zoom = defaultZoom,
     ...restProps
