@@ -214,11 +214,11 @@ export function IssueForm(props: IssueFormProps) {
                             formState.location = data;
                           }}
                         />
-                        {formState.location && (
-                          <MarkerSSR position={formState.location}>
-                            <span>Selected Location</span>
-                          </MarkerSSR>
-                        )}
+                        <Suspense fallback={null}>
+                          {formState.location && (
+                            <MarkerSSR position={formState.location} />
+                          )}
+                        </Suspense>
                       </Suspense>
                     </LeafletMapSSR>
                   )}
