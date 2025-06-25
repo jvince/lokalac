@@ -1,17 +1,16 @@
 import type { JSX } from "preact";
-import { useGlobalContext } from "../globalContext.ts";
 
 interface FormProps extends JSX.FormHTMLAttributes<HTMLFormElement> {}
 
 export function Form(props: FormProps) {
-  const { language } = useGlobalContext();
+  const { lang, ...restProps } = props;
 
   return (
     <form
-      {...props}
+      {...restProps}
     >
       {props.children}
-      <input type="hidden" name="lang" value={language.code} />
+      {lang && <input type="hidden" name="lang" value={lang} />}
     </form>
   );
 }
