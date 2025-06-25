@@ -21,6 +21,7 @@ interface LeafletMapProps extends MapContainerProps {
 
 const defaultCenter: LatLngTuple = [46.1011601, 19.6694994];
 const defaultZoom = 13;
+const maxZoom = 18;
 
 export function LeafletMap(props: LeafletMapProps) {
   const {
@@ -34,6 +35,7 @@ export function LeafletMap(props: LeafletMapProps) {
   return (
     <MapContainer
       center={center}
+      maxZoom={maxZoom}
       zoom={zoom}
       {...restProps}
     >
