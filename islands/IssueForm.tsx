@@ -45,7 +45,6 @@ interface IssueFormState {
 
 export function IssueForm(props: IssueFormProps) {
   const { t, fromObject } = useTranslation(props.i18nState);
-
   const isDialogOpen = useSignal(false);
 
   const formState = useDeepSignal<IssueFormState>({
@@ -96,7 +95,12 @@ export function IssueForm(props: IssueFormProps) {
   return (
     <>
       {JSON.stringify(formState.$canSubmit)}
-      <Form method="POST" action="/submit-issue" f-client-nav={false}>
+      <Form
+        method="POST"
+        action="/submit-issue"
+        lang={props.i18nState.language.code}
+        f-client-nav={false}
+      >
         <fieldset class="fieldset gap-y-4">
           <legend class="fieldset-legend">
             Create an Issue
