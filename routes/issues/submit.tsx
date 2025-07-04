@@ -1,20 +1,20 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { getIssueCategories, IssueCategory } from "$models/issue-category.ts";
 import { getIssueTypes, IssueType } from "$models/issue-type.ts";
+import { insertIssue, IssueLocation, IssueStatus } from "$models/issue.ts";
 import {
   getLocalCommunities,
   LocalCommunity,
 } from "$models/local-community.ts";
 import { AppState } from "$types/app.ts";
-import { IssueForm } from "../../islands/IssueForm.tsx";
-import { insertIssue, IssueLocation, IssueStatus } from "$models/issue.ts";
-import { json } from "node:stream/consumers";
+import { IssueForm, IssueFormValues } from "$islands/IssueForm.tsx";
 
 interface PageData {
   categories: IssueCategory[];
   communities: LocalCommunity[];
   issueTypes: IssueType[];
   errors?: string[];
+  formValues?: IssueFormValues;
 }
 
 async function loadData() {
@@ -120,6 +120,13 @@ export const handler: Handlers<PageData, AppState> = {
       communities,
       issueTypes,
       errors,
+      formValues: {
+        localCommunity: community?.id,
+        issueCategory: category?.id,
+        issueType: issueType?.id,
+        location,
+        note,
+      },
     });
   },
 };
@@ -141,6 +148,7 @@ export default function SubmitIssuePage(
         categories={data.categories}
         communities={data.communities}
         issueTypes={data.issueTypes}
+        formValues={data.formValues}
       />
     </>
   );
