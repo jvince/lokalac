@@ -5,6 +5,7 @@ import { TableCell } from "$components/Table/TableCell.tsx";
 import { TableRow } from "$components/Table/TableRow.tsx";
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { useTranslation } from "$hooks/useTranslation.ts";
+import { LocationDialog } from "$islands/LocationDialog.tsx";
 import { getIssues, IssueDTO } from "$models/issue.ts";
 import { AppState } from "$types/app.ts";
 
@@ -18,8 +19,8 @@ export const handler: Handlers<Data, AppState> = {
   },
 };
 
-export default function Page(props: PageProps<Data>) {
-  const { data } = props;
+export default function Page(props: PageProps<Data, AppState>) {
+  const { data, state } = props;
   const { fromObject } = useTranslation();
 
   return (
@@ -46,7 +47,16 @@ export default function Page(props: PageProps<Data>) {
           {
             id: "location",
             cell: (item) =>
-              item.location ? `${item.location.lat}, ${item.location.lng}` : "",
+              item.location && (
+                  <LocationDialog
+                    location={item.location}
+                    i18nState={{
+                      language: state.language,
+                      translation: state.translation,
+                    }}
+                  />
+                ) ||
+              "N/A",
           },
           {
             id: "status",
