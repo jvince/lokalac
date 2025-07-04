@@ -4,7 +4,7 @@
 
 @plugin "daisyui/theme" {
   name: "winter";
-  default: false;
+  default: true;
   prefersdark: false;
   color-scheme: "light";
   --color-base-100: oklch(100% 0 0);
@@ -33,10 +33,6 @@
   --size-selector: 0.25rem;
   --size-field: 0.25rem;
   --border: 1px;
-  --depth: 0;
-  --noise: 0;
-}
-
-html {
-  scrollbar-gutter: stable;
+  --depth: 1;
+  --noise: 1;
 }
