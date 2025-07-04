@@ -1,7 +1,8 @@
+import { colorsUI, sizesUI } from "$types/daisyui.ts";
+import { defineThemeProps, withTheme } from "$utils/theme.tsx";
 import clsx from "clsx/lite";
 import { JSX } from "preact";
-import { defineThemeProps, withTheme } from "$utils/theme.tsx";
-import { colorsUI, sizesUI } from "$types/daisyui.ts";
+import { Label } from "./Label.tsx";
 
 /**
  * @fileoverview
@@ -45,7 +46,13 @@ export function SelectBase(props: SelectProps) {
 
   return (
     <label class={className}>
-      {label && <span class="label text-accent">{label} {props.required && '*'}</span>}
+      {label && (
+        <Label
+          required={props.required}
+        >
+          {label}
+        </Label>
+      )}
       <select
         {...restProps}
       >

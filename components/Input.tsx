@@ -3,6 +3,7 @@ import { defineThemeProps, withTheme } from "$utils/theme.tsx";
 import { clsx } from "clsx/lite";
 import type { JSX, VNode } from "preact";
 import { cloneElement } from "preact";
+import { Label } from "./Label.tsx";
 
 /**
  * @fileoverview
@@ -29,13 +30,17 @@ interface InputProps
   contentAfter?: VNode;
   contentBefore?: VNode;
   fullWidth?: boolean;
+  label?: string;
 }
 
 function InputBase(props: InputProps) {
   const {
+    class: klassName,
+    className,
     contentAfter,
     contentBefore,
     fullWidth = false,
+    label,
     ...restProps
   } = props;
 
@@ -46,7 +51,7 @@ function InputBase(props: InputProps) {
   );
 
   const inputClassName = clsx(
-    props.class || props.className,
+    klassName || className,
     hasAddons && "join-item",
     fullWidth && "w-full",
   );
@@ -54,10 +59,18 @@ function InputBase(props: InputProps) {
   return (
     <span class={rootClassName}>
       {contentBefore && cloneElement(contentBefore, { class: "join-item" })}
-      <input
-        {...restProps}
-        class={inputClassName}
-      />
+      <label class={inputClassName}>
+        {label && (
+          <Label
+            required={props.required}
+          >
+            {label}
+          </Label>
+        )}
+        <input
+          {...restProps}
+        />
+      </label>
       {contentAfter && cloneElement(contentAfter, { class: "join-item" })}
     </span>
   );
