@@ -108,13 +108,14 @@ export function IssueForm(props: IssueFormProps) {
 
           <Select
             fullWidth
+            label={t("common.local_community")}
             name="local_community"
             required
             size="lg"
             onChange={onChangeHandler("localCommunity")}
           >
             <option disabled selected value="">
-              {t("common.local_community")}
+              {t("common.select_local_community")}
             </option>
             {props.communities.map((community) => (
               <option value={community.id} key={community.id}>
@@ -125,13 +126,14 @@ export function IssueForm(props: IssueFormProps) {
 
           <Select
             fullWidth
+            label={t("common.issue_category")}
             name="issue_category"
             required
             size="lg"
             onChange={onChangeHandler("issueCategory")}
           >
             <option disabled selected value="">
-              Select a category
+              {t("common.select_issue_category")}
             </option>
             {props.categories.map((category) => (
               <option value={category.id} key={category.id}>
@@ -142,13 +144,14 @@ export function IssueForm(props: IssueFormProps) {
 
           <Select
             fullWidth
+            label={t("common.issue_type")}
             name="issue_type"
             required
             size="lg"
             onChange={onChangeHandler("issueType")}
           >
             <option disabled selected value="">
-              Select a issue
+              {t("common.select_issue_type")}
             </option>
             {props.issueTypes
               .filter((issueType) =>
@@ -162,20 +165,25 @@ export function IssueForm(props: IssueFormProps) {
           </Select>
 
           <Input
+            aria-label="Location"
             contentAfter={
               <Button
-                disabled={!formState.location}
+                aria-label={t("common.clear_location")}
                 color="warning"
+                disabled={!formState.location}
                 size="lg"
                 onClick={() => {
                   formState.location = null;
                 }}
               >
-                <MapPinOffIcon />
+                <span aria-hidden="true">
+                  <MapPinOffIcon />
+                </span>
               </Button>
             }
             contentBefore={
               <Button
+                aria-label={t("common.select_location")}
                 color="secondary"
                 disabled={!formState.localCommunity}
                 size="lg"
@@ -183,7 +191,9 @@ export function IssueForm(props: IssueFormProps) {
                   isDialogOpen.value = true;
                 }}
               >
-                <MapPinPlusIcon />
+                <span aria-hidden="true">
+                  <MapPinPlusIcon />
+                </span>
               </Button>
             }
             fullWidth
@@ -247,7 +257,7 @@ export function IssueForm(props: IssueFormProps) {
 
           <Button
             color="primary"
-            // disabled={!formState.canSubmit}
+            fullWidth
             size="lg"
             type="submit"
           >
