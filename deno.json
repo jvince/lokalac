@@ -48,6 +48,7 @@
     "$auth": "./auth.ts",
     "$components/": "./components/",
     "$hooks/": "./hooks/",
+    "$islands/": "./islands/",
     "$models/": "./models/",
     "$plugins/": "./plugins/",
     "$services/": "./services/",
