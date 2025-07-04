@@ -20,7 +20,7 @@ import type { IssueType } from "$models/issue-type.ts";
 import { IssueLocation } from "$models/issue.ts";
 import type { LocalCommunity } from "$models/local-community.ts";
 import { i18nState } from "$plugins/i18n/mod.ts";
-import { useSignal, useSignalEffect } from "@preact/signals";
+import { useComputed, useSignal } from "@preact/signals";
 import { useDeepSignal } from "deepsignal";
 import MapPinOffIcon from "https://deno.land/x/tabler_icons_tsx@0.0.7/tsx/map-pin-off.tsx";
 import MapPinPlusIcon from "https://deno.land/x/tabler_icons_tsx@0.0.7/tsx/map-pin-plus.tsx";
@@ -52,8 +52,6 @@ interface IssueFormState {
   localCommunity: string | undefined;
   location?: LatLngLiteral | undefined;
   note?: string;
-  get locationFormatted(): string | undefined;
-  get canSubmit(): boolean;
 }
 
 export function IssueForm(props: IssueFormProps) {
@@ -65,19 +63,19 @@ export function IssueForm(props: IssueFormProps) {
     issueCategory: formValues?.issueCategory,
     issueType: formValues?.issueType,
     localCommunity: formValues?.localCommunity,
-    location: formValues?.location,
+    location: formValues?.location
+      ? { lat: formValues.location.lat, lng: formValues.location.lng }
+      : undefined,
     note: formValues?.note,
-    get locationFormatted() {
-      if (!this.location) {
-        return undefined;
-      }
-
-      return `${this.location.lat}, ${this.location.lng}`;
-    },
-    get canSubmit() {
-      return !!(this.issueCategory && this.issueType && this.localCommunity);
-    },
   });
+
+  const locationFormatted = useComputed(() => (
+    formState.$location?.value
+      ? `${formState.$location.value.lat.toFixed(3)}, ${
+        formState.$location.value.lng.toFixed(3)
+      }`
+      : t("common.no_location_selected")
+  ));
 
   const shouldFetch = IS_BROWSER && !!formState.localCommunity;
 
@@ -88,6 +86,10 @@ export function IssueForm(props: IssueFormProps) {
 
       if (field in formState) {
         (formState as any)[field] = value;
+      }
+
+      if (field === "localCommunity") {
+        formState.location = undefined; // Reset location when community changes
       }
     },
     [],
@@ -100,12 +102,6 @@ export function IssueForm(props: IssueFormProps) {
       defaultValue: [],
     },
   );
-
-  useSignalEffect(() => {
-    if (formState.$localCommunity?.value) {
-      formState.location = undefined;
-    }
-  });
 
   return (
     <Form
@@ -218,8 +214,7 @@ export function IssueForm(props: IssueFormProps) {
           fullWidth
           label={t("common.location")}
           size="lg"
-          value={formState.$locationFormatted?.value ??
-            t("common.no_location_selected")}
+          value={locationFormatted.value}
         />
         <Dialog
           open={isDialogOpen}
