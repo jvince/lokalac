@@ -71,8 +71,8 @@ export function IssueForm(props: IssueFormProps) {
 
   const locationFormatted = useComputed(() => (
     formState.$location?.value
-      ? `${formState.$location.value.lat.toFixed(3)}, ${
-        formState.$location.value.lng.toFixed(3)
+      ? `${formState.$location.value.lat.toFixed(6)}, ${
+        formState.$location.value.lng.toFixed(6)
       }`
       : t("common.no_location_selected")
   ));
