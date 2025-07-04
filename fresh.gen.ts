@@ -13,6 +13,7 @@ import * as $issues_submit from "./routes/issues/submit.tsx";
 import * as $local_communities from "./routes/local-communities.tsx";
 import * as $submit_issue from "./routes/submit-issue.tsx";
 import * as $IssueForm from "./islands/IssueForm.tsx";
+import * as $LocationDialog from "./islands/LocationDialog.tsx";
 import type { Manifest } from "$fresh/server.ts";
 
 const manifest = {
@@ -30,6 +31,7 @@ const manifest = {
   },
   islands: {
     "./islands/IssueForm.tsx": $IssueForm,
+    "./islands/LocationDialog.tsx": $LocationDialog,
   },
   baseUrl: import.meta.url,
 } satisfies Manifest;
