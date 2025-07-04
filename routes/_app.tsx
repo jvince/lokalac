@@ -34,7 +34,7 @@ export default defineApp<AppState>((_, { Component, state, url }) => {
           />
         </head>
 
-        <body class="bg-base-100" f-client-nav>
+        <body f-client-nav>
           <Partial name="body">
             <Component />
           </Partial>
