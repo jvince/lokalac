@@ -17,6 +17,7 @@ import { useAbortableFetch } from "$hooks/useAbortableFetch.ts";
 import { useTranslation } from "$hooks/useTranslation.ts";
 import type { IssueCategory } from "$models/issue-category.ts";
 import type { IssueType } from "$models/issue-type.ts";
+import { IssueLocation } from "$models/issue.ts";
 import type { LocalCommunity } from "$models/local-community.ts";
 import { i18nState } from "$plugins/i18n/mod.ts";
 import { useSignal, useSignalEffect } from "@preact/signals";
@@ -28,35 +29,47 @@ import type { ComponentChildren, JSX } from "preact";
 import { useCallback } from "preact/hooks";
 import { Suspense } from "react-dom";
 
+export interface IssueFormValues {
+  localCommunity?: string;
+  issueCategory?: string;
+  issueType?: string;
+  location?: IssueLocation;
+  note?: string;
+}
+
 interface IssueFormProps {
   i18nState: i18nState;
   categories: IssueCategory[];
   children?: ComponentChildren;
   communities: LocalCommunity[];
   issueTypes: IssueType[];
+  formValues?: IssueFormValues;
 }
 
 interface IssueFormState {
-  issueCategory: string | null;
-  issueType: string | null;
-  localCommunity: string | null;
-  location?: LatLngLiteral | null;
-  get locationFormatted(): string | null;
+  issueCategory: string | undefined;
+  issueType: string | undefined;
+  localCommunity: string | undefined;
+  location?: LatLngLiteral | undefined;
+  note?: string;
+  get locationFormatted(): string | undefined;
   get canSubmit(): boolean;
 }
 
 export function IssueForm(props: IssueFormProps) {
+  const { formValues } = props;
   const { t, fromObject } = useTranslation(props.i18nState);
   const isDialogOpen = useSignal(false);
 
   const formState = useDeepSignal<IssueFormState>({
-    issueCategory: null,
-    issueType: null,
-    localCommunity: null,
-    location: null,
+    issueCategory: formValues?.issueCategory,
+    issueType: formValues?.issueType,
+    localCommunity: formValues?.localCommunity,
+    location: formValues?.location,
+    note: formValues?.note,
     get locationFormatted() {
       if (!this.location) {
-        return null;
+        return undefined;
       }
 
       return `${this.location.lat}, ${this.location.lng}`;
@@ -90,7 +103,7 @@ export function IssueForm(props: IssueFormProps) {
 
   useSignalEffect(() => {
     if (formState.$localCommunity?.value) {
-      formState.location = null;
+      formState.location = undefined;
     }
   });
 
@@ -107,6 +120,7 @@ export function IssueForm(props: IssueFormProps) {
         </legend>
 
         <Select
+          defaultValue={formState.localCommunity}
           fullWidth
           label={t("common.local_community")}
           name="local_community"
@@ -125,6 +139,7 @@ export function IssueForm(props: IssueFormProps) {
         </Select>
 
         <Select
+          defaultValue={formState.issueCategory}
           fullWidth
           label={t("common.issue_category")}
           name="issue_category"
@@ -143,6 +158,7 @@ export function IssueForm(props: IssueFormProps) {
         </Select>
 
         <Select
+          defaultValue={formState.issueType}
           fullWidth
           label={t("common.issue_type")}
           name="issue_type"
@@ -174,7 +190,7 @@ export function IssueForm(props: IssueFormProps) {
               size="lg"
               title={t("common.clear_location")}
               onClick={() => {
-                formState.location = null;
+                formState.location = undefined;
               }}
             >
               <span aria-hidden="true">
@@ -211,7 +227,7 @@ export function IssueForm(props: IssueFormProps) {
         >
           <DialogBody>
             <DialogContent>
-              <Suspense fallback="Loading map...">
+              <Suspense fallback={null}>
                 {IS_BROWSER && (
                   <LeafletMapSSR style={{ height: "100%" }}>
                     <Suspense fallback={null}>
@@ -253,7 +269,12 @@ export function IssueForm(props: IssueFormProps) {
         <Label as="label" for="note" size="lg">
           {t("common.note")}
         </Label>
-        <Textarea id="note" name="note" />
+
+        <Textarea
+          defaultValue={formState.note}
+          id="note"
+          name="note"
+        />
 
         <Button
           color="primary"
