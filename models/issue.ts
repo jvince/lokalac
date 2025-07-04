@@ -20,6 +20,11 @@ export enum IssueSecondaryIndex {
   ByIssueType = "issue_by_type",
 }
 
+export type IssueLocation = {
+  lat: number;
+  lng: number;
+};
+
 export interface Issue {
   id: string;
   communityId: string;
@@ -27,6 +32,7 @@ export interface Issue {
   typeId: string;
   note?: string;
   status: IssueStatus;
+  location?: IssueLocation;
   submittedAt: string;
   updatedAt?: string;
 }
