@@ -52,7 +52,9 @@ export const handler: Handlers<PageData, AppState> = {
         if (key === "issue_type") {
           issueType = issueTypes.find((i) => i.id === value);
         }
-        if (key === "location" && typeof value === "string") {
+        if (
+          key === "location" && typeof value === "string" && value.length > 0
+        ) {
           try {
             const locationValue = JSON.parse(value);
             if (
