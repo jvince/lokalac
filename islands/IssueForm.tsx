@@ -7,9 +7,11 @@ import { DialogContent } from "$components/Dialog/DialogContent.tsx";
 import { DialogTrigger } from "$components/Dialog/DialogTrigger.tsx";
 import { Form } from "$components/Form.tsx";
 import { Input } from "$components/Input.tsx";
+import { Label } from "$components/Label.tsx";
 import { LeafletMapSSR } from "$components/LeafletMapSSR.tsx";
 import { MarkerSSR } from "$components/MarkerSSR.ts";
 import { Select } from "$components/Select.tsx";
+import { Textarea } from "$components/Textarea.tsx";
 import { IS_BROWSER } from "$fresh/runtime.ts";
 import { useAbortableFetch } from "$hooks/useAbortableFetch.ts";
 import { useTranslation } from "$hooks/useTranslation.ts";
@@ -39,7 +41,7 @@ interface IssueFormState {
   issueType: string | null;
   localCommunity: string | null;
   location?: LatLngLiteral | null;
-  get locationFormatted(): string;
+  get locationFormatted(): string | null;
   get canSubmit(): boolean;
 }
 
@@ -54,7 +56,7 @@ export function IssueForm(props: IssueFormProps) {
     location: null,
     get locationFormatted() {
       if (!this.location) {
-        return t("common.no_location_selected");
+        return null;
       }
 
       return `${this.location.lat}, ${this.location.lng}`;
@@ -172,6 +174,7 @@ export function IssueForm(props: IssueFormProps) {
                 color="warning"
                 disabled={!formState.location}
                 size="lg"
+                title={t("common.clear_location")}
                 onClick={() => {
                   formState.location = null;
                 }}
@@ -187,6 +190,7 @@ export function IssueForm(props: IssueFormProps) {
                 color="secondary"
                 disabled={!formState.localCommunity}
                 size="lg"
+                title={t("common.select_location")}
                 onClick={() => {
                   isDialogOpen.value = true;
                 }}
@@ -197,9 +201,11 @@ export function IssueForm(props: IssueFormProps) {
               </Button>
             }
             fullWidth
+            label={t("common.location")}
             readOnly
             size="lg"
-            value={formState.$locationFormatted}
+            value={formState.$locationFormatted?.value ??
+              t("common.no_location_selected")}
           />
 
           <input
@@ -253,7 +259,10 @@ export function IssueForm(props: IssueFormProps) {
             </DialogBody>
           </Dialog>
 
-          <textarea class="textarea" placeholder="note" name="note" />
+          <Label as="label" for="note" size="lg">
+            {t("common.note")}
+          </Label>
+          <Textarea id="note" name="note" />
 
           <Button
             color="primary"
