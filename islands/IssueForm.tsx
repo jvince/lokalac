@@ -200,20 +200,13 @@ export function IssueForm(props: IssueFormProps) {
                 </span>
               </Button>
             }
+            disabled
             fullWidth
             label={t("common.location")}
-            readOnly
             size="lg"
             value={formState.$locationFormatted?.value ??
               t("common.no_location_selected")}
           />
-
-          <input
-            type="hidden"
-            name="location"
-            value={JSON.stringify(formState.location)}
-          />
-
           <Dialog
             open={isDialogOpen}
             onOpenChange={(e) => isDialogOpen.value = e.detail.open}
@@ -272,6 +265,12 @@ export function IssueForm(props: IssueFormProps) {
           >
             {t("common.submit")}
           </Button>
+
+          <input
+            type="hidden"
+            name="location"
+            value={JSON.stringify(formState.location)}
+          />
         </fieldset>
       </Form>
     </>
