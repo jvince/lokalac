@@ -44,6 +44,11 @@ export default function Page(props: PageProps<Data>) {
             cell: (item) => fromObject(item.type, "name"),
           },
           {
+            id: "location",
+            cell: (item) =>
+              item.location ? `${item.location.lat}, ${item.location.lng}` : "",
+          },
+          {
             id: "status",
             cell: (item) => item.status,
           },
