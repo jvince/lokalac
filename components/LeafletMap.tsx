@@ -1,4 +1,3 @@
-import { type LatLngTuple } from "leaflet";
 import type { ComponentChildren } from "preact";
 import { MapContainer, type MapContainerProps, TileLayer } from "react-leaflet";
 
