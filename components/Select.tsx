@@ -26,11 +26,13 @@ import { colorsUI, sizesUI } from "$types/daisyui.ts";
 interface SelectProps
   extends Omit<JSX.SelectHTMLAttributes<HTMLSelectElement>, "size"> {
   fullWidth?: boolean;
+  label?: string;
 }
 
 export function SelectBase(props: SelectProps) {
   const {
     children,
+    label,
     fullWidth = false,
     ...restProps
   } = props;
@@ -42,12 +44,14 @@ export function SelectBase(props: SelectProps) {
   );
 
   return (
-    <select
-      {...restProps}
-      class={className}
-    >
-      {children}
-    </select>
+    <label class={className}>
+      {label && <span class="label text-accent">{label} {props.required && '*'}</span>}
+      <select
+        {...restProps}
+      >
+        {children}
+      </select>
+    </label>
   );
 }
 
