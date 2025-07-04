@@ -6,11 +6,11 @@ import type { AppState } from "$types/app.ts";
 
 export default defineLayout<AppState>((_, { Component }) => {
   return (
-    <div class="grid grid-rows-[auto_1fr_auto] min-h-screen gap-4">
+    <div class="grid grid-rows-[auto_1fr_auto] min-h-screen">
       <Header />
 
       <main>
-        <Container>
+        <Container class="py-12">
           <Component />
         </Container>
       </main>
