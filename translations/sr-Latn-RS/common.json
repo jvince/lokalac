@@ -10,5 +10,9 @@
   "select_local_community": "Izaberite mesnu zajednicu",
   "select_issue_category": "Izaberite kategoriju problema",
   "select_issue_type": "Izaberite vrstu problema",
-  "no_location_selected": "Nije izabrana lokacija"
+  "no_location_selected": "Nije izabrana lokacija",
+  "select_location": "Izaberite lokaciju",
+  "clear_location": "Ukloni lokaciju",
+  "location": "Lokacija",
+  "note": "Napomena"
 }

@@ -10,5 +10,9 @@
   "select_local_community": "Helyi közösség kiválasztása",
   "select_issue_category": "Probléma kategória kiválasztása",
   "select_issue_type": "Probléma típusának kiválasztása",
-  "no_location_selected": "Nincs kiválasztott helyszín"
+  "no_location_selected": "Nincs kiválasztott helyszín",
+  "select_location": "Kiválasztás helyszín",
+  "clear_location": "Helyszín törlése",
+  "location": "Helyszín",
+  "note": "Megjegyzés"
 }
