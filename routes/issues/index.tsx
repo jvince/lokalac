@@ -59,6 +59,13 @@ export default function Page(props: PageProps<Data, AppState>) {
               "N/A",
           },
           {
+            id: "submittedAt",
+            cell: (item) =>
+              Temporal.ZonedDateTime.from(item.submittedAt)
+                .toPlainDateTime()
+                .toLocaleString(state.language.code, { dateStyle: "medium" })
+          },
+          {
             id: "status",
             cell: (item) => item.status,
           },

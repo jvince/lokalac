@@ -101,7 +101,7 @@ export const handler: Handlers<PageData, AppState> = {
           status: IssueStatus.Open,
           location,
           note,
-          submittedAt: new Date().toISOString(),
+          submittedAt: Temporal.Now.zonedDateTimeISO().toString(),
         });
 
         return new Response(null, {
