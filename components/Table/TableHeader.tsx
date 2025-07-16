@@ -1,5 +1,5 @@
 import type { JSX } from "preact";
-import { useTableContext } from "./tableContext.ts";
+import { useTableContext } from "./tableContext.tsx";
 import { TableRowContextProvider } from "./tableRowContext.ts";
 import { useMemo } from "preact/hooks";
 

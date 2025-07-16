@@ -1,6 +1,6 @@
 import { createContext } from "preact";
 import { useContext } from "preact/hooks";
-import type { TableContextValue } from "./tableContext.ts";
+import type { TableContextValue } from "./tableContext.tsx";
 import type { TableData, TableRowKind } from "./types.ts";
 
 interface TableRowContextValue<T extends TableData = TableData>
@@ -15,7 +15,8 @@ const defaultRowContextValue: TableRowContextValue = {
   columns: [],
 };
 
-const TableRowContext = createContext<TableRowContextValue>(null!);
+// deno-lint-ignore no-explicit-any
+const TableRowContext = createContext<TableRowContextValue<any>>(null!);
 
 export const { Provider: TableRowContextProvider } = TableRowContext;
 

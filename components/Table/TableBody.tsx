@@ -1,5 +1,5 @@
 import type { ComponentChild, JSX } from "preact";
-import { useTableContext } from "./tableContext.ts";
+import { useTableContext } from "./tableContext.tsx";
 import { TableRowContextProvider } from "./tableRowContext.ts";
 import type { TableData } from "./types.ts";
 import { useMemo } from "preact/hooks";
@@ -28,8 +28,7 @@ export function TableBody<T extends TableData = TableData>(
           value={useMemo(() => ({
             kind: "body",
             item,
-            // deno-lint-ignore no-explicit-any
-            columns: columns as any,
+            columns,
           }), [item, columns])}
         >
           {children({ item, rowId: item.id })}
