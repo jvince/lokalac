@@ -24,6 +24,7 @@ export function Table<T extends TableData>(props: TableProps<T>) {
   );
 
   return (
+    // deno-lint-ignore no-explicit-any
     <TableContextProvider value={{ columns: columns as any, items }}>
       <table {...restProps} class={className}>
         {children}
