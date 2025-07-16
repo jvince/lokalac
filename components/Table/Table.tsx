@@ -10,11 +10,14 @@ interface TableProps<T extends TableData>
   items?: T[];
 }
 
+const defaultColumns: TableColumn<TableData>[] = [];
+const defaultItems: TableData[] = [];
+
 export function Table<T extends TableData>(props: TableProps<T>) {
   const {
     children,
-    columns = [],
-    items = [],
+    columns = defaultColumns,
+    items = defaultItems,
     ...restProps
   } = props;
 

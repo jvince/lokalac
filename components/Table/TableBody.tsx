@@ -2,6 +2,7 @@ import type { ComponentChild, JSX } from "preact";
 import { useTableContext } from "./tableContext.ts";
 import { TableRowContextProvider } from "./tableRowContext.ts";
 import type { TableData } from "./types.ts";
+import { useMemo } from "preact/hooks";
 
 interface Children<T> {
   (props: { item: T; rowId: string }): ComponentChild;
@@ -23,12 +24,13 @@ export function TableBody<T extends TableData = TableData>(
     <tbody {...restProps} class={className}>
       {items.map((item) => (
         <TableRowContextProvider
-          value={{
+          key={item.id}
+          value={useMemo(() => ({
             kind: "body",
             item,
             // deno-lint-ignore no-explicit-any
             columns: columns as any,
-          }}
+          }), [item, columns])}
         >
           {children({ item, rowId: item.id })}
         </TableRowContextProvider>

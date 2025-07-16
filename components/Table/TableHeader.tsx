@@ -1,6 +1,7 @@
 import type { JSX } from "preact";
 import { useTableContext } from "./tableContext.ts";
 import { TableRowContextProvider } from "./tableRowContext.ts";
+import { useMemo } from "preact/hooks";
 
 interface TableHeaderProps
   extends JSX.HTMLAttributes<HTMLTableSectionElement> {}
@@ -13,11 +14,11 @@ export function TableHeader(props: TableHeaderProps) {
   return (
     <thead {...restProps} class={className}>
       <TableRowContextProvider
-        value={{
+        value={useMemo(() => ({
           kind: "header",
           item: null,
           columns,
-        }}
+        }), [columns])}
       >
         {children}
       </TableRowContextProvider>

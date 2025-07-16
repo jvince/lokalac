@@ -88,7 +88,7 @@ export default function Page(props: PageProps<Data, AppState>) {
       >
         <TableHeader>
           <TableRow>
-            {({ cell }) => <TableCell as="th">{cell}</TableCell>}
+            {({ cell }) => <TableCell as="th" scope="col">{cell}</TableCell>}
           </TableRow>
         </TableHeader>
 
