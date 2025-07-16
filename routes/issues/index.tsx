@@ -85,9 +85,11 @@ export default function Page(props: PageProps<Data, AppState>) {
         ]}
       >
         <TableBody>
-          <TableRow<IssueDTO>>
-            {({ cell }) => <TableCell>{cell}</TableCell>}
-          </TableRow>
+          {({ rowId }) => (
+            <TableRow id={rowId}>
+              {({ cell }) => <TableCell>{cell}</TableCell>}
+            </TableRow>
+          )}
         </TableBody>
       </Table>
     </>

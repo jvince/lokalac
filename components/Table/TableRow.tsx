@@ -13,11 +13,11 @@ interface TableRowProps<T extends TableData = TableData>
 
 function renderCell<T extends TableData>(
   column: TableColumn<T>,
-  item: TableData | null,
+  item: T | null,
   kind: TableRowKind,
 ) {
   if (kind === "body") {
-    return item ? column.cell(item as T) : null;
+    return item ? column.cell(item) : null;
   }
 
   return "Kesa";
