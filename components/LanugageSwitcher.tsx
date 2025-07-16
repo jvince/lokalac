@@ -28,7 +28,7 @@ export function LanguageSwitcher() {
         <IconLanguage role="presentation" />
       </div>
 
-      <ul class="menu dropdown-content bg-base-200 rounded-box z-1 w-52 p-2 gap-1.5 shadow-sm">
+      <ul class="menu dropdown-content bg-base-200 rounded-box z-1 w-52 p-2 gap-1.5 shadow-sm" f-client-nav={false}>
         {supportedLanguages.map((lang) => (
           <li>
             <a
