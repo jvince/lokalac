@@ -20,7 +20,11 @@ function renderCell<T extends TableData>(
     return item ? column.cell(item) : null;
   }
 
-  return "Kesa";
+  if (kind === "header") {
+    return column.header || null;
+  }
+
+  throw new Error(`Cannot render cell for kind "${kind}"`);
 }
 
 export function TableRow<T extends TableData = TableData>(

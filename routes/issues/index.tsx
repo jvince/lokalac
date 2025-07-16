@@ -2,6 +2,7 @@ import { Link } from "$components/Link.tsx";
 import { Table } from "$components/Table/Table.tsx";
 import { TableBody } from "$components/Table/TableBody.tsx";
 import { TableCell } from "$components/Table/TableCell.tsx";
+import { TableHeader } from "$components/Table/TableHeader.tsx";
 import { TableRow } from "$components/Table/TableRow.tsx";
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { useTranslation } from "$hooks/useTranslation.ts";
@@ -30,6 +31,7 @@ export default function Page(props: PageProps<Data, AppState>) {
         columns={[
           {
             id: "id",
+            header: "ID",
             cell: (item) => item.id,
           },
           {
@@ -84,6 +86,12 @@ export default function Page(props: PageProps<Data, AppState>) {
           },
         ]}
       >
+        <TableHeader>
+          <TableRow>
+            {({ cell }) => <TableCell as="th">{cell}</TableCell>}
+          </TableRow>
+        </TableHeader>
+
         <TableBody>
           {({ rowId }) => (
             <TableRow id={rowId}>
