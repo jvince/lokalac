@@ -1,17 +1,17 @@
 import { createContext } from "preact";
 import { useContext } from "preact/hooks";
 import type { TableContextValue } from "./tableContext.ts";
-import type { TableData } from "./types.ts";
+import type { TableData, TableRowKind } from "./types.ts";
 
 interface TableRowContextValue<T extends TableData = TableData>
   extends Omit<TableContextValue<T>, "items"> {
-  kind: "body" | "header" | "footer";
-  item: T;
+  kind: TableRowKind;
+  item: T | null;
 }
 
 const defaultRowContextValue: TableRowContextValue = {
   kind: "body",
-  item: null!,
+  item: null,
   columns: [],
 };
 
