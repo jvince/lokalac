@@ -3,7 +3,6 @@ import { defaultLanguage } from "../languages.ts";
 
 export function useURL(href: string) {
   const { baseURL, language, path } = useGlobalContext();
-  console.log(path);
 
   try {
     const url = new URL(href, baseURL);
