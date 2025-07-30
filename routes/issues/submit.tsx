@@ -1,13 +1,19 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
-import { getIssueCategories, IssueCategory } from "$models/issue-category.ts";
-import { getIssueTypes, IssueType } from "$models/issue-type.ts";
-import { insertIssue, IssueLocation, IssueStatus } from "$models/issue.ts";
+import { IssueForm, IssueFormValues } from "$islands/IssueForm.tsx";
+import {
+  getIssueCategories,
+  type IssueCategory,
+} from "$models/issue-category.ts";
+import { getIssueTypes, type IssueType } from "$models/issue-type.ts";
+import { insertIssue, type IssueLocation, IssueStatus } from "$models/issue.ts";
 import {
   getLocalCommunities,
-  LocalCommunity,
+  getLocalCommunityPolygonById,
+  type LocalCommunity,
 } from "$models/local-community.ts";
 import { AppState } from "$types/app.ts";
-import { IssueForm, IssueFormValues } from "$islands/IssueForm.tsx";
+import { ulid } from "@std/ulid";
+import type { LatLngTuple } from "leaflet";
 
 interface PageData {
   categories: IssueCategory[];
@@ -23,6 +29,55 @@ async function loadData() {
   const issueTypes = await Array.fromAsync(getIssueTypes());
 
   return { categories, communities, issueTypes };
+}
+
+export function getLatLngBounds(polygon: LatLngTuple[] | undefined | null) {
+  if (!polygon || !Array.isArray(polygon) || polygon.length === 0) {
+    return [
+      [Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY],
+      [Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY],
+    ];
+  }
+
+  let southWest = polygon[0];
+  let northEast = polygon[0];
+
+  for (const [lat, lng] of polygon) {
+    if (lat < southWest[0]) {
+      southWest = [lat, southWest[1]];
+    }
+    if (lng < southWest[1]) {
+      southWest = [southWest[0], lng];
+    }
+    if (lat > northEast[0]) {
+      northEast = [lat, northEast[1]];
+    }
+    if (lng > northEast[1]) {
+      northEast = [northEast[0], lng];
+    }
+  }
+
+  return [southWest, northEast];
+}
+
+/**
+ * @todo: Implement more robust location validation.
+ */
+async function isLocationInPolygon(
+  location: IssueLocation | undefined,
+  community: LocalCommunity | undefined,
+) {
+  if (!location || !community) {
+    return false;
+  }
+
+  const polygon = await getLocalCommunityPolygonById(community.id);
+  const [southWest, northEast] = getLatLngBounds(polygon);
+
+  return (
+    location.lat >= southWest[0] && location.lat <= northEast[0] &&
+    location.lng >= southWest[1] && location.lng <= northEast[1]
+  );
 }
 
 export const handler: Handlers<PageData, AppState> = {
@@ -45,12 +100,21 @@ export const handler: Handlers<PageData, AppState> = {
       for (const [key, value] of formData.entries()) {
         if (key === "local_community") {
           community = communities.find((c) => c.id === value);
+          if (!community) {
+            errors.push("error.local_community_not_found");
+          }
         }
         if (key === "issue_category") {
           category = categories.find((c) => c.id === value);
+          if (!category) {
+            errors.push("error.issue_category_not_found");
+          }
         }
         if (key === "issue_type") {
           issueType = issueTypes.find((i) => i.id === value);
+          if (!issueType) {
+            errors.push("error.issue_type_not_found");
+          }
         }
         if (
           key === "location" && typeof value === "string" && value.length > 0
@@ -72,20 +136,15 @@ export const handler: Handlers<PageData, AppState> = {
           } catch {
             throw new Error("error.invalid_location_format");
           }
-        }
-        if (key === "note") {
-          note = value as string;
-        }
-      }
 
-      if (!community) {
-        errors.push("error.local_community_not_found");
-      }
-      if (!category) {
-        errors.push("error.issue_category_not_found");
-      }
-      if (!issueType) {
-        errors.push("error.issue_type_not_found");
+          if (!(await isLocationInPolygon(location, community))) {
+            throw new Error("error.location_not_in_community_polygon");
+          }
+        }
+
+        if (key === "note" && typeof value === "string") {
+          note = value;
+        }
       }
 
       if (community && category && issueType) {
@@ -94,7 +153,7 @@ export const handler: Handlers<PageData, AppState> = {
         );
 
         await insertIssue({
-          id: crypto.randomUUID(),
+          id: ulid(),
           communityId: community.id,
           categoryId: category.id,
           typeId: issueType.id,

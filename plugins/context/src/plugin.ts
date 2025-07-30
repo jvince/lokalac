@@ -3,6 +3,7 @@ import type { Context } from "preact";
 import { setup, SHARED_CONTEXT_ID } from "./shared.ts";
 
 export function context(
+  // deno-lint-ignore no-explicit-any
   Context: Context<any>,
   importURL: string,
 ): Plugin {

@@ -7,10 +7,7 @@ import {
   IssueType,
   IssueTypeIndex as IssueTypePrimaryKey,
 } from "./issue-type.ts";
-import {
-  LocalCommunity,
-  LocalCommunityIndex as LocalCommunityIndex,
-} from "./local-community.ts";
+import { LocalCommunity, LocalCommunityIndex } from "./local-community.ts";
 
 export const IssueIndex = "issue";
 
@@ -18,6 +15,7 @@ export enum IssueSecondaryIndex {
   ByCommunity = "issue_by_community",
   ByCategory = "issue_by_category",
   ByIssueType = "issue_by_type",
+  ByIssueStatus = "issue_by_status",
 }
 
 export type IssueLocation = {

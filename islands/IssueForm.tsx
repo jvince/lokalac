@@ -85,6 +85,7 @@ export function IssueForm(props: IssueFormProps) {
       const value = e.currentTarget.value;
 
       if (field in formState) {
+        // deno-lint-ignore no-explicit-any
         (formState as any)[field] = value;
       }
 
