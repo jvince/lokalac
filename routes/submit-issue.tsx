@@ -122,7 +122,7 @@ export const handler: Handlers<Props, AppState> = {
         typeId: issue.id,
         status: IssueStatus.Open,
         note,
-        submittedAt: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
       });
 
       return new Response(null, {

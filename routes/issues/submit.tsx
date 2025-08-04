@@ -152,6 +152,8 @@ export const handler: Handlers<PageData, AppState> = {
           `Reported issue ${issueType.name} in category ${category.name} for community ${community.name}`,
         );
 
+        const createdAt = Temporal.Now.zonedDateTimeISO().toString();
+
         await insertIssue({
           id: ulid(),
           communityId: community.id,
@@ -160,7 +162,8 @@ export const handler: Handlers<PageData, AppState> = {
           status: IssueStatus.Open,
           location,
           note,
-          submittedAt: Temporal.Now.zonedDateTimeISO().toString(),
+          createdAt,
+          updatedAt: createdAt,
         });
 
         return new Response(null, {
@@ -205,11 +208,11 @@ export default function SubmitIssuePage(
         );
       })}
       <IssueForm
-        i18nState={{ language: state.language, translation: state.translation }}
         categories={data.categories}
         communities={data.communities}
-        issueTypes={data.issueTypes}
         formValues={data.formValues}
+        i18nState={state}
+        issueTypes={data.issueTypes}
       />
     </>
   );

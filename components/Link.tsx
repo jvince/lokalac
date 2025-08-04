@@ -1,5 +1,6 @@
 import { colorsUI, variantsUI } from "$types/daisyui.ts";
 import { defineThemeProps, withTheme } from "$utils/theme.tsx";
+import { toNormalizedUrl } from "$utils/url.ts";
 import { clsx } from "clsx/lite";
 import type { JSX } from "preact";
 
@@ -20,6 +21,7 @@ import type { JSX } from "preact";
 interface LinkProps extends JSX.AnchorHTMLAttributes<HTMLAnchorElement> {
   as?: "link" | "btn";
   href?: string;
+  lang?: string;
   withHover?: boolean;
 }
 
@@ -27,19 +29,20 @@ function LinkBase(props: LinkProps) {
   const {
     as = "link",
     href = "",
+    lang,
     withHover = true,
     ...rest
   } = props;
 
   const className = clsx(
     props.class || props.className,
-    as === "link" && withHover && "link-hover"
+    as === "link" && withHover && "link-hover",
   );
 
   return (
     <a
       {...rest}
-      href={href}
+      href={toNormalizedUrl(href, lang)}
       class={className}
     >
       {props.children}

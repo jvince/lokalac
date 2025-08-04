@@ -16,6 +16,7 @@ export enum IssueSecondaryIndex {
   ByCategory = "issue_by_category",
   ByIssueType = "issue_by_type",
   ByIssueStatus = "issue_by_status",
+  ByCommunityAndStatus = "issue_by_community_and_status",
 }
 
 export type IssueLocation = {
@@ -31,8 +32,8 @@ export interface Issue {
   note?: string;
   status: IssueStatus;
   location?: IssueLocation;
-  submittedAt: string;
-  updatedAt?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface IssueDTO extends Issue {
@@ -48,6 +49,14 @@ export enum IssueStatus {
   Rejected = "rejected",
 }
 
+export function isIssueStatus(value: unknown): value is IssueStatus {
+  if (typeof value !== "string") {
+    return false;
+  }
+
+  return Object.values(IssueStatus).includes(value as IssueStatus);
+}
+
 export async function insertIssue(issue: Issue) {
   const primaryKey = [IssueIndex, issue.id];
   const byCommunityKey = [
@@ -56,11 +65,26 @@ export async function insertIssue(issue: Issue) {
     issue.id,
   ];
 
+  const byStatusKey = [
+    IssueSecondaryIndex.ByIssueStatus,
+    issue.status,
+    issue.id,
+  ];
+
+  const byCommunityAndStatusKey = [
+    IssueSecondaryIndex.ByCommunityAndStatus,
+    issue.communityId,
+    issue.status,
+    issue.id,
+  ];
+
   const result = await kv.atomic()
     .check({ key: primaryKey, versionstamp: null })
     .check({ key: byCommunityKey, versionstamp: null })
     .set(primaryKey, issue)
     .set(byCommunityKey, issue)
+    .set(byStatusKey, issue)
+    .set(byCommunityAndStatusKey, issue)
     .commit();
 
   if (!result.ok) {
@@ -87,6 +111,61 @@ export async function* getIssuesByCommunity(
 ) {
   const result = kv.list<Issue>({
     prefix: [IssueSecondaryIndex.ByCommunity, communityId],
+  }, options);
+
+  for await (const item of result) {
+    yield await resolve(item.value);
+  }
+}
+
+export async function* getIssuesByStatus(
+  status: IssueStatus,
+  options?: Deno.KvListOptions,
+) {
+  const result = kv.list<Issue>({
+    prefix: [IssueSecondaryIndex.ByIssueStatus, status],
+  }, options);
+
+  for await (const item of result) {
+    yield await resolve(item.value);
+  }
+}
+
+export async function* getIssuesByCommunityAndStatus(
+  communityId?: string,
+  status?: string | null,
+  options?: Deno.KvListOptions,
+) {
+  if (
+    typeof communityId !== "string" || typeof status !== "string" ||
+    (communityId === "all" && status === "all")
+  ) {
+    for await (const item of getIssues(options)) {
+      yield item;
+    }
+    return;
+  }
+
+  if (communityId !== "all" && status === "all") {
+    for await (const item of getIssuesByCommunity(communityId, options)) {
+      yield item;
+    }
+    return;
+  }
+
+  if (communityId === "all" && status !== "all" && isIssueStatus(status)) {
+    for await (const item of getIssuesByStatus(status, options)) {
+      yield item;
+    }
+    return;
+  }
+
+  const result = kv.list<Issue>({
+    prefix: [
+      IssueSecondaryIndex.ByCommunityAndStatus,
+      communityId,
+      status,
+    ],
   }, options);
 
   for await (const item of result) {

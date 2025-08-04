@@ -1,11 +1,8 @@
-import {
-  createInternalUrl,
-  createLanguageUrl,
-  toRelativeUrl,
-} from "$utils/url.ts";
+import { toNormalizedUrl } from "$utils/url.ts";
 import type { JSX } from "preact";
-import { forwardRef } from "preact/compat";
+import { forwardRef } from "react-dom";
 import { defaultLanguage } from "../languages.ts";
+
 interface FormProps extends JSX.FormHTMLAttributes<HTMLFormElement> {}
 
 export const Form = forwardRef<HTMLFormElement, FormProps>((props, ref) => {
@@ -22,12 +19,7 @@ export const Form = forwardRef<HTMLFormElement, FormProps>((props, ref) => {
     <form
       {...restProps}
       ref={ref}
-      action={toRelativeUrl(
-        createLanguageUrl(
-          createInternalUrl(action?.toString()),
-          lang?.toString(),
-        ),
-      )}
+      action={toNormalizedUrl(action?.toString(), lang?.toString())}
     >
       {props.children}
       {shouldIncludeLang && <input type="hidden" name="lang" value={lang} />}

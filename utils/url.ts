@@ -42,3 +42,17 @@ export function toRelativeUrl(
     return `${url.pathname}${url.search}${url.hash}`;
   }
 }
+
+/**
+ * Converts a URL to a normalized format, ensuring it includes the language code
+ * if necessary. If the URL is relative, it will be converted to an internal URL.
+ * If the language code is not the default, it will be added as a search parameter.
+ */
+export function toNormalizedUrl(
+  url: string | undefined,
+  languageCode: string = defaultLanguage.code,
+) {
+  return toRelativeUrl(
+    createLanguageUrl(createInternalUrl(url), languageCode),
+  );
+}
