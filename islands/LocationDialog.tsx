@@ -9,8 +9,8 @@ import { MarkerSSR } from "$components/MarkerSSR.ts";
 import { useTranslation } from "$hooks/useTranslation.ts";
 import { IssueLocation } from "$models/issue.ts";
 import type { WithI18nState } from "$plugins/i18n/src/types.ts";
-import EyeIcon from "https://deno.land/x/tabler_icons_tsx@0.0.7/tsx/eye.tsx";
 import { Suspense } from "react-dom";
+import { IconEye } from "../icons.ts";
 
 export interface LocationDialogProps extends WithI18nState {
   location: IssueLocation;
@@ -27,7 +27,7 @@ export function LocationDialog(props: LocationDialogProps) {
           class="aspect-square p-0"
           color="neutral"
         >
-          <EyeIcon />
+          <IconEye />
         </Button>
       </DialogTrigger>
       <DialogBody>

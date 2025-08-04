@@ -16,8 +16,7 @@ import {
   LocalCommunity,
 } from "$models/local-community.ts";
 import { AppState } from "$types/app.ts";
-import IconFilterCancel from "https://deno.land/x/tabler_icons_tsx@0.0.7/tsx/filter-cancel.tsx";
-import IconFilter from "https://deno.land/x/tabler_icons_tsx@0.0.7/tsx/filter.tsx";
+import { IconFilter, IconFilterCancel } from "../../icons.ts";
 
 interface FilterSort {
   community?: string;

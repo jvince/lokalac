@@ -21,12 +21,11 @@ import type { LocalCommunity } from "$models/local-community.ts";
 import type { WithI18nState } from "$plugins/i18n/src/types.ts";
 import { useComputed, useSignal } from "@preact/signals";
 import { useDeepSignal } from "deepsignal";
-import MapPinOffIcon from "https://deno.land/x/tabler_icons_tsx@0.0.7/tsx/map-pin-off.tsx";
-import MapPinPlusIcon from "https://deno.land/x/tabler_icons_tsx@0.0.7/tsx/map-pin-plus.tsx";
 import type { LatLngLiteral, LatLngTuple } from "leaflet";
 import type { ComponentChildren, JSX } from "preact";
 import { useCallback } from "preact/hooks";
 import { Suspense } from "react-dom";
+import { IconMapPinOff, IconMapPinPlus } from "../icons.ts";
 
 export interface IssueFormValues {
   localCommunity?: string;
@@ -193,7 +192,7 @@ export function IssueForm(props: IssueFormProps) {
               }}
             >
               <span aria-hidden="true">
-                <MapPinOffIcon />
+                <IconMapPinOff />
               </span>
             </Button>
           }
@@ -209,7 +208,7 @@ export function IssueForm(props: IssueFormProps) {
               }}
             >
               <span aria-hidden="true">
-                <MapPinPlusIcon />
+                <IconMapPinPlus />
               </span>
             </Button>
           }

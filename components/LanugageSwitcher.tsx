@@ -1,7 +1,7 @@
 import { useTranslation } from "$hooks/useTranslation.ts";
 import clsx from "clsx";
-import IconLanguage from "https://deno.land/x/tabler_icons_tsx@0.0.7/tsx/language.tsx";
 import { useGlobalContext } from "../globalContext.ts";
+import { IconLanguage } from "../icons.ts";
 import { defaultLanguage } from "../languages.ts";
 
 function getLanguageLinkProps(code: string, path: string) {
