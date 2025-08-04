@@ -56,6 +56,7 @@ export default function LocalCommunitiesPage(
             <Link
               href={item.link}
               target="_blank"
+              title={item.link}
             >
               <IconExternalLink size={18} />
             </Link>
