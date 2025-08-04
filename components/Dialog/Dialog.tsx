@@ -8,10 +8,10 @@ import {
   type JSX,
   toChildArray,
 } from "preact";
+import { createPortal } from "preact/compat";
 import { useCallback, useLayoutEffect, useMemo, useRef } from "preact/hooks";
 import { DialogContextProvider, DialogContextValue } from "./dialogContext.ts";
 import { DialogTrigger } from "./DialogTrigger.tsx";
-import { createPortal } from "preact/compat";
 
 export type DialogOpenChangeData = {
   open: boolean;
@@ -121,6 +121,9 @@ export function Dialog(props: DialogProps) {
             onClose={onDialogCloseHandler}
           >
             {slots.children}
+            <form method="dialog" className="modal-backdrop">
+              <button type="submit">close</button>
+            </form>
           </dialog>,
           globalThis.document?.body,
         )}
