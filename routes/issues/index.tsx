@@ -76,6 +76,8 @@ export default function Page(props: PageProps<Data, AppState>) {
             header: (
               <div class="flex flex-col gap-2">
                 <Select
+                  aria-labelledby="filter-community-label"
+                  id="filter-community"
                   form="filter"
                   name="community"
                   defaultValue={data.filter.community}
@@ -90,7 +92,9 @@ export default function Page(props: PageProps<Data, AppState>) {
                     </option>
                   ))}
                 </Select>
-                <span>{t("common.local_community")}</span>
+                <span id="filter-community-label">
+                  {t("common.local_community")}
+                </span>
               </div>
             ),
             cell: (item) => fromObject(item.community, "name"),
@@ -170,6 +174,7 @@ export default function Page(props: PageProps<Data, AppState>) {
             header: (
               <div class="flex flex-col gap-2">
                 <Select
+                  aria-labelledby="filter-status-label"
                   defaultValue={data.filter.status}
                   form="filter"
                   name="status"
@@ -186,7 +191,7 @@ export default function Page(props: PageProps<Data, AppState>) {
                     {t("common.status_rejected")}
                   </option>
                 </Select>
-                <span>{t("common.status")}</span>
+                <span id="filter-status-label">{t("common.status")}</span>
               </div>
             ),
             cell: (item) => t(`common.status_${item.status}`),
