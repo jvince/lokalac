@@ -2,7 +2,6 @@ import { defineApp } from "$fresh/server.ts";
 import { AppState } from "$types/app.ts";
 import { signal } from "@preact/signals";
 import { Context, type GlobalContext } from "../globalContext.ts";
-import { Partial } from "$fresh/runtime.ts";
 
 export const theme = signal("winter");
 
@@ -34,10 +33,8 @@ export default defineApp<AppState>((_, { Component, state, url }) => {
           />
         </head>
 
-        <body f-client-nav>
-          <Partial name="body">
-            <Component />
-          </Partial>
+        <body>
+          <Component />
         </body>
       </html>
     </Context.Provider>

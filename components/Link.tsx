@@ -1,8 +1,7 @@
+import { colorsUI, variantsUI } from "$types/daisyui.ts";
+import { defineThemeProps, withTheme } from "$utils/theme.tsx";
 import { clsx } from "clsx/lite";
 import type { JSX } from "preact";
-import { useURL } from "../hooks/useURL.ts";
-import { defineThemeProps, withTheme } from "$utils/theme.tsx";
-import { colorsUI, variantsUI } from "$types/daisyui.ts";
 
 /**
  * @fileoverview
@@ -31,18 +30,16 @@ function LinkBase(props: LinkProps) {
     withHover = true,
     ...rest
   } = props;
-  const { active, url } = useURL(href);
 
   const className = clsx(
     props.class || props.className,
-    as === "link" && withHover && "link-hover",
-    active && "underline",
+    as === "link" && withHover && "link-hover"
   );
 
   return (
     <a
       {...rest}
-      href={url}
+      href={href}
       class={className}
     >
       {props.children}

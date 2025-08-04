@@ -1,5 +1,5 @@
 import { useTranslation } from "$hooks/useTranslation.ts";
-import { clsx } from "clsx/lite";
+import clsx from "clsx";
 import IconLanguage from "https://deno.land/x/tabler_icons_tsx@0.0.7/tsx/language.tsx";
 import { useGlobalContext } from "../globalContext.ts";
 import { defaultLanguage } from "../languages.ts";
@@ -17,7 +17,7 @@ export function LanguageSwitcher() {
   const { t, supportedLanguages, language } = useTranslation();
 
   return (
-    <div class="dropdown dropdown-end">
+    <div data-language-switcher class="dropdown dropdown-end">
       <div
         id="test"
         class="btn btn-square btn-soft"
@@ -28,10 +28,7 @@ export function LanguageSwitcher() {
         <IconLanguage role="presentation" />
       </div>
 
-      <ul
-        class="menu dropdown-content bg-base-200 rounded-box z-1 w-52 p-2 gap-1.5 shadow-sm"
-        f-client-nav={false}
-      >
+      <ul class="menu dropdown-content bg-base-200 rounded-box z-1 w-52 p-2 gap-1.5 shadow-sm">
         {supportedLanguages.map((lang) => (
           <li>
             <a

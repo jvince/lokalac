@@ -36,3 +36,7 @@
   --depth: 1;
   --noise: 1;
 }
+
+[aria-current="page"]:not([data-language-switcher] a) {
+  @apply underline;
+}
