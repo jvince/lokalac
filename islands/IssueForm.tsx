@@ -75,6 +75,10 @@ export function IssueForm(props: IssueFormProps) {
       : t("common.no_location_selected")
   ));
 
+  const locationFormValue = useComputed(() => (
+    JSON.stringify(formState.$location) || ""
+  ));
+
   const shouldFetch = IS_BROWSER && !!formState.localCommunity;
 
   const onChangeHandler = useCallback(
@@ -279,7 +283,7 @@ export function IssueForm(props: IssueFormProps) {
         <input
           type="hidden"
           name="location"
-          value={JSON.stringify(formState.location)}
+          value={locationFormValue}
         />
       </fieldset>
     </Form>
