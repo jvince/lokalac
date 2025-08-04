@@ -16,7 +16,12 @@ import {
   LocalCommunity,
 } from "$models/local-community.ts";
 import { AppState } from "$types/app.ts";
-import { IconFilter, IconFilterCancel } from "../../icons.ts";
+import {
+  IconFilter,
+  IconFilterCancel,
+  IconSortAscending2,
+  IconSortDescending2,
+} from "../../icons.ts";
 
 interface FilterSort {
   community?: string;
@@ -62,7 +67,6 @@ export default function Page(props: PageProps<Data, AppState>) {
   return (
     <>
       <Form id="filter" lang={state.language.code} />
-
       <Table
         items={data.issues}
         columns={[
@@ -116,27 +120,40 @@ export default function Page(props: PageProps<Data, AppState>) {
           {
             id: "updatedAt",
             header: (
-              <>
-                <input
-                  type="radio"
-                  name="updatedAt"
-                  value="asc"
-                  form="filter"
-                  checked={data.filter.updatedAt === "asc" ? true : undefined}
-                />
-                <input
-                  type="radio"
-                  name="updatedAt"
-                  value="desc"
-                  form="filter"
-                  checked={data.filter.updatedAt === "desc" ? true : undefined}
-                />
-              </>
+              <div class="flex items-center gap-2">
+                <label
+                  aria-label={t("common.sort-asc")}
+                  class="flex items-center gap-1"
+                >
+                  <input
+                    type="radio"
+                    name="updatedAt"
+                    value="asc"
+                    form="filter"
+                    checked={data.filter.updatedAt === "asc" ? true : undefined}
+                  />
+                  <IconSortAscending2 />
+                </label>
+                <label
+                  aria-label={t("common.sort-desc")}
+                  class="flex items-center gap-1"
+                >
+                  <input
+                    type="radio"
+                    name="updatedAt"
+                    value="desc"
+                    form="filter"
+                    checked={data.filter.updatedAt === "desc"
+                      ? true
+                      : undefined}
+                  />
+                  <IconSortDescending2 />
+                </label>
+              </div>
             ),
-            cell: (item) =>
-              Temporal.ZonedDateTime.from(item.updatedAt)
-                .toPlainDateTime()
-                .toLocaleString(state.language.code, { dateStyle: "medium" }),
+            cell: (item) => Temporal.ZonedDateTime.from(item.updatedAt)
+              .toPlainDateTime()
+              .toLocaleString(state.language.code, { dateStyle: "medium" }),
           },
           {
             id: "status",
@@ -145,9 +162,6 @@ export default function Page(props: PageProps<Data, AppState>) {
                 defaultValue={data.filter.status}
                 form="filter"
                 name="status"
-                onChange={() => {
-                  console.log("Status filter changed");
-                }}
               >
                 <option value="all">{t("common.all")}</option>
                 <option value="open">{t("issue.status.open")}</option>
