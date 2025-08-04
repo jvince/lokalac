@@ -63,7 +63,7 @@ export const handler: Handlers<Data, AppState> = {
 
 export default function Page(props: PageProps<Data, AppState>) {
   const { data, state } = props;
-  const { fromObject, t } = useTranslation(state);
+  const { fromObject, t } = useTranslation();
 
   return (
     <>

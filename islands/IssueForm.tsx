@@ -113,10 +113,6 @@ export function IssueForm(props: IssueFormProps) {
       f-client-nav={false}
     >
       <fieldset class="fieldset gap-y-4">
-        <legend class="fieldset-legend">
-          Create an Issue
-        </legend>
-
         <Select
           defaultValue={formState.localCommunity}
           fullWidth

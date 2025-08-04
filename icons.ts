@@ -1,3 +1,4 @@
+export { default as IconExternalLink } from "https://deno.land/x/tabler_icons_tsx@0.0.7/tsx/external-link.tsx";
 export { default as IconEye } from "https://deno.land/x/tabler_icons_tsx@0.0.7/tsx/eye.tsx";
 export { default as IconFilterCancel } from "https://deno.land/x/tabler_icons_tsx@0.0.7/tsx/filter-cancel.tsx";
 export { default as IconFilter } from "https://deno.land/x/tabler_icons_tsx@0.0.7/tsx/filter.tsx";
