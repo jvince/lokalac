@@ -45,7 +45,6 @@ function ButtonBase(props: ButtonProps) {
   const className = clsx(
     props.class || props.className,
     "inline-flex",
-    "w-fit",
     shape === "circle" && "btn-circle",
     shape === "square" && "btn-square",
     fullWidth && "w-full",
