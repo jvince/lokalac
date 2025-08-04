@@ -64,6 +64,7 @@ export const handler: Handlers<Data, AppState> = {
 export default function Page(props: PageProps<Data, AppState>) {
   const { data, state } = props;
   const { fromObject, t } = useTranslation(state);
+
   return (
     <>
       <Form id="filter" lang={state.language.code} />
@@ -73,34 +74,40 @@ export default function Page(props: PageProps<Data, AppState>) {
           {
             id: "community",
             header: (
-              <Select
-                form="filter"
-                name="community"
-                defaultValue={data.filter.community}
-              >
-                <option value="all">{t("common.all")}</option>
-                {data.communities.map((community) => (
-                  <option
-                    key={community.id}
-                    value={community.id}
-                  >
-                    {fromObject(community, "name")}
-                  </option>
-                ))}
-              </Select>
+              <div class="flex flex-col gap-2">
+                <Select
+                  form="filter"
+                  name="community"
+                  defaultValue={data.filter.community}
+                >
+                  <option value="all">{t("common.all")}</option>
+                  {data.communities.map((community) => (
+                    <option
+                      key={community.id}
+                      value={community.id}
+                    >
+                      {fromObject(community, "name")}
+                    </option>
+                  ))}
+                </Select>
+                <span>{t("common.local_community")}</span>
+              </div>
             ),
             cell: (item) => fromObject(item.community, "name"),
           },
           {
             id: "category",
+            header: t("common.issue_category"),
             cell: (item) => fromObject(item.category, "name"),
           },
           {
             id: "type",
+            header: t("common.issue_type"),
             cell: (item) => fromObject(item.type, "name"),
           },
           {
             id: "location",
+            header: t("common.location"),
             cell: (item) =>
               item.location && (
                   <LocationDialog
@@ -112,6 +119,7 @@ export default function Page(props: PageProps<Data, AppState>) {
           },
           {
             id: "createdAt",
+            header: t("common.created_at"),
             cell: (item) =>
               Temporal.ZonedDateTime.from(item.createdAt)
                 .toPlainDateTime()
@@ -120,58 +128,68 @@ export default function Page(props: PageProps<Data, AppState>) {
           {
             id: "updatedAt",
             header: (
-              <div class="flex items-center gap-2">
-                <label
-                  aria-label={t("common.sort-asc")}
-                  class="flex items-center gap-1"
-                >
-                  <input
-                    type="radio"
-                    name="updatedAt"
-                    value="asc"
-                    form="filter"
-                    checked={data.filter.updatedAt === "asc" ? true : undefined}
-                  />
-                  <IconSortAscending2 />
-                </label>
-                <label
-                  aria-label={t("common.sort-desc")}
-                  class="flex items-center gap-1"
-                >
-                  <input
-                    type="radio"
-                    name="updatedAt"
-                    value="desc"
-                    form="filter"
-                    checked={data.filter.updatedAt === "desc"
-                      ? true
-                      : undefined}
-                  />
-                  <IconSortDescending2 />
-                </label>
+              <div class="flex flex-col gap-2">
+                <div class="flex items-center gap-2">
+                  <label
+                    class="flex items-center gap-1"
+                    title={t("common.sort_asc")}
+                  >
+                    <input
+                      type="radio"
+                      name="updatedAt"
+                      value="asc"
+                      form="filter"
+                      checked={data.filter.updatedAt === "asc"}
+                    />
+                    <IconSortAscending2 />
+                  </label>
+                  <label
+                    class="flex items-center gap-1"
+                    title={t("common.sort_desc")}
+                  >
+                    <input
+                      type="radio"
+                      name="updatedAt"
+                      value="desc"
+                      form="filter"
+                      checked={data.filter.updatedAt === "desc"}
+                    />
+                    <IconSortDescending2 />
+                  </label>
+                </div>
+                <span>{t("common.updated_at")}</span>
               </div>
             ),
-            cell: (item) => Temporal.ZonedDateTime.from(item.updatedAt)
-              .toPlainDateTime()
-              .toLocaleString(state.language.code, { dateStyle: "medium" }),
+            cell: (item) =>
+              Temporal.ZonedDateTime.from(item.updatedAt)
+                .toPlainDateTime()
+                .toLocaleString(state.language.code, { dateStyle: "medium" }),
           },
           {
             id: "status",
             header: (
-              <Select
-                defaultValue={data.filter.status}
-                form="filter"
-                name="status"
-              >
-                <option value="all">{t("common.all")}</option>
-                <option value="open">{t("issue.status.open")}</option>
-                <option value="closed">{t("issue.status.closed")}</option>
-                <option value="in-progress">
-                  {t("issue.status.in-progress")}
-                </option>
-              </Select>
+              <div class="flex flex-col gap-2">
+                <Select
+                  defaultValue={data.filter.status}
+                  form="filter"
+                  name="status"
+                >
+                  <option value="all">{t("common.all")}</option>
+                  <option value="open">{t("common.status_open")}</option>
+                  <option value="reported">
+                    {t("common.status_reported")}
+                  </option>
+                  <option value="resolved">
+                    {t("common.status_resolved")}
+                  </option>
+                  <option value="rejected">
+                    {t("common.status_rejected")}
+                  </option>
+                </Select>
+                <span>{t("common.status")}</span>
+              </div>
             ),
-            cell: (item) => item.status,
+            cell: (item) => t(`common.${item.status}`),
           },
           {
             id: "edit",
@@ -202,7 +220,7 @@ export default function Page(props: PageProps<Data, AppState>) {
                 lang={state.language.code}
                 variant="soft"
               >
-                Edit
+                {t("common.edit")}
               </Link>
             ),
           },
@@ -210,7 +228,15 @@ export default function Page(props: PageProps<Data, AppState>) {
       >
         <TableHeader>
           <TableRow key="header">
-            {({ cell }) => <TableCell as="th" scope="col">{cell}</TableCell>}
+            {({ cell }) => (
+              <TableCell
+                as="th"
+                class="align-bottom"
+                scope="col"
+              >
+                {cell}
+              </TableCell>
+            )}
           </TableRow>
         </TableHeader>
 

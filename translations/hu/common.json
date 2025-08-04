@@ -1,4 +1,5 @@
 {
+  "edit": "Szerkesztés",
   "close": "Bezárás",
   "submit": "Beküldés",
   "submitted_issues": "Bejelentett problémák",
@@ -16,5 +17,14 @@
   "clear_location": "Helyszín törlése",
   "location": "Helyszín",
   "note": "Megjegyzés",
-  "all": "Minden"
+  "all": "Minden",
+  "sort_asc": "Rendezés növekvő",
+  "sort_desc": "Rendezés csökkenő",
+  "created_at": "Bejelentés dátuma",
+  "updated_at": "Frissítés dátuma",
+  "status": "Statusz",
+  "status_open": "Nyitott",
+  "status_reported": "Jelentett",
+  "status_resolved": "Megoldott",
+  "status_rejected": "Elutasított"
 }

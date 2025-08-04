@@ -1,4 +1,5 @@
 {
+  "edit": "Uredi",
   "close": "Zatvori",
   "submit": "Pošalji",
   "submitted_issues": "Prijavljeni problemi",
@@ -16,5 +17,14 @@
   "clear_location": "Ukloni lokaciju",
   "location": "Lokacija",
   "note": "Napomena",
-  "all": "Sve"
+  "all": "Sve",
+  "sort_asc": "Sortiraj uzlazno",
+  "sort_desc": "Sortiraj silazno",
+  "created_at": "Datum prijave",
+  "updated_at": "Datum ažuriranja",
+  "status": "Status",
+  "status_open": "Otvoreno",
+  "status_reported": "Prijavljeno",
+  "status_resolved": "Rešeno",
+  "status_rejected": "Odbijeno"
 }
