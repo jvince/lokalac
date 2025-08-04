@@ -4,7 +4,6 @@ import { Dialog } from "$components/Dialog/Dialog.tsx";
 import { DialogActions } from "$components/Dialog/DialogActions.tsx";
 import { DialogBody } from "$components/Dialog/DialogBody.tsx";
 import { DialogContent } from "$components/Dialog/DialogContent.tsx";
-import { DialogTrigger } from "$components/Dialog/DialogTrigger.tsx";
 import { Form } from "$components/Form.tsx";
 import { Input } from "$components/Input.tsx";
 import { Label } from "$components/Label.tsx";
@@ -244,18 +243,15 @@ export function IssueForm(props: IssueFormProps) {
             </DialogContent>
 
             <DialogActions>
-              <DialogTrigger triggerAction="close">
-                <Button autoFocus size="lg">Close</Button>
-              </DialogTrigger>
               <Button
+                autoFocus
                 color="primary"
                 size="lg"
                 onClick={() => {
-                  // Do something on Ok
                   isDialogOpen.value = false;
                 }}
               >
-                Ok
+                {t("common.close")}
               </Button>
             </DialogActions>
           </DialogBody>
