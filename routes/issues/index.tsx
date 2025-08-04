@@ -189,7 +189,7 @@ export default function Page(props: PageProps<Data, AppState>) {
                 <span>{t("common.status")}</span>
               </div>
             ),
-            cell: (item) => t(`common.${item.status}`),
+            cell: (item) => t(`common.status_${item.status}`),
           },
           {
             id: "edit",
@@ -199,14 +199,14 @@ export default function Page(props: PageProps<Data, AppState>) {
                   form="filter"
                   shape="circle"
                   type="submit"
-                  title={t("common.filter")}
+                  title={t("common.filter_and_sort")}
                 >
                   <IconFilter size={22} />
                 </Button>
                 <Link
                   href="/issues"
                   lang={state.language.code}
-                  title={t("common.clear-filters")}
+                  title={t("common.filter_and_sort_reset")}
                 >
                   <IconFilterCancel size={18} />
                 </Link>

@@ -43,10 +43,10 @@ export interface IssueDTO extends Issue {
 }
 
 export enum IssueStatus {
-  Open = "status_open",
-  Reported = "status_reported",
-  Resolved = "status_resolved",
-  Rejected = "status_rejected",
+  Open = "open",
+  Reported = "reported",
+  Resolved = "resolved",
+  Rejected = "rejected",
 }
 
 export function isIssueStatus(value: unknown): value is IssueStatus {

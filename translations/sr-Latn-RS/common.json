@@ -28,5 +28,7 @@
   "status_open": "Otvoreno",
   "status_reported": "Prijavljeno",
   "status_resolved": "Rešeno",
-  "status_rejected": "Odbijeno"
+  "status_rejected": "Odbijeno",
+  "filter_and_sort": "Filtriraj i sortiraj",
+  "filter_and_sort_reset": "Ukloni filtere i sortiranje"
 }

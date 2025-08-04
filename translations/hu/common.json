@@ -28,5 +28,7 @@
   "status_open": "Nyitott",
   "status_reported": "Jelentett",
   "status_resolved": "Megoldott",
-  "status_rejected": "Elutasított"
+  "status_rejected": "Elutasított",
+  "filter_and_sort": "Szűrés és rendezés",
+  "filter_and_sort_reset": "Szűrők és rendezés eltávolítása"
 }
