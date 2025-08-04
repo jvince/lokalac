@@ -8,12 +8,11 @@ import { LeafletMapSSR } from "$components/LeafletMapSSR.tsx";
 import { MarkerSSR } from "$components/MarkerSSR.ts";
 import { useTranslation } from "$hooks/useTranslation.ts";
 import { IssueLocation } from "$models/issue.ts";
-import { i18nState } from "$plugins/i18n/mod.ts";
+import type { WithI18nState } from "$plugins/i18n/src/types.ts";
 import EyeIcon from "https://deno.land/x/tabler_icons_tsx@0.0.7/tsx/eye.tsx";
 import { Suspense } from "react-dom";
 
-export interface LocationDialogProps {
-  i18nState: i18nState;
+export interface LocationDialogProps extends WithI18nState {
   location: IssueLocation;
 }
 

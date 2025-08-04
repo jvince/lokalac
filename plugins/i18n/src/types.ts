@@ -17,3 +17,7 @@ export interface i18nState {
   translation: i18nTranslation;
   language: i18nLanguage;
 }
+
+export interface WithI18nState {
+  i18nState: i18nState;
+}

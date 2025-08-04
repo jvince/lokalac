@@ -19,7 +19,7 @@ import type { IssueCategory } from "$models/issue-category.ts";
 import type { IssueType } from "$models/issue-type.ts";
 import { IssueLocation } from "$models/issue.ts";
 import type { LocalCommunity } from "$models/local-community.ts";
-import { i18nState } from "$plugins/i18n/mod.ts";
+import type { WithI18nState } from "$plugins/i18n/src/types.ts";
 import { useComputed, useSignal } from "@preact/signals";
 import { useDeepSignal } from "deepsignal";
 import MapPinOffIcon from "https://deno.land/x/tabler_icons_tsx@0.0.7/tsx/map-pin-off.tsx";
@@ -37,8 +37,7 @@ export interface IssueFormValues {
   note?: string;
 }
 
-interface IssueFormProps {
-  i18nState: i18nState;
+interface IssueFormProps extends WithI18nState {
   categories: IssueCategory[];
   children?: ComponentChildren;
   communities: LocalCommunity[];
