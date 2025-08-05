@@ -216,6 +216,7 @@ export function IssueForm(props: IssueFormProps) {
         />
         <Dialog
           open={isDialogOpen}
+          size="lg"
           onOpenChange={(e) => isDialogOpen.value = e.detail.open}
         >
           <DialogBody>

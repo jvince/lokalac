@@ -12,8 +12,9 @@ import * as $issues_index from "./routes/issues/index.tsx";
 import * as $issues_submit from "./routes/issues/submit.tsx";
 import * as $local_communities from "./routes/local-communities.tsx";
 import * as $submit_issue from "./routes/submit-issue.tsx";
+import * as $DialogLocationView from "./islands/DialogLocationView.tsx";
+import * as $DialogNotesView from "./islands/DialogNotesView.tsx";
 import * as $IssueForm from "./islands/IssueForm.tsx";
-import * as $LocationDialog from "./islands/LocationDialog.tsx";
 import * as $SelectFilter from "./islands/SelectFilter.tsx";
 import type { Manifest } from "$fresh/server.ts";
 
@@ -31,8 +32,9 @@ const manifest = {
     "./routes/submit-issue.tsx": $submit_issue,
   },
   islands: {
+    "./islands/DialogLocationView.tsx": $DialogLocationView,
+    "./islands/DialogNotesView.tsx": $DialogNotesView,
     "./islands/IssueForm.tsx": $IssueForm,
-    "./islands/LocationDialog.tsx": $LocationDialog,
     "./islands/SelectFilter.tsx": $SelectFilter,
   },
   baseUrl: import.meta.url,

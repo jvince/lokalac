@@ -9,7 +9,8 @@ import { TableHeader } from "$components/Table/TableHeader.tsx";
 import { TableRow } from "$components/Table/TableRow.tsx";
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { useTranslation } from "$hooks/useTranslation.ts";
-import { LocationDialog } from "$islands/LocationDialog.tsx";
+import { DialogLocationView } from "$islands/DialogLocationView.tsx";
+import { DialogNoteView } from "$islands/DialogNotesView.tsx";
 import { getIssuesByCommunityAndStatus, IssueDTO } from "$models/issue.ts";
 import {
   getLocalCommunities,
@@ -114,12 +115,22 @@ export default function Page(props: PageProps<Data, AppState>) {
             header: t("common.location"),
             cell: (item) =>
               item.location && (
-                  <LocationDialog
+                  <DialogLocationView
                     location={item.location}
                     i18nState={state}
                   />
-                ) ||
-              "N/A",
+                ) || "N/A",
+          },
+          {
+            id: "note",
+            header: t("common.note"),
+            cell: (item) =>
+              item.note && (
+                  <DialogNoteView
+                    i18nState={state}
+                    note={item.note}
+                  />
+                ) || "N/A",
           },
           {
             id: "createdAt",

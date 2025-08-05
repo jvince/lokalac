@@ -30,5 +30,7 @@
   "status_resolved": "Megoldott",
   "status_rejected": "Elutasított",
   "filter_and_sort": "Szűrés és rendezés",
-  "filter_and_sort_reset": "Szűrők és rendezés eltávolítása"
+  "filter_and_sort_reset": "Szűrők és rendezés eltávolítása",
+  "view_location": "Helyszín megtekintése",
+  "view_note": "Megjegyzés megtekintése"
 }

@@ -1,13 +1,15 @@
 import { createContext } from "preact";
 import { useContext } from "preact/hooks";
-import { DialogOpenChangeEvent } from "./Dialog.tsx";
+import { DialogOpenChangeEvent, type DialogSize } from "./Dialog.tsx";
 
 export interface DialogContextValue {
+  size?: DialogSize;
   open: boolean;
   requestOpenChange: (e: DialogOpenChangeEvent) => void;
 }
 
 const defaultDialogContextValue: DialogContextValue = {
+  size: undefined,
   open: false,
   requestOpenChange: () => {},
 };

@@ -28,9 +28,12 @@ export function createDialogChangeEvent(
   });
 }
 
+export type DialogSize = "sm" | "md" | "lg" | "xl";
+
 export interface DialogProps
   extends JSX.DialogHTMLAttributes<HTMLDialogElement> {
   defaultOpen?: boolean;
+  size?: DialogSize;
   onOpenChange?: (e: DialogOpenChangeEvent) => void;
 }
 
@@ -56,6 +59,7 @@ export function Dialog(props: DialogProps) {
     children,
     defaultOpen,
     open,
+    size,
     onOpenChange,
     ...restProps
   } = props;
@@ -91,8 +95,9 @@ export function Dialog(props: DialogProps) {
 
   const contextValue = useMemo<DialogContextValue>(() => ({
     open: open?.valueOf() as boolean ?? isOpen.value ?? false,
+    size,
     requestOpenChange,
-  }), [isOpen, requestOpenChange]);
+  }), [isOpen, size, requestOpenChange]);
 
   useLayoutEffect(() => {
     const dialog = dialogRef.current;

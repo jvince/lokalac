@@ -10,24 +10,26 @@ import { useTranslation } from "$hooks/useTranslation.ts";
 import { IssueLocation } from "$models/issue.ts";
 import type { WithI18nState } from "$plugins/i18n/src/types.ts";
 import { Suspense } from "react-dom";
-import { IconEye } from "../icons.ts";
+import { IconMap2 } from "../icons.ts";
 
-export interface LocationDialogProps extends WithI18nState {
+export interface DialogLocationView extends WithI18nState {
   location: IssueLocation;
 }
 
-export function LocationDialog(props: LocationDialogProps) {
+export function DialogLocationView(props: DialogLocationView) {
   const { t } = useTranslation(props.i18nState);
 
   return (
-    <Dialog>
+    <Dialog size="lg">
       <DialogTrigger>
         <Button
-          aria-label={t("common.view_location")}
           class="aspect-square p-0"
           color="neutral"
+          shape="circle"
+          variant="soft"
+          title={t("common.view_location")}
         >
-          <IconEye />
+          <IconMap2 />
         </Button>
       </DialogTrigger>
       <DialogBody>
