@@ -24,6 +24,8 @@ import {
   IconSortDescending2,
 } from "../../icons.ts";
 
+const ITEMS_PER_PAGE = 50;
+
 interface FilterSort {
   community?: string;
   status?: string;
@@ -48,7 +50,7 @@ export const handler: Handlers<Data, AppState> = {
       updatedAt = "desc";
     }
 
-    const options = { reverse: updatedAt === "desc", cursor, limit: 3 };
+    const options = { reverse: updatedAt === "desc", cursor, limit: ITEMS_PER_PAGE + 1 };
     const { cursor: newCursor, items: issues } =
       await getIssuesByCommunityAndStatus(
         community,
