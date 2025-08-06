@@ -48,7 +48,7 @@ export const handler: Handlers<Data, AppState> = {
       updatedAt = "desc";
     }
 
-    const options = { reverse: updatedAt === "desc", cursor };
+    const options = { reverse: updatedAt === "desc", cursor, limit: 3 };
     const { cursor: newCursor, items: issues } =
       await getIssuesByCommunityAndStatus(
         community,
@@ -275,11 +275,13 @@ export default function Page(props: PageProps<Data, AppState>) {
         </TableBody>
       </Table>
 
-      <Link
-        href={`?cursor=${data.cursor}&${searchParams.toString()}`}
-      >
-        {t("common.view_more")}
-      </Link>
+      {!!data.cursor.length && (
+        <Link
+          href={`?cursor=${data.cursor}&${searchParams.toString()}`}
+        >
+          {t("common.view_more")}
+        </Link>
+      )}
     </>
   );
 }

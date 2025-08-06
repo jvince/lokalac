@@ -52,16 +52,26 @@ export enum IssueStatus {
 async function processIterator<T, K>(
   iterator: Deno.KvListIterator<T>,
   resolver: (item: T) => Promise<K>,
+  limit: number | undefined = Number.POSITIVE_INFINITY,
 ) {
-  let cursor = "";
+  const _limit = limit - 1;
+  let _cursor = "";
   const items: K[] = [];
+  let count = 0;
 
   for await (const item of iterator) {
+    count += 1;
     items.push(await resolver(item.value));
-    cursor = iterator.cursor;
+
+    if (count <= _limit) {
+      _cursor = iterator.cursor;
+    }
   }
 
-  return { cursor, items };
+  return {
+    cursor: count >= _limit ? _cursor : "",
+    items: limit ? items.slice(0, _limit) : items,
+  };
 }
 
 export function isIssueStatus(value: unknown): value is IssueStatus {
@@ -129,6 +139,7 @@ export async function getIssuesByCommunity(
       prefix: [IssueSecondaryIndex.ByCommunity, communityId],
     }, options),
     resolve,
+    options?.limit,
   );
 }
 
@@ -141,6 +152,7 @@ export async function getIssuesByStatus(
       prefix: [IssueSecondaryIndex.ByIssueStatus, status],
     }, options),
     resolve,
+    options?.limit,
   );
 }
 
@@ -180,6 +192,7 @@ export async function getIssues(options?: Deno.KvListOptions) {
   return await processIterator(
     kv.list<Issue>({ prefix: [IssueIndex] }, options),
     resolve,
+    options?.limit,
   );
 }
 
