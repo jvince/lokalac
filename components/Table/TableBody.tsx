@@ -1,8 +1,8 @@
 import type { ComponentChild, JSX } from "preact";
+import { useMemo } from "preact/hooks";
 import { useTableContext } from "./tableContext.tsx";
 import { TableRowContextProvider } from "./tableRowContext.ts";
 import type { TableData } from "./types.ts";
-import { useMemo } from "preact/hooks";
 
 interface Children<T> {
   (props: { item: T; rowId: string }): ComponentChild;

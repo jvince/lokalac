@@ -49,6 +49,21 @@ export enum IssueStatus {
   Rejected = "rejected",
 }
 
+async function processIterator<T, K>(
+  iterator: Deno.KvListIterator<T>,
+  resolver: (item: T) => Promise<K>,
+) {
+  let cursor = "";
+  const items: K[] = [];
+
+  for await (const item of iterator) {
+    items.push(await resolver(item.value));
+    cursor = iterator.cursor;
+  }
+
+  return { cursor, items };
+}
+
 export function isIssueStatus(value: unknown): value is IssueStatus {
   if (typeof value !== "string") {
     return false;
@@ -105,33 +120,31 @@ export async function getIssueById(
   return await resolve(result.value);
 }
 
-export async function* getIssuesByCommunity(
+export async function getIssuesByCommunity(
   communityId: string,
   options?: Deno.KvListOptions,
 ) {
-  const result = kv.list<Issue>({
-    prefix: [IssueSecondaryIndex.ByCommunity, communityId],
-  }, options);
-
-  for await (const item of result) {
-    yield await resolve(item.value);
-  }
+  return await processIterator(
+    kv.list<Issue>({
+      prefix: [IssueSecondaryIndex.ByCommunity, communityId],
+    }, options),
+    resolve,
+  );
 }
 
-export async function* getIssuesByStatus(
+export async function getIssuesByStatus(
   status: IssueStatus,
   options?: Deno.KvListOptions,
 ) {
-  const result = kv.list<Issue>({
-    prefix: [IssueSecondaryIndex.ByIssueStatus, status],
-  }, options);
-
-  for await (const item of result) {
-    yield await resolve(item.value);
-  }
+  return await processIterator(
+    kv.list<Issue>({
+      prefix: [IssueSecondaryIndex.ByIssueStatus, status],
+    }, options),
+    resolve,
+  );
 }
 
-export async function* getIssuesByCommunityAndStatus(
+export async function getIssuesByCommunityAndStatus(
   communityId?: string,
   status?: string | null,
   options?: Deno.KvListOptions,
@@ -140,45 +153,34 @@ export async function* getIssuesByCommunityAndStatus(
     typeof communityId !== "string" || typeof status !== "string" ||
     (communityId === "all" && status === "all")
   ) {
-    for await (const item of getIssues(options)) {
-      yield item;
-    }
-    return;
+    return await getIssues(options);
   }
 
   if (communityId !== "all" && status === "all") {
-    for await (const item of getIssuesByCommunity(communityId, options)) {
-      yield item;
-    }
-    return;
+    return await getIssuesByCommunity(communityId, options);
   }
 
   if (communityId === "all" && status !== "all" && isIssueStatus(status)) {
-    for await (const item of getIssuesByStatus(status, options)) {
-      yield item;
-    }
-    return;
+    return await getIssuesByStatus(status, options);
   }
 
-  const result = kv.list<Issue>({
-    prefix: [
-      IssueSecondaryIndex.ByCommunityAndStatus,
-      communityId,
-      status,
-    ],
-  }, options);
-
-  for await (const item of result) {
-    yield await resolve(item.value);
-  }
+  return await processIterator(
+    kv.list<Issue>({
+      prefix: [
+        IssueSecondaryIndex.ByCommunityAndStatus,
+        communityId,
+        status,
+      ],
+    }, options),
+    resolve,
+  );
 }
 
-export async function* getIssues(options?: Deno.KvListOptions) {
-  const result = kv.list<Issue>({ prefix: [IssueIndex] }, options);
-
-  for await (const item of result) {
-    yield await resolve(item.value);
-  }
+export async function getIssues(options?: Deno.KvListOptions) {
+  return await processIterator(
+    kv.list<Issue>({ prefix: [IssueIndex] }, options),
+    resolve,
+  );
 }
 
 async function resolve(obj: Issue): Promise<IssueDTO> {

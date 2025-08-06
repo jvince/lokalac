@@ -110,7 +110,6 @@ export function IssueForm(props: IssueFormProps) {
       method="POST"
       action="/issues/submit"
       lang={props.i18nState.language.code}
-      f-client-nav={false}
     >
       <fieldset class="fieldset gap-y-4">
         <Select

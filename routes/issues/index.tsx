@@ -31,6 +31,7 @@ interface FilterSort {
 }
 
 interface Data {
+  cursor: string;
   issues: IssueDTO[];
   communities: LocalCommunity[];
   filter: FilterSort;
@@ -40,23 +41,29 @@ export const handler: Handlers<Data, AppState> = {
   async GET(_, ctx) {
     const community = ctx.url.searchParams.get("community") ?? "all";
     const status = ctx.url.searchParams.get("status") ?? "all";
+    const cursor = ctx.url.searchParams.get("cursor") ?? "";
 
     let updatedAt = ctx.url.searchParams.get("updatedAt") ?? "desc";
     if (updatedAt !== "asc" && updatedAt !== "desc") {
       updatedAt = "desc";
     }
 
-    const options = { reverse: updatedAt === "desc" };
+    const options = { reverse: updatedAt === "desc", cursor };
+    const { cursor: newCursor, items: issues } =
+      await getIssuesByCommunityAndStatus(
+        community,
+        status,
+        options,
+      );
 
     return await ctx.render({
+      cursor: newCursor,
       filter: {
         community,
         status,
         updatedAt: updatedAt as "asc" | "desc",
       },
-      issues: await Array.fromAsync(
-        getIssuesByCommunityAndStatus(community, status, options),
-      ),
+      issues,
       communities: await Array.fromAsync(getLocalCommunities()),
     });
   },
@@ -66,6 +73,9 @@ export default function Page(props: PageProps<Data, AppState>) {
   const { data, state } = props;
   const { fromObject, t } = useTranslation();
 
+  const searchParams = new URLSearchParams(
+    data.filter as Record<string, string>,
+  );
   return (
     <>
       <Form id="filter" lang={state.language.code} />
@@ -264,6 +274,12 @@ export default function Page(props: PageProps<Data, AppState>) {
           )}
         </TableBody>
       </Table>
+
+      <Link
+        href={`?cursor=${data.cursor}&${searchParams.toString()}`}
+      >
+        {t("common.view_more")}
+      </Link>
     </>
   );
 }
