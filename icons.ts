@@ -11,3 +11,4 @@ export { default as IconSortAscending2 } from "https://deno.land/x/tabler_icons_
 export { default as IconSortAscending } from "https://deno.land/x/tabler_icons_tsx@0.0.7/tsx/sort-ascending.tsx";
 export { default as IconSortDescending2 } from "https://deno.land/x/tabler_icons_tsx@0.0.7/tsx/sort-descending-2.tsx";
 export { default as IconSortDescending } from "https://deno.land/x/tabler_icons_tsx@0.0.7/tsx/sort-descending.tsx";
+export { default as IconX } from "https://deno.land/x/tabler_icons_tsx@0.0.7/tsx/x.tsx";
