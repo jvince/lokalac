@@ -1,6 +1,6 @@
 export function Footer() {
   return (
-    <footer className="footer footer-center py-4">
+    <footer class="footer footer-center py-4">
       <a href="https://fresh.deno.dev">
         <img
           width="197"
