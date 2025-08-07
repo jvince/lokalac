@@ -67,7 +67,6 @@ async function processIterator<T, K>(
       _cursor = iterator.cursor;
     }
   }
-  console.log(count, _limit);
 
   return {
     cursor: count > _limit ? _cursor : "",

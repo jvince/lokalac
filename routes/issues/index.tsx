@@ -50,7 +50,11 @@ export const handler: Handlers<Data, AppState> = {
       updatedAt = "desc";
     }
 
-    const options = { reverse: updatedAt === "desc", cursor, limit: ITEMS_PER_PAGE + 1 };
+    const options = {
+      cursor,
+      limit: ITEMS_PER_PAGE + 1,
+      reverse: updatedAt === "desc",
+    };
     const { cursor: newCursor, items: issues } =
       await getIssuesByCommunityAndStatus(
         community,
