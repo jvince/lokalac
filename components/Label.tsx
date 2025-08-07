@@ -38,7 +38,7 @@ type LabelProps =
 
 export function Label(props: LabelProps) {
   const {
-    as = "span",
+    as = "label",
     required = false,
     color = "accent",
     size,
