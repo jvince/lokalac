@@ -3,7 +3,9 @@ import type { JSX } from "preact";
 import { forwardRef } from "react-dom";
 import { defaultLanguage } from "../languages.ts";
 
-interface FormProps extends JSX.FormHTMLAttributes<HTMLFormElement> {}
+interface FormProps extends JSX.FormHTMLAttributes<HTMLFormElement> {
+  method?: "GET" | "POST";
+}
 
 export const Form = forwardRef<HTMLFormElement, FormProps>((props, ref) => {
   const {
