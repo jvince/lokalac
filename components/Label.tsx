@@ -13,6 +13,7 @@ import { createElement } from "preact";
  * - text-success
  * - text-warning
  * - text-error
+ * - text-neutral
  * - text-xs
  * - text-sm
  * - text-md
@@ -32,7 +33,8 @@ type LabelProps =
       | "info"
       | "success"
       | "warning"
-      | "error";
+      | "error"
+      | "neutral";
     size?: "xs" | "sm" | "md" | "lg" | "xl";
   };
 
