@@ -117,9 +117,23 @@ export async function insertIssue(issue: Issue) {
   }
 }
 
+export async function deleteIssue(
+  id: string | undefined | null,
+) {
+  if (typeof id !== "string") {
+    return null;
+  }
+
+  return await kv.delete([IssueIndex, id]);
+}
+
 export async function getIssueById(
-  id: string,
+  id: string | undefined | null,
 ): Promise<IssueDTO | null> {
+  if (typeof id !== "string" || id.trim() === "") {
+    return null;
+  }
+
   const primaryKey = [IssueIndex, id];
   const result = await kv.get<Issue>(primaryKey);
 
