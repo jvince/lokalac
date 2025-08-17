@@ -27,6 +27,8 @@
     "@preact/signals": "https://esm.sh/*@preact/signals@2.2.0",
     "@preact/signals/": "https://esm.sh/*@preact/signals@2.2.0/",
     "@std/crypto": "jsr:@std/crypto@^1.0.5",
+    "@std/fs": "jsr:@std/fs@^1.0.19",
+    "@std/fs/": "jsr:@std/fs@^1.0.19/",
     "@std/ulid": "jsr:@std/ulid@^1.0.0",
     "@superstruct/core": "jsr:@superstruct/core@^2.0.2",
     "$fresh/": "https://deno.land/x/fresh@1.7.3/",
@@ -54,7 +56,8 @@
     "$plugins/": "./plugins/",
     "$services/": "./services/",
     "$types/": "./types/",
-    "$utils/": "./utils/"
+    "$utils/": "./utils/",
+    "uuid": "npm:uuid@^11.1.0"
   },
   "compilerOptions": {
     "jsx": "react-jsx",

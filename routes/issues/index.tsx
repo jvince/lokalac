@@ -149,6 +149,13 @@ export default function Page(props: PageProps<Data, AppState>) {
                 ) || "N/A",
           },
           {
+            id: "images",
+            header: t("common.images"),
+            cell: (item) => (
+              (item.images ?? []).map((image) => <img src={image} />)
+            ),
+          },
+          {
             id: "createdAt",
             header: t("common.created_at"),
             cell: (item) =>

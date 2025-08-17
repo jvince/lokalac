@@ -1,7 +1,10 @@
 import { resolve } from "node:path";
+import { appConfig } from "../config.ts";
 
-const storageDir = Deno.env.get("KV_STORAGE_DIR") || "data";
-const path = resolve(import.meta.dirname as string, `../${storageDir}`);
+const path = resolve(
+  import.meta.dirname as string,
+  `../${appConfig.kvStorageDir}`,
+);
 
 try {
   await Deno.mkdir(path);

@@ -1,16 +1,18 @@
-import "$std/dotenv/load.ts";
+import "./config.ts";
 
 import { defineConfig } from "$fresh/server.ts";
 import { i18n } from "$plugins/i18n/mod.ts";
 import { kv } from "$services/kv.ts";
 import tailwind from "@pakornv/fresh-plugin-tailwindcss";
+import { ensureDir } from "@std/fs";
+import { appConfig } from "./config.ts";
 import supportedLanguages, { defaultLanguage } from "./languages.ts";
 import { migrate } from "./migrate.ts";
 import migrations from "./migrations.ts";
 
-const abortController = new AbortController();
-
 await migrate(migrations, kv);
+
+await ensureDir(appConfig.uploadDir);
 
 function cleanup() {
   Deno.exit();
@@ -30,6 +32,5 @@ export default defineConfig({
   ],
   server: {
     port: 3000,
-    signal: abortController.signal,
   },
 });

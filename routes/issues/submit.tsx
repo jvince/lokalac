@@ -12,8 +12,11 @@ import {
   type LocalCommunity,
 } from "$models/local-community.ts";
 import { AppState } from "$types/app.ts";
+import { ensureDir } from "@std/fs";
 import { ulid } from "@std/ulid";
 import type { LatLngTuple } from "leaflet";
+import sharp from "sharp";
+import { appConfig } from "../../config.ts";
 
 interface PageData {
   categories: IssueCategory[];
@@ -21,6 +24,36 @@ interface PageData {
   issueTypes: IssueType[];
   errors?: string[];
   formValues?: IssueFormValues;
+}
+
+async function processImages(id: string, data: FormData) {
+  const files = data.getAll("images[]");
+
+  if (!files.length) {
+    return [];
+  }
+
+  const uploadDir = `./${appConfig.uploadDir}/${id}`;
+  await ensureDir(uploadDir);
+  const imageUrls: string[] = [];
+
+  for await (const file of files) {
+    if (file instanceof File) {
+      const fileName = `${crypto.randomUUID()}.webp`;
+      const uploadPath = `/${uploadDir}/${fileName}`;
+
+      const image = sharp(await file.bytes());
+      const metadata = await image.metadata();
+      const isLandscape = metadata.width > metadata.height;
+      const size = isLandscape ? { width: 1920 } : { height: 1080 };
+      const buffer = await image.resize(size).webp().toBuffer();
+
+      await Deno.writeFile(`.${uploadPath}`, buffer);
+      imageUrls.push(uploadPath);
+    }
+  }
+
+  return imageUrls;
 }
 
 async function loadData() {
@@ -143,19 +176,16 @@ export const handler: Handlers<PageData, AppState> = {
         }
 
         if (key === "note" && typeof value === "string") {
-          note = value;
+          note = value.slice(0, 512);
         }
       }
 
       if (community && category && issueType) {
-        console.log(
-          `Reported issue ${issueType.name} in category ${category.name} for community ${community.name}`,
-        );
-
+        const id = ulid();
         const createdAt = Temporal.Now.zonedDateTimeISO().toString();
 
         await insertIssue({
-          id: ulid(),
+          id,
           communityId: community.id,
           categoryId: category.id,
           typeId: issueType.id,
@@ -164,7 +194,12 @@ export const handler: Handlers<PageData, AppState> = {
           note,
           createdAt,
           updatedAt: createdAt,
+          images: await processImages(id, formData),
         });
+
+        console.log(
+          `Reported issue ${issueType.name} in category ${category.name} for community ${community.name}`,
+        );
 
         return new Response(null, {
           status: 303,

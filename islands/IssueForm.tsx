@@ -26,6 +26,7 @@ import type { ComponentChildren, JSX } from "preact";
 import { useCallback } from "preact/hooks";
 import { Suspense } from "react-dom";
 import { IconMapPinOff, IconMapPinPlus } from "../icons.ts";
+import { ImageUpload } from "./ImageUpload.tsx";
 
 export interface IssueFormValues {
   localCommunity?: string;
@@ -110,6 +111,7 @@ export function IssueForm(props: IssueFormProps) {
       method="POST"
       action="/issues/submit"
       lang={props.i18nState.language.code}
+      encType="multipart/form-data"
     >
       <fieldset class="fieldset gap-y-4">
         <Select
@@ -256,7 +258,7 @@ export function IssueForm(props: IssueFormProps) {
           </DialogBody>
         </Dialog>
 
-        <Label as="label" for="note" size="lg">
+        <Label for="note" size="lg">
           {t("common.note")}
         </Label>
 
@@ -265,6 +267,8 @@ export function IssueForm(props: IssueFormProps) {
           id="note"
           name="note"
         />
+
+        <ImageUpload />
 
         <Button
           color="primary"

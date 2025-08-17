@@ -1,4 +1,6 @@
 import { kv } from "$services/kv.ts";
+import { exists } from "@std/fs";
+import { appConfig } from "../config.ts";
 import {
   IssueCategory,
   IssueCategoryIndex as IssueCategoryPrimaryKey,
@@ -34,6 +36,7 @@ export interface Issue {
   location?: IssueLocation;
   createdAt: string;
   updatedAt: string;
+  images?: string[];
 }
 
 export interface IssueDTO extends Issue {
@@ -117,6 +120,25 @@ export async function insertIssue(issue: Issue) {
   }
 }
 
+export async function updateIssue(id: string, issue: Partial<Issue>) {
+  const key = [IssueIndex, id];
+  const entry = await kv.get<Issue>([IssueIndex, id]);
+
+  if (!entry) {
+    throw new Error(`Issue with ID ${id} does not exist`);
+  }
+
+  const result = await kv.atomic()
+    .check({ key, versionstamp: entry.versionstamp })
+    .set(key, { ...entry.value, ...issue })
+    .commit();
+
+  if (!result.ok) {
+    console.log(result);
+    throw new Error(`Failed to update issue with ID ${id}`);
+  }
+}
+
 export async function deleteIssue(
   id: string | undefined | null,
 ) {
@@ -124,7 +146,11 @@ export async function deleteIssue(
     return null;
   }
 
-  return await kv.delete([IssueIndex, id]);
+  await kv.delete([IssueIndex, id]);
+
+  if (await exists(`./${appConfig.uploadDir}/${id}`)) {
+    await Deno.remove(`./${appConfig.uploadDir}/${id}`, { recursive: true });
+  }
 }
 
 export async function getIssueById(

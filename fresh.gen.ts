@@ -7,13 +7,16 @@ import * as $_app from "./routes/_app.tsx";
 import * as $_layout from "./routes/_layout.tsx";
 import * as $_middleware from "./routes/_middleware.ts";
 import * as $api_polygon_id_ from "./routes/api/polygon/[id].tsx";
+import * as $issues_issue_delete from "./routes/issues/[issue]/delete.tsx";
 import * as $issues_issue_edit from "./routes/issues/[issue]/edit.tsx";
+import * as $issues_issue_types from "./routes/issues/[issue]/types.ts";
 import * as $issues_index from "./routes/issues/index.tsx";
 import * as $issues_submit from "./routes/issues/submit.tsx";
 import * as $local_communities from "./routes/local-communities.tsx";
 import * as $submit_issue from "./routes/submit-issue.tsx";
 import * as $DialogLocationView from "./islands/DialogLocationView.tsx";
 import * as $DialogNotesView from "./islands/DialogNotesView.tsx";
+import * as $ImageUpload from "./islands/ImageUpload.tsx";
 import * as $IssueForm from "./islands/IssueForm.tsx";
 import * as $SelectFilter from "./islands/SelectFilter.tsx";
 import type { Manifest } from "$fresh/server.ts";
@@ -25,7 +28,9 @@ const manifest = {
     "./routes/_layout.tsx": $_layout,
     "./routes/_middleware.ts": $_middleware,
     "./routes/api/polygon/[id].tsx": $api_polygon_id_,
+    "./routes/issues/[issue]/delete.tsx": $issues_issue_delete,
     "./routes/issues/[issue]/edit.tsx": $issues_issue_edit,
+    "./routes/issues/[issue]/types.ts": $issues_issue_types,
     "./routes/issues/index.tsx": $issues_index,
     "./routes/issues/submit.tsx": $issues_submit,
     "./routes/local-communities.tsx": $local_communities,
@@ -34,6 +39,7 @@ const manifest = {
   islands: {
     "./islands/DialogLocationView.tsx": $DialogLocationView,
     "./islands/DialogNotesView.tsx": $DialogNotesView,
+    "./islands/ImageUpload.tsx": $ImageUpload,
     "./islands/IssueForm.tsx": $IssueForm,
     "./islands/SelectFilter.tsx": $SelectFilter,
   },
