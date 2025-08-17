@@ -15,7 +15,7 @@ import { AppState } from "$types/app.ts";
 import { ensureDir } from "@std/fs";
 import { ulid } from "@std/ulid";
 import type { LatLngTuple } from "leaflet";
-import sharp from "sharp";
+import sharp, { type Metadata as ImageMetadata } from "sharp";
 import { appConfig } from "../../config.ts";
 
 interface PageData {
@@ -24,6 +24,16 @@ interface PageData {
   issueTypes: IssueType[];
   errors?: string[];
   formValues?: IssueFormValues;
+}
+
+type ImageOrientation = "landscape" | "portrait";
+
+function getOrientation(metadata: ImageMetadata): ImageOrientation {
+  if (typeof metadata.orientation === "number") {
+    return metadata.orientation >= 5 ? "landscape" : "portrait";
+  }
+
+  return metadata.width > metadata.height ? "landscape" : "portrait";
 }
 
 async function processImages(id: string, data: FormData) {
@@ -44,7 +54,7 @@ async function processImages(id: string, data: FormData) {
 
       const image = sharp(await file.bytes());
       const metadata = await image.metadata();
-      const isLandscape = metadata.width > metadata.height;
+      const isLandscape = getOrientation(metadata) === "landscape";
       const size = isLandscape ? { width: 1920 } : { height: 1080 };
       const buffer = await image.resize(size).webp().toBuffer();
 
