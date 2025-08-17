@@ -47,20 +47,26 @@ async function processImages(id: string, data: FormData) {
   await ensureDir(uploadDir);
   const imageUrls: string[] = [];
 
-  for await (const file of files) {
-    if (file instanceof File) {
-      const fileName = `${crypto.randomUUID()}.webp`;
-      const uploadPath = `/${uploadDir}/${fileName}`;
+  try {
+    for await (const file of files) {
+      if (file instanceof File) {
+        const fileName = `${crypto.randomUUID()}.webp`;
+        const uploadPath = `/${uploadDir}/${fileName}`;
 
-      const image = sharp(await file.bytes());
-      const metadata = await image.metadata();
-      const isLandscape = getOrientation(metadata) === "landscape";
-      const size = isLandscape ? { width: 1920 } : { height: 1080 };
-      const buffer = await image.resize(size).webp().toBuffer();
+        const image = sharp(await file.bytes());
+        const metadata = await image.metadata();
+        const isLandscape = getOrientation(metadata) === "landscape";
+        const size = isLandscape ? { width: 1920 } : { height: 1080 };
+        const buffer = await image.resize(size).webp().toBuffer();
 
-      await Deno.writeFile(`.${uploadPath}`, buffer);
-      imageUrls.push(uploadPath);
+        await Deno.writeFile(`.${uploadPath}`, buffer);
+        imageUrls.push(uploadPath);
+      }
     }
+  } catch (error) {
+    console.error("Error processing images:", error);
+    await Deno.remove(uploadDir, { recursive: true });
+    throw error;
   }
 
   return imageUrls;
