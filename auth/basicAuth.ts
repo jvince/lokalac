@@ -9,9 +9,16 @@ function isValid(authHEader: string) {
   const [user, password] = atob(match[1]).split(":");
   const encoder = new TextEncoder();
 
+  const expectedUser = encoder.encode("test");
+  const expectedPassword = encoder.encode("test");
+  const encodedUser = encoder.encode(user || "");
+  const encodedPassword = encoder.encode(password || "");
+
   if (
-    timingSafeEqual(encoder.encode(user), encoder.encode("test")) &&
-    timingSafeEqual(encoder.encode(password), encoder.encode("test"))
+    encodedUser.length === expectedUser.length &&
+    encodedPassword.length === expectedPassword.length &&
+    timingSafeEqual(encodedUser, expectedUser) &&
+    timingSafeEqual(encodedPassword, expectedPassword)
   ) {
     return true;
   }
