@@ -75,5 +75,6 @@
   "unstable": [
     "kv",
     "temporal"
-  ]
+  ],
+  "allowScripts": ["npm:sharp@0.34.5"]
 }
