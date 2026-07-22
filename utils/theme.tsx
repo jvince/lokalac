@@ -1,4 +1,4 @@
-import type { ColorUI, SizeUI, VariantUI } from "$types/daisyui.ts";
+import type { ColorUI, SizeUI, VariantUI } from "@/types/daisyui.ts";
 import { clsx } from "clsx/lite";
 import type { ComponentProps, JSX } from "preact";
 

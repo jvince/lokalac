@@ -1,30 +1,26 @@
-import { Handlers, PageProps } from "$fresh/server.ts";
-import { IssueForm, IssueFormValues } from "$islands/IssueForm.tsx";
+import { appConfig } from "@/config.ts";
+import { IssueForm, IssueFormValues } from "@/islands/IssueForm.tsx";
 import {
   getIssueCategories,
   type IssueCategory,
-} from "$models/issue-category.ts";
-import { getIssueTypes, type IssueType } from "$models/issue-type.ts";
-import { insertIssue, type IssueLocation, IssueStatus } from "$models/issue.ts";
+} from "@/models/issue-category.ts";
+import { getIssueTypes, type IssueType } from "@/models/issue-type.ts";
+import {
+  insertIssue,
+  type IssueLocation,
+  IssueStatus,
+} from "@/models/issue.ts";
 import {
   getLocalCommunities,
   getLocalCommunityPolygonById,
   type LocalCommunity,
-} from "$models/local-community.ts";
-import { AppState } from "$types/app.ts";
+} from "@/models/local-community.ts";
+import { define } from "@/types/app.ts";
 import { ensureDir } from "@std/fs";
 import { ulid } from "@std/ulid";
+import { page } from "fresh";
 import type { LatLngTuple } from "leaflet";
 import sharp, { type Metadata as ImageMetadata } from "sharp";
-import { appConfig } from "../../config.ts";
-
-interface PageData {
-  categories: IssueCategory[];
-  communities: LocalCommunity[];
-  issueTypes: IssueType[];
-  errors?: string[];
-  formValues?: IssueFormValues;
-}
 
 type ImageOrientation = "landscape" | "portrait";
 
@@ -129,13 +125,13 @@ async function isLocationInPolygon(
   );
 }
 
-export const handler: Handlers<PageData, AppState> = {
-  async GET(_req, ctx) {
-    return ctx.render(await loadData());
+export const handler = define.handlers({
+  async GET() {
+    return page({ ...await loadData(), errors: [], formValues: {} });
   },
 
-  async POST(req, ctx) {
-    const formData = await req.formData();
+  async POST(ctx) {
+    const formData = await ctx.req.formData();
     const { categories, communities, issueTypes } = await loadData();
 
     let community: LocalCommunity | undefined;
@@ -230,7 +226,7 @@ export const handler: Handlers<PageData, AppState> = {
       }
     }
 
-    return ctx.render({
+    return page({
       categories,
       communities,
       issueTypes,
@@ -244,11 +240,11 @@ export const handler: Handlers<PageData, AppState> = {
       },
     });
   },
-};
+});
 
-export default function SubmitIssuePage(
-  { data, state }: PageProps<PageData, AppState>,
-) {
+export default define.page<typeof handler>((ctx) => {
+  const { data, state } = ctx;
+
   return (
     <>
       {(data.errors ?? []).map((error) => {
@@ -258,7 +254,14 @@ export default function SubmitIssuePage(
           </div>
         );
       })}
+
       <IssueForm
+        _ctx={{
+          baseURL: ctx.url.origin,
+          language: state.language,
+          translation: state.translation,
+          path: ctx.url.pathname,
+        }}
         categories={data.categories}
         communities={data.communities}
         formValues={data.formValues}
@@ -267,4 +270,4 @@ export default function SubmitIssuePage(
       />
     </>
   );
-}
+});

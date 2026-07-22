@@ -1,4 +1,4 @@
-import { useGlobalContext } from "@/globalContext.ts";
+import { useGlobalContext } from "@/clientGlobalContext.ts";
 import supportedLanguages from "@/languages.ts";
 import {
   createTranslator,

@@ -1,6 +1,6 @@
-import { kv } from "$services/kv.ts";
+import { appConfig } from "@/config.ts";
+import { kv } from "@/services/kv.ts";
 import { exists } from "@std/fs";
-import { appConfig } from "../config.ts";
 import {
   IssueCategory,
   IssueCategoryIndex as IssueCategoryPrimaryKey,

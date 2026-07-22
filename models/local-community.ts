@@ -1,4 +1,4 @@
-import { kv } from "$services/kv.ts";
+import { kv } from "@/services/kv.ts";
 import type { LatLngTuple } from "leaflet";
 
 export const LocalCommunityIndex = "local_community";

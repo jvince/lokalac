@@ -1,8 +1,8 @@
-import { useTranslation } from "$hooks/useTranslation.ts";
+import { useGlobalContext } from "@/globalContext.ts";
+import { useTranslation } from "@/hooks/useTranslation.ts";
+import { IconLanguage } from "@/icons.ts";
+import { defaultLanguage } from "@/languages.ts";
 import clsx from "clsx";
-import { useGlobalContext } from "../globalContext.ts";
-import { IconLanguage } from "../icons.ts";
-import { defaultLanguage } from "../languages.ts";
 
 function getLanguageLinkProps(code: string, path: string) {
   if (code === defaultLanguage.code) {
@@ -25,7 +25,7 @@ export function LanguageSwitcher() {
         tabIndex={0}
         title={t("common.change_language")}
       >
-        <IconLanguage role="presentation" />
+        <IconLanguage role="presentation" size={24} />
       </div>
 
       <ul class="menu dropdown-content bg-base-200 rounded-box z-1 w-52 p-2 gap-1.5 shadow-sm">

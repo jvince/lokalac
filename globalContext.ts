@@ -1,27 +1,35 @@
-import { i18nLanguage } from "$plugins/i18n/src/types.ts";
-import { createContext } from "preact";
-import { useContext } from "preact/hooks";
-import languages from "./languages.ts";
+import languages from "@/languages.ts";
+import type { GlobalContext } from "@/types/app.ts";
+import { define } from "@/types/app.ts";
+import { AsyncLocalStorage } from "node:async_hooks";
 
-export interface GlobalContext {
-  language: i18nLanguage;
-  translation: Record<string, Record<string, string>>;
-  baseURL: string;
-  path: string;
+export const serverStorage = new AsyncLocalStorage<GlobalContext>();
+
+export const globalContext = () =>
+  define.middleware(async (ctx) => {
+    const contextValue: GlobalContext = {
+      language: ctx.state.language,
+      translation: ctx.state.translation,
+      baseURL: ctx.url.origin,
+      path: ctx.url.pathname,
+    };
+
+    return await serverStorage.run(contextValue, async () => {
+      return await ctx.next();
+    });
+  });
+
+export function useGlobalContext(): GlobalContext {
+  const context = serverStorage.getStore();
+
+  if (!context) {
+    return {
+      language: languages[0],
+      translation: {},
+      baseURL: "",
+      path: "",
+    };
+  }
+
+  return context;
 }
-
-const defaultGlobalContext: GlobalContext = {
-  language: languages[0],
-  translation: {},
-  baseURL: null!,
-  path: "/",
-};
-
-const Context = createContext<GlobalContext>(null!);
-
-export function useGlobalContext() {
-  const context = useContext(Context);
-  return context ?? defaultGlobalContext;
-}
-
-export { Context };

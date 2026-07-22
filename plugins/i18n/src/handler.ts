@@ -1,6 +1,5 @@
-import type { MiddlewareHandler } from "$fresh/server.ts";
-import {} from "$std/fs/mod.ts";
-import { join } from "$std/path/join.ts";
+import { join } from "@std/path";
+import type { Middleware } from "fresh";
 import type { i18nLanguage, i18nPluginConfig } from "./types.ts";
 import { i18nState } from "./types.ts";
 
@@ -23,9 +22,9 @@ async function loadTranslations(
   return await readJSONFile(translationPath);
 }
 
-export function createHandler(
+export function createHandler<State extends i18nState>(
   config: i18nPluginConfig,
-): MiddlewareHandler<i18nState> {
+): Middleware<State> {
   console.debug("i18n plugin handler created with config:", config);
 
   const { defaultLanguage, languages, languagesDir } = config;
@@ -40,10 +39,8 @@ export function createHandler(
     languages.map((lang) => [lang.code, lang]),
   );
 
-  return async (req, ctx) => {
-    if ((ctx.destination !== "route" && ctx.destination !== "notFound")) {
-      return await ctx.next();
-    }
+  return async (ctx) => {
+    const { req } = ctx;
 
     const urlLang = new URL(req.url).searchParams.get("lang");
     const languageObj = languageMap.get(urlLang || "") ??
@@ -51,6 +48,7 @@ export function createHandler(
 
     ctx.state.language = languageObj;
     ctx.state.translation = {};
+
     ctx.state.translation.common = await loadTranslations(
       languagesDir,
       "common",

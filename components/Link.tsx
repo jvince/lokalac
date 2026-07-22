@@ -1,6 +1,6 @@
-import { colorsUI, variantsUI } from "$types/daisyui.ts";
-import { defineThemeProps, withTheme } from "$utils/theme.tsx";
-import { toNormalizedUrl } from "$utils/url.ts";
+import { colorsUI, variantsUI } from "@/types/daisyui.ts";
+import { defineThemeProps, withTheme } from "@/utils/theme.tsx";
+import { toNormalizedUrl } from "@/utils/url.ts";
 import { clsx } from "clsx/lite";
 import type { JSX } from "preact";
 

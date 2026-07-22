@@ -1,6 +1,6 @@
+import { colorsUI, sizesUI } from "@/types/daisyui.ts";
+import { defineThemeProps, withTheme } from "@/utils/theme.tsx";
 import type { JSX } from "preact";
-import { defineThemeProps, withTheme } from "$utils/theme.tsx";
-import { colorsUI, sizesUI } from "$types/daisyui.ts";
 
 /**
  * @fileoverview

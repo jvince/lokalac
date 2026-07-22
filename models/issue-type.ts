@@ -1,4 +1,4 @@
-import { kv } from "$services/kv.ts";
+import { kv } from "@/services/kv.ts";
 
 export const IssueTypeIndex = "issue_type";
 

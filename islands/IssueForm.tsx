@@ -1,30 +1,31 @@
-import { Button } from "$components/Button.tsx";
-import { CommunityVectorLayerSSR } from "$components/CommunityVectorLayerSSR.tsx";
-import { Dialog } from "$components/Dialog/Dialog.tsx";
-import { DialogActions } from "$components/Dialog/DialogActions.tsx";
-import { DialogBody } from "$components/Dialog/DialogBody.tsx";
-import { DialogContent } from "$components/Dialog/DialogContent.tsx";
-import { Form } from "$components/Form.tsx";
-import { Input } from "$components/Input.tsx";
-import { Label } from "$components/Label.tsx";
-import { LeafletMapSSR } from "$components/LeafletMapSSR.tsx";
-import { MarkerSSR } from "$components/MarkerSSR.ts";
-import { Select } from "$components/Select.tsx";
-import { Textarea } from "$components/Textarea.tsx";
-import { IS_BROWSER } from "$fresh/runtime.ts";
-import { useAbortableFetch } from "$hooks/useAbortableFetch.ts";
-import { useTranslation } from "$hooks/useTranslation.ts";
-import type { IssueCategory } from "$models/issue-category.ts";
-import type { IssueType } from "$models/issue-type.ts";
-import { IssueLocation } from "$models/issue.ts";
-import type { LocalCommunity } from "$models/local-community.ts";
-import type { WithI18nState } from "$plugins/i18n/src/types.ts";
+import { Button } from "@/components/Button.tsx";
+import { CommunityVectorLayerSSR } from "@/components/CommunityVectorLayerSSR.tsx";
+import { Dialog } from "@/components/Dialog/Dialog.tsx";
+import { DialogActions } from "@/components/Dialog/DialogActions.tsx";
+import { DialogBody } from "@/components/Dialog/DialogBody.tsx";
+import { DialogContent } from "@/components/Dialog/DialogContent.tsx";
+import { Form } from "@/components/Form.tsx";
+import { Input } from "@/components/Input.tsx";
+import { Label } from "@/components/Label.tsx";
+import { LeafletMapSSR } from "@/components/LeafletMapSSR.tsx";
+import { MarkerSSR } from "@/components/MarkerSSR.ts";
+import { Select } from "@/components/Select.tsx";
+import { Textarea } from "@/components/Textarea.tsx";
+import { useAbortableFetch } from "@/hooks/useAbortableFetch.ts";
+import { useTranslation } from "@/hooks/useClientTranslation.ts";
+import { withGlobalContext } from "@/islands/withGlobalContext.tsx";
+import type { IssueCategory } from "@/models/issue-category.ts";
+import type { IssueType } from "@/models/issue-type.ts";
+import { IssueLocation } from "@/models/issue.ts";
+import type { LocalCommunity } from "@/models/local-community.ts";
+import type { WithI18nState } from "@/plugins/i18n/src/types.ts";
 import { useComputed, useSignal } from "@preact/signals";
 import { useDeepSignal } from "deepsignal";
+import { IS_BROWSER } from "fresh/runtime";
 import type { LatLngLiteral, LatLngTuple } from "leaflet";
 import type { ComponentChildren, JSX } from "preact";
+import { Suspense } from "preact/compat";
 import { useCallback } from "preact/hooks";
-import { Suspense } from "react-dom";
 import { IconMapPinOff, IconMapPinPlus } from "../icons.ts";
 import { ImageUpload } from "./ImageUpload.tsx";
 
@@ -52,9 +53,9 @@ interface IssueFormState {
   note?: string;
 }
 
-export function IssueForm(props: IssueFormProps) {
+export const IssueForm = withGlobalContext((props: IssueFormProps) => {
   const { formValues } = props;
-  const { t, fromObject } = useTranslation(props.i18nState);
+  const { t, fromObject } = useTranslation();
   const isDialogOpen = useSignal(false);
 
   const formState = useDeepSignal<IssueFormState>({
@@ -287,4 +288,4 @@ export function IssueForm(props: IssueFormProps) {
       </fieldset>
     </Form>
   );
-}
+});

@@ -1,4 +1,4 @@
-import { defaultLanguage } from "../languages.ts";
+import { defaultLanguage } from "@/languages.ts";
 
 export function isRelativeUrl(url: string): boolean {
   return url.startsWith("/");

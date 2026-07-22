@@ -1,4 +1,4 @@
-import "$std/dotenv/load.ts";
+import "@std/dotenv/load";
 
 export interface AppConfig {
   kvStorageDir: string;

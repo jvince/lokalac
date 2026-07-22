@@ -1,25 +1,25 @@
-import { Button } from "$components/Button.tsx";
-import { Form } from "$components/Form.tsx";
-import { Link } from "$components/Link.tsx";
-import { Handlers } from "$fresh/server.ts";
-import { useTranslation } from "$hooks/useTranslation.ts";
-import { deleteIssue, getIssueById } from "$models/issue.ts";
-import { WithAuthorization } from "../../../auth/withAuthorization.ts";
-import { IssuePageProps } from "./types.ts";
+import { Button } from "@/components/Button.tsx";
+import { Form } from "@/components/Form.tsx";
+import { Link } from "@/components/Link.tsx";
+import { useTranslation } from "@/hooks/useTranslation.ts";
+import { deleteIssue, getIssueById } from "@/models/issue.ts";
+import { WithAuthorization } from "@/auth/withAuthorization.ts";
+import { define } from "@/types/app.ts";
+import { page } from "fresh";
 
-export const handler: Handlers = {
-  GET: WithAuthorization(async (_, ctx) => {
+export const handler = define.handlers({
+  GET: WithAuthorization(async (ctx) => {
     const issue = await getIssueById(ctx.params.issue);
 
-    return await ctx.render({ issue });
+    return page({ issue });
   }),
 
-  POST: WithAuthorization(async (req, ctx) => {
-    const formData = await req.formData();
+  POST: WithAuthorization(async (ctx) => {
+    const formData = await ctx.req.formData();
     const id = formData.get("id");
 
     if (typeof id !== "string") {
-      return ctx.render({ issue: null });
+      return page({ issue: null });
     }
 
     const lang = formData.get("lang");
@@ -38,9 +38,9 @@ export const handler: Handlers = {
       },
     });
   }),
-};
+});
 
-export default function DeletePage(props: IssuePageProps) {
+export default define.page<typeof handler>((props) => {
   const { data } = props;
   const { t, language } = useTranslation();
 
@@ -67,4 +67,4 @@ export default function DeletePage(props: IssuePageProps) {
       </Button>
     </Form>
   );
-}
+});
