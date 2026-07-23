@@ -1,5 +1,5 @@
 import { appConfig } from "@/config.ts";
-import { IssueForm, IssueFormValues } from "@/islands/IssueForm.tsx";
+import { IssueForm } from "@/islands/IssueForm.tsx";
 import {
   getIssueCategories,
   type IssueCategory,
@@ -17,7 +17,7 @@ import {
 } from "@/models/local-community.ts";
 import { define } from "@/types/app.ts";
 import { ensureDir } from "@std/fs";
-import { ulid } from "@std/ulid";
+import { monotonicUlid } from "@std/ulid";
 import { page } from "fresh";
 import type { LatLngTuple } from "leaflet";
 import sharp, { type Metadata as ImageMetadata } from "sharp";
@@ -193,7 +193,7 @@ export const handler = define.handlers({
       }
 
       if (community && category && issueType) {
-        const id = ulid();
+        const id = monotonicUlid();
         const createdAt = Temporal.Now.zonedDateTimeISO().toString();
 
         await insertIssue({
