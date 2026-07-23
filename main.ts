@@ -9,12 +9,16 @@ import { i18n } from "@/plugins/i18n/mod.ts";
 import { kv } from "@/services/kv.ts";
 import { AppState, define } from "@/types/app.ts";
 import { ensureDir } from "@std/fs";
-import { App, cors, staticFiles } from "fresh";
+import { App, cors, csrf, staticFiles } from "fresh";
 
 export const app = new App<AppState>();
 
 await migrate(migrations, kv);
 await ensureDir(appConfig.uploadDir);
+
+app.use(cors());
+app.use(csrf());
+app.use(staticFiles());
 
 app.use(define.middleware(async (ctx) => {
   if (ctx.url.pathname === "/") {
@@ -38,8 +42,6 @@ app.use(define.middleware(async (ctx) => {
 
   return ctx.next();
 }));
-app.use(cors());
-app.use(staticFiles());
 
 app.use(i18n<typeof supportedLanguages, AppState>({
   defaultLanguage: defaultLanguage.code,

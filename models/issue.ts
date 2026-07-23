@@ -1,6 +1,8 @@
 import { appConfig } from "@/config.ts";
 import { kv } from "@/services/kv.ts";
-import { exists } from "@std/fs";
+import { isValidUlid } from "@/utils/ulid.ts";
+import { dirname, resolve as resolvePath } from "@std/path";
+
 import {
   IssueCategory,
   IssueCategoryIndex as IssueCategoryPrimaryKey,
@@ -52,6 +54,11 @@ export enum IssueStatus {
   Rejected = "rejected",
 }
 
+export type DeleteIssueResult =
+  | { status: "deleted" }
+  | { status: "not_found" }
+  | { status: "invalid_id" };
+
 async function processIterator<T, K>(
   iterator: Deno.KvListIterator<T>,
   resolver: (item: T) => Promise<K>,
@@ -75,6 +82,17 @@ async function processIterator<T, K>(
     cursor: count > _limit ? _cursor : "",
     items: limit ? items.slice(0, _limit) : items,
   };
+}
+
+function getIssueDirectory(id: string): string {
+  const uploadRoot = resolvePath(appConfig.uploadDir);
+  const issueDirectory = resolvePath(uploadRoot, id);
+
+  if (dirname(issueDirectory) !== uploadRoot) {
+    throw new Error("Invalid issue directory path.");
+  }
+
+  return issueDirectory;
 }
 
 export function isIssueStatus(value: unknown): value is IssueStatus {
@@ -141,22 +159,44 @@ export async function updateIssue(id: string, issue: Partial<Issue>) {
 
 export async function deleteIssue(
   id: string | undefined | null,
-) {
-  if (typeof id !== "string") {
-    return null;
+): Promise<DeleteIssueResult> {
+  if (!isValidUlid(id)) {
+    return { status: "invalid_id" };
+  }
+
+  const entry = await kv.get<Issue>([IssueIndex, id]);
+
+  if (entry.value === null) {
+    return { status: "not_found" };
+  }
+
+  if (entry.value.id !== id) {
+    throw new Error(
+      `Issue ID mismatch: expected ${id}, got ${entry.value.id}.`,
+    );
+  }
+
+  const issueDirectory = getIssueDirectory(id);
+
+  try {
+    await Deno.remove(issueDirectory, { recursive: true });
+  } catch (error) {
+    if (!(error instanceof Deno.errors.NotFound)) {
+      throw new Error(`Failed to remove files for issue ${id}`, {
+        cause: error,
+      });
+    }
   }
 
   await kv.delete([IssueIndex, id]);
 
-  if (await exists(`./${appConfig.uploadDir}/${id}`)) {
-    await Deno.remove(`./${appConfig.uploadDir}/${id}`, { recursive: true });
-  }
+  return { status: "deleted" };
 }
 
 export async function getIssueById(
   id: string | undefined | null,
 ): Promise<IssueDTO | null> {
-  if (typeof id !== "string" || id.trim() === "") {
+  if (!isValidUlid(id)) {
     return null;
   }
 
