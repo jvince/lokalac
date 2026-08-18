@@ -1,17 +1,16 @@
 import { appConfig } from "@/config.ts";
+import { useTranslation } from "@/hooks/useTranslation.ts";
 import { IssueForm } from "@/islands/IssueForm.tsx";
-import {
-  getIssueCategories,
-  type IssueCategory,
-} from "@/models/issue-category.ts";
-import { getIssueTypes, type IssueType } from "@/models/issue-type.ts";
+import { getIssueCategoriesAsArray } from "@/models/issue-category.ts";
+import { formDataToIssue } from "@/models/issue-submission.ts";
+import { getIssueTypesAsArray } from "@/models/issue-type.ts";
 import {
   insertIssue,
   type IssueLocation,
   IssueStatus,
 } from "@/models/issue.ts";
 import {
-  getLocalCommunities,
+  getLocalCommunitiesAsArray,
   getLocalCommunityPolygonById,
   type LocalCommunity,
 } from "@/models/local-community.ts";
@@ -24,6 +23,9 @@ import sharp, { type Metadata as ImageMetadata } from "sharp";
 
 type ImageOrientation = "landscape" | "portrait";
 
+const MAX_IMAGE_PIXELS = 40_000_000;
+const ALLOWED_SHARP_IMAGE_FORMATS = new Set(["jpeg", "png", "webp"]);
+
 function getOrientation(metadata: ImageMetadata): ImageOrientation {
   if (typeof metadata.orientation === "number") {
     return metadata.orientation >= 5 ? "landscape" : "portrait";
@@ -32,9 +34,7 @@ function getOrientation(metadata: ImageMetadata): ImageOrientation {
   return metadata.width > metadata.height ? "landscape" : "portrait";
 }
 
-async function processImages(id: string, data: FormData) {
-  const files = data.getAll("images[]");
-
+async function processImages(id: string, files: File[]) {
   if (!files.length) {
     return [];
   }
@@ -43,35 +43,55 @@ async function processImages(id: string, data: FormData) {
   await ensureDir(uploadDir);
   const imageUrls: string[] = [];
 
-  try {
-    for await (const file of files) {
-      if (file instanceof File) {
-        const fileName = `${crypto.randomUUID()}.webp`;
-        const uploadPath = `/${uploadDir}/${fileName}`;
+  for await (const file of files) {
+    const fileName = `${crypto.randomUUID()}.webp`;
+    const uploadPath = `/${uploadDir}/${fileName}`;
 
-        const image = sharp(await file.bytes());
-        const metadata = await image.metadata();
-        const isLandscape = getOrientation(metadata) === "landscape";
-        const size = isLandscape ? { width: 1920 } : { height: 1080 };
-        const buffer = await image.resize(size).webp().toBuffer();
+    const image = sharp(await file.bytes(), {
+      limitInputPixels: MAX_IMAGE_PIXELS,
+    });
+    const metadata = await image.metadata();
 
-        await Deno.writeFile(`.${uploadPath}`, buffer);
-        imageUrls.push(uploadPath);
-      }
+    if (
+      !metadata.format || !ALLOWED_SHARP_IMAGE_FORMATS.has(metadata.format)
+    ) {
+      throw new Error("error.image_invalid_type");
     }
-  } catch (error) {
-    console.error("Error processing images:", error);
-    await Deno.remove(uploadDir, { recursive: true });
-    throw error;
+
+    if (metadata.pages && metadata.pages > 1) {
+      throw new Error("error.animated_image_not_allowed");
+    }
+
+    const isLandscape = getOrientation(metadata) === "landscape";
+    const size = isLandscape ? { width: 1920 } : { height: 1080 };
+    const buffer = await image.resize({
+      ...size,
+      withoutEnlargement: true,
+    }).webp().toBuffer();
+
+    await Deno.writeFile(`.${uploadPath}`, buffer);
+    imageUrls.push(uploadPath);
   }
 
   return imageUrls;
 }
 
+async function removeProcessedImages(id: string) {
+  const uploadDir = `./${appConfig.uploadDir}/${id}`;
+
+  try {
+    await Deno.remove(uploadDir, { recursive: true });
+  } catch (error) {
+    if (!(error instanceof Deno.errors.NotFound)) {
+      console.error(`Failed to clean up images for issue ${id}:`, error);
+    }
+  }
+}
+
 async function loadData() {
-  const communities = await Array.fromAsync(getLocalCommunities());
-  const categories = await Array.fromAsync(getIssueCategories());
-  const issueTypes = await Array.fromAsync(getIssueTypes());
+  const communities = await getLocalCommunitiesAsArray();
+  const categories = await getIssueCategoriesAsArray();
+  const issueTypes = await getIssueTypesAsArray();
 
   return { categories, communities, issueTypes };
 }
@@ -132,111 +152,94 @@ export const handler = define.handlers({
 
   async POST(ctx) {
     const formData = await ctx.req.formData();
+    const { input, formValues } = formDataToIssue(formData);
     const { categories, communities, issueTypes } = await loadData();
-
-    let community: LocalCommunity | undefined;
-    let category: IssueCategory | undefined;
-    let issueType: IssueType | undefined;
-    let note: string | undefined;
-    let location: IssueLocation | undefined;
     const errors: string[] = [];
 
-    try {
-      for (const [key, value] of formData.entries()) {
-        if (key === "local_community") {
-          community = communities.find((c) => c.id === value);
-          if (!community) {
-            errors.push("error.local_community_not_found");
-          }
-        }
-        if (key === "issue_category") {
-          category = categories.find((c) => c.id === value);
-          if (!category) {
-            errors.push("error.issue_category_not_found");
-          }
-        }
-        if (key === "issue_type") {
-          issueType = issueTypes.find((i) => i.id === value);
-          if (!issueType) {
-            errors.push("error.issue_type_not_found");
-          }
-        }
-        if (
-          key === "location" && typeof value === "string" && value.length > 0
-        ) {
-          try {
-            const locationValue = JSON.parse(value);
-            if (
-              typeof locationValue === "object" &&
-              "lat" in locationValue &&
-              "lng" in locationValue &&
-              typeof locationValue.lat === "number" &&
-              typeof locationValue.lng === "number"
-            ) {
-              location = {
-                lat: locationValue.lat,
-                lng: locationValue.lng,
-              };
-            }
-          } catch {
-            throw new Error("error.invalid_location_format");
-          }
-
-          if (!(await isLocationInPolygon(location, community))) {
-            throw new Error("error.location_not_in_community_polygon");
-          }
-        }
-
-        if (key === "note" && typeof value === "string") {
-          note = value.slice(0, 512);
-        }
-      }
-
-      if (community && category && issueType) {
-        const id = monotonicUlid();
-        const createdAt = Temporal.Now.zonedDateTimeISO().toString();
-
-        await insertIssue({
-          id,
-          communityId: community.id,
-          categoryId: category.id,
-          typeId: issueType.id,
-          status: IssueStatus.Open,
-          location,
-          note,
-          createdAt,
-          updatedAt: createdAt,
-          images: await processImages(id, formData),
-        });
-
-        console.log(
-          `Reported issue ${issueType.name} in category ${category.name} for community ${community.name}`,
-        );
-
-        return new Response(null, {
-          status: 303,
-          headers: {
-            Location: `/issues?lang=${formData.get("lang")}`,
-          },
-        });
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        errors.push(error.message);
-      }
+    if (!input.success) {
+      return page({
+        categories,
+        communities,
+        issueTypes,
+        errors: input.issues.map((issue) => issue.message),
+        formValues,
+      });
     }
 
-    return page({
-      categories,
-      communities,
-      issueTypes,
-      errors,
-      formValues: {
-        localCommunity: community?.id,
-        issueCategory: category?.id,
-        issueType: issueType?.id,
-        location,
-        note,
+    const issueType = issueTypes.find((i) => i.id === input.output.typeId);
+
+    if (!communities.find((c) => c.id === input.output.communityId)) {
+      errors.push("error.local_community_not_found");
+    }
+
+    if (!categories.find((c) => c.id === input.output.categoryId)) {
+      errors.push("error.issue_category_not_found");
+    }
+
+    if (!issueType) {
+      errors.push("error.issue_type_not_found");
+    } else if (issueType.category !== input.output.categoryId) {
+      errors.push("error.issue_type_not_in_category");
+    }
+
+    if (
+      input.output.location &&
+      !(await isLocationInPolygon(
+        input.output.location,
+        communities.find((c) => c.id === input.output.communityId),
+      ))
+    ) {
+      errors.push("error.location_not_in_community_polygon");
+    }
+
+    if (errors.length > 0) {
+      return page({
+        categories,
+        communities,
+        issueTypes,
+        errors,
+        formValues,
+      });
+    }
+    const id = monotonicUlid();
+    const createdAt = Temporal.Now.zonedDateTimeISO().toString();
+
+    try {
+      const images = await processImages(id, input.output.images);
+
+      await insertIssue({
+        id,
+        communityId: input.output.communityId,
+        categoryId: input.output.categoryId,
+        typeId: input.output.typeId,
+        status: IssueStatus.Open,
+        location: input.output.location,
+        note: input.output.note,
+        createdAt,
+        updatedAt: createdAt,
+        images,
+      });
+    } catch (error) {
+      console.error(`Failed to submit issue ${id}:`, error);
+      await removeProcessedImages(id);
+
+      return page({
+        categories,
+        communities,
+        issueTypes,
+        errors: ["error.issue_submission_failed"],
+        formValues,
+      });
+    }
+
+    console.log(
+      `Reported issue ${input.output.typeId} in category ${input.output.categoryId} for community ${input.output.communityId}`,
+    );
+
+    return new Response(null, {
+      status: 303,
+      headers: {
+        Location: `/issues?lang=${formData.get("lang")}`,
       },
     });
   },
@@ -244,13 +247,16 @@ export const handler = define.handlers({
 
 export default define.page<typeof handler>((ctx) => {
   const { data, state } = ctx;
+  const { t } = useTranslation();
 
   return (
     <>
       {(data.errors ?? []).map((error) => {
         return (
           <div class="alert alert-error">
-            <span>{error}</span>
+            <span>
+              {error.startsWith("error.") ? t(`common.${error}`) : error}
+            </span>
           </div>
         );
       })}

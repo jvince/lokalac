@@ -1,9 +1,13 @@
 import { join } from "@std/path";
 import type { Middleware } from "fresh";
-import type { i18nLanguage, i18nPluginConfig } from "./types.ts";
+import type {
+  i18nLanguage,
+  i18nPluginConfig,
+  i18nTranslationPackage,
+} from "./types.ts";
 import { i18nState } from "./types.ts";
 
-async function readJSONFile(path: string): Promise<Record<string, string>> {
+async function readJSONFile(path: string): Promise<i18nTranslationPackage> {
   try {
     const data = await Deno.readTextFile(path);
     return JSON.parse(data);

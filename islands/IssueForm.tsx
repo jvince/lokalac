@@ -15,34 +15,36 @@ import { useAbortableFetch } from "@/hooks/useAbortableFetch.ts";
 import { useTranslation } from "@/hooks/useClientTranslation.ts";
 import { withGlobalContext } from "@/islands/withGlobalContext.tsx";
 import type { IssueCategory } from "@/models/issue-category.ts";
+import {
+  IssueSubmission,
+  MAX_ISSUE_NOTE_LENGTH,
+} from "@/models/issue-submission.ts";
 import type { IssueType } from "@/models/issue-type.ts";
-import { IssueLocation } from "@/models/issue.ts";
 import type { LocalCommunity } from "@/models/local-community.ts";
 import type { WithI18nState } from "@/plugins/i18n/src/types.ts";
 import { useComputed, useSignal } from "@preact/signals";
 import { useDeepSignal } from "deepsignal";
 import { IS_BROWSER } from "fresh/runtime";
 import type { LatLngLiteral, LatLngTuple } from "leaflet";
-import type { ComponentChildren, JSX } from "preact";
+import type { ComponentChildren, TargetedEvent } from "preact";
 import { Suspense } from "preact/compat";
 import { useCallback } from "preact/hooks";
 import { IconMapPinOff, IconMapPinPlus } from "../icons.ts";
 import { ImageUpload } from "./ImageUpload.tsx";
 
-export interface IssueFormValues {
-  localCommunity?: string;
-  issueCategory?: string;
-  issueType?: string;
-  location?: IssueLocation;
-  note?: string;
-}
+type IssueSubmissionFormValues = Partial<
+  Pick<
+    IssueSubmission,
+    "categoryId" | "typeId" | "communityId" | "location" | "note"
+  >
+>;
 
 interface IssueFormProps extends WithI18nState {
   categories: IssueCategory[];
   children?: ComponentChildren;
   communities: LocalCommunity[];
   issueTypes: IssueType[];
-  formValues?: IssueFormValues;
+  formValues?: IssueSubmissionFormValues;
 }
 
 interface IssueFormState {
@@ -59,9 +61,9 @@ export const IssueForm = withGlobalContext((props: IssueFormProps) => {
   const isDialogOpen = useSignal(false);
 
   const formState = useDeepSignal<IssueFormState>({
-    issueCategory: formValues?.issueCategory,
-    issueType: formValues?.issueType,
-    localCommunity: formValues?.localCommunity,
+    issueCategory: formValues?.categoryId,
+    issueType: formValues?.typeId,
+    localCommunity: formValues?.communityId,
     location: formValues?.location
       ? { lat: formValues.location.lat, lng: formValues.location.lng }
       : undefined,
@@ -84,8 +86,8 @@ export const IssueForm = withGlobalContext((props: IssueFormProps) => {
 
   const onChangeHandler = useCallback(
     (field: keyof IssueFormState) =>
-    (e: JSX.TargetedEvent<HTMLSelectElement>) => {
-      const value = e.currentTarget.value;
+    (event: TargetedEvent<HTMLSelectElement>) => {
+      const value = event.currentTarget.value;
 
       if (field in formState) {
         // deno-lint-ignore no-explicit-any
@@ -93,7 +95,11 @@ export const IssueForm = withGlobalContext((props: IssueFormProps) => {
       }
 
       if (field === "localCommunity") {
-        formState.location = undefined; // Reset location when community changes
+        formState.location = undefined;
+      }
+
+      if (field === "issueCategory") {
+        formState.issueType = undefined;
       }
     },
     [],
@@ -266,6 +272,7 @@ export const IssueForm = withGlobalContext((props: IssueFormProps) => {
         <Textarea
           defaultValue={formState.note}
           id="note"
+          maxLength={MAX_ISSUE_NOTE_LENGTH}
           name="note"
         />
 

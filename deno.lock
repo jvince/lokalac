@@ -44,6 +44,7 @@
     "jsr:@std/semver@^1.0.6": "1.0.8",
     "jsr:@std/ulid@1": "1.0.0",
     "jsr:@std/uuid@^1.0.9": "1.1.1",
+    "jsr:@valibot/valibot@^1.4.2": "1.4.2",
     "npm:@babel/core@^7.28.0": "7.29.7",
     "npm:@babel/preset-react@^7.27.1": "7.29.7_@babel+core@7.29.7",
     "npm:@opentelemetry/api@^1.9.0": "1.9.1",
@@ -242,6 +243,9 @@
       "dependencies": [
         "jsr:@std/bytes"
       ]
+    },
+    "@valibot/valibot@1.4.2": {
+      "integrity": "14f7fbb7474a8ade216224062d1e8b23cd17ecbb5176fc23595e846778c4725d"
     }
   },
   "npm": {
@@ -1713,6 +1717,7 @@
       "jsr:@std/fs@^1.0.24",
       "jsr:@std/path@^1.1.6",
       "jsr:@std/ulid@1",
+      "jsr:@valibot/valibot@^1.4.2",
       "npm:@preact/signals@^2.9.0",
       "npm:@tailwindcss/vite@^4.1.12",
       "npm:@types/babel__core@^7.20.5",

@@ -33,5 +33,19 @@
   "filter_and_sort_reset": "Szűrők és rendezés eltávolítása",
   "view_location": "Helyszín megtekintése",
   "view_note": "Megjegyzés megtekintése",
-  "view_more": "Továbbiak megtekintése"
+  "view_more": "Továbbiak megtekintése",
+  "error": {
+    "local_community_not_found": "A helyi közösség nem található.",
+    "issue_category_not_found": "A probléma kategóriája nem található.",
+    "issue_type_not_found": "A probléma típusa nem található.",
+    "issue_type_not_in_category": "A probléma típusa nem tartozik a kiválasztott kategóriához.",
+    "location_not_in_community_polygon": "A kiválasztott helyszín nem található a helyi közösség területén.",
+    "issue_submission_failed": "A probléma beküldése sikertelen. Kérjük, próbálja újra.",
+    "image_empty": "A kiválasztott kép üres.",
+    "image_too_large": "A kiválasztott kép túl nagy.",
+    "image_invalid_type": "A kép formátuma nem támogatott.",
+    "too_many_images": "Túl sok kép lett kiválasztva.",
+    "note_too_long": "A megjegyzés túl hosszú.",
+    "animated_image_not_allowed": "Animált képek feltöltése nem engedélyezett."
+  }
 }
