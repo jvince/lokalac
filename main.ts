@@ -7,6 +7,8 @@ import { migrate } from "@/migrate.ts";
 import migrations from "@/migrations.ts";
 import { i18n } from "@/plugins/i18n/mod.ts";
 import { kv } from "@/services/kv.ts";
+
+import { serveUpload } from "@/middleware/serveUpload.ts";
 import { AppState, define } from "@/types/app.ts";
 import { ensureDir } from "@std/fs";
 import { App, cors, csrf, staticFiles } from "fresh";
@@ -20,7 +22,7 @@ app.use(cors());
 app.use(csrf());
 app.use(staticFiles());
 
-app.use(define.middleware(async (ctx) => {
+app.use(define.middleware((ctx) => {
   if (ctx.url.pathname === "/") {
     return new Response(null, {
       status: 302,
@@ -30,18 +32,10 @@ app.use(define.middleware(async (ctx) => {
     });
   }
 
-  if (ctx.url.pathname.startsWith(`/${appConfig.uploadDir}/`)) {
-    const file = await Deno.open(`.${ctx.url.pathname}`);
-
-    return new Response(file.readable, {
-      headers: {
-        "Content-Type": "application/octet-stream",
-      },
-    });
-  }
-
   return ctx.next();
 }));
+
+app.use(serveUpload({ uploadDir: appConfig.uploadDir }));
 
 app.use(i18n<typeof supportedLanguages, AppState>({
   defaultLanguage: defaultLanguage.code,
