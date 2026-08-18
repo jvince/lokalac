@@ -4,6 +4,13 @@ import { IssueForm } from "@/islands/IssueForm.tsx";
 import { getIssueCategoriesAsArray } from "@/models/issue-category.ts";
 import { formDataToIssue } from "@/models/issue-submission.ts";
 import { getIssueTypesAsArray } from "@/models/issue-type.ts";
+import { processImagesAndPersist } from "@/services/imageProcessing.ts";
+import { SemaphoreTimeoutError } from "@/services/semaphore.ts";
+import {
+  readLimitedFormData,
+  RequestBodyTooLargeError,
+} from "@/services/requestBody.ts";
+import { submissionQuota } from "@/services/submissionQuota.ts";
 import {
   insertIssue,
   type IssueLocation,
@@ -15,78 +22,13 @@ import {
   type LocalCommunity,
 } from "@/models/local-community.ts";
 import { define } from "@/types/app.ts";
-import { ensureDir } from "@std/fs";
+import { textResponse } from "@/utils/http.ts";
+import { getRemoteAddr } from "@/utils/net.ts";
 import { monotonicUlid } from "@std/ulid";
 import { page } from "fresh";
 import type { LatLngTuple } from "leaflet";
-import sharp, { type Metadata as ImageMetadata } from "sharp";
 
-type ImageOrientation = "landscape" | "portrait";
-
-const MAX_IMAGE_PIXELS = 40_000_000;
-const ALLOWED_SHARP_IMAGE_FORMATS = new Set(["jpeg", "png", "webp"]);
-
-function getOrientation(metadata: ImageMetadata): ImageOrientation {
-  if (typeof metadata.orientation === "number") {
-    return metadata.orientation >= 5 ? "landscape" : "portrait";
-  }
-
-  return metadata.width > metadata.height ? "landscape" : "portrait";
-}
-
-async function processImages(id: string, files: File[]) {
-  if (!files.length) {
-    return [];
-  }
-
-  const uploadDir = `./${appConfig.uploadDir}/${id}`;
-  await ensureDir(uploadDir);
-  const imageUrls: string[] = [];
-
-  for await (const file of files) {
-    const fileName = `${crypto.randomUUID()}.webp`;
-    const uploadPath = `/${uploadDir}/${fileName}`;
-
-    const image = sharp(await file.bytes(), {
-      limitInputPixels: MAX_IMAGE_PIXELS,
-    });
-    const metadata = await image.metadata();
-
-    if (
-      !metadata.format || !ALLOWED_SHARP_IMAGE_FORMATS.has(metadata.format)
-    ) {
-      throw new Error("error.image_invalid_type");
-    }
-
-    if (metadata.pages && metadata.pages > 1) {
-      throw new Error("error.animated_image_not_allowed");
-    }
-
-    const isLandscape = getOrientation(metadata) === "landscape";
-    const size = isLandscape ? { width: 1920 } : { height: 1080 };
-    const buffer = await image.resize({
-      ...size,
-      withoutEnlargement: true,
-    }).webp().toBuffer();
-
-    await Deno.writeFile(`.${uploadPath}`, buffer);
-    imageUrls.push(uploadPath);
-  }
-
-  return imageUrls;
-}
-
-async function removeProcessedImages(id: string) {
-  const uploadDir = `./${appConfig.uploadDir}/${id}`;
-
-  try {
-    await Deno.remove(uploadDir, { recursive: true });
-  } catch (error) {
-    if (!(error instanceof Deno.errors.NotFound)) {
-      console.error(`Failed to clean up images for issue ${id}:`, error);
-    }
-  }
-}
+export const MAX_SUBMISSION_BODY_SIZE = 52 * 1024 * 1024;
 
 async function loadData() {
   const communities = await getLocalCommunitiesAsArray();
@@ -151,7 +93,35 @@ export const handler = define.handlers({
   },
 
   async POST(ctx) {
-    const formData = await ctx.req.formData();
+    let remoteAddr: string;
+
+    try {
+      remoteAddr = getRemoteAddr(ctx);
+    } catch {
+      return textResponse("Unable to identify the requesting client.", 500);
+    }
+
+    const quotaResponse = submissionQuota(remoteAddr);
+
+    if (quotaResponse) {
+      return quotaResponse;
+    }
+
+    let formData: FormData;
+
+    try {
+      formData = await readLimitedFormData(
+        ctx.req,
+        MAX_SUBMISSION_BODY_SIZE,
+      );
+    } catch (error) {
+      if (error instanceof RequestBodyTooLargeError) {
+        return textResponse("Request body too large.", 413);
+      }
+
+      return textResponse("Invalid form submission.", 400);
+    }
+
     const { input, formValues } = formDataToIssue(formData);
     const { categories, communities, issueTypes } = await loadData();
     const errors: string[] = [];
@@ -205,23 +175,38 @@ export const handler = define.handlers({
     const createdAt = Temporal.Now.zonedDateTimeISO().toString();
 
     try {
-      const images = await processImages(id, input.output.images);
-
-      await insertIssue({
+      await processImagesAndPersist(
         id,
-        communityId: input.output.communityId,
-        categoryId: input.output.categoryId,
-        typeId: input.output.typeId,
-        status: IssueStatus.Open,
-        location: input.output.location,
-        note: input.output.note,
-        createdAt,
-        updatedAt: createdAt,
-        images,
-      });
+        input.output.images,
+        { uploadDir: appConfig.uploadDir },
+        async (images) => {
+          await insertIssue({
+            id,
+            communityId: input.output.communityId,
+            categoryId: input.output.categoryId,
+            typeId: input.output.typeId,
+            status: IssueStatus.Open,
+            location: input.output.location,
+            note: input.output.note,
+            createdAt,
+            updatedAt: createdAt,
+            images,
+          });
+        },
+      );
     } catch (error) {
       console.error(`Failed to submit issue ${id}:`, error);
-      await removeProcessedImages(id);
+
+      if (error instanceof SemaphoreTimeoutError) {
+        return new Response("Image processing is busy. Try again shortly.", {
+          status: 503,
+          headers: {
+            "Content-Type": "text/plain; charset=utf-8",
+            "Retry-After": "5",
+            "X-Content-Type-Options": "nosniff",
+          },
+        });
+      }
 
       return page({
         categories,
