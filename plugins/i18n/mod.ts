@@ -9,6 +9,8 @@ export type {
   i18nPluginConfig,
   i18nState,
   i18nTranslation,
+  i18nTranslationPackage,
+  i18nTranslationValue,
 } from "./src/types.ts";
 
 export function isValidValue(value: unknown) {

@@ -35,6 +35,10 @@ export async function* getLocalCommunities(options?: Deno.KvListOptions) {
   }
 }
 
+export function getLocalCommunitiesAsArray(options?: Deno.KvListOptions) {
+  return Array.fromAsync(getLocalCommunities(options));
+}
+
 export async function getLocalCommunityPolygonById(id: string) {
   const key = [LocalCommunityPolygonIndex, id];
   const result = await kv.get<LocalCommunityPolygon>(key);

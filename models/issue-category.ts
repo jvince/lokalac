@@ -18,3 +18,7 @@ export async function* getIssueCategories(options?: Deno.KvListOptions) {
     yield item.value;
   }
 }
+
+export function getIssueCategoriesAsArray(options?: Deno.KvListOptions) {
+  return Array.fromAsync(getIssueCategories(options));
+}

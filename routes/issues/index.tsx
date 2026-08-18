@@ -152,7 +152,9 @@ export default define.page<typeof handler>((ctx) => {
             id: "images",
             header: t("common.images"),
             cell: (item) => (
-              (item.images ?? []).map((image) => <img src={image} />)
+              (item.images ?? []).map((image) => (
+                <img key={image} src={image} />
+              ))
             ),
           },
           {
