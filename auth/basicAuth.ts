@@ -1,35 +1,55 @@
+import { appConfig } from "@/config.ts";
+import { verify } from "@felix/argon2";
 import { timingSafeEqual } from "@std/crypto";
 
-function isValid(authHEader: string) {
+async function isValid(authHEader: string) {
   const match = authHEader.match(/^Basic\s+(.*)$/);
   if (!match) {
     return false;
   }
 
-  const [user, password] = atob(match[1]).split(":");
-  const encoder = new TextEncoder();
+  let decoded: string;
 
-  const expectedUser = encoder.encode("test");
-  const expectedPassword = encoder.encode("test");
-  const encodedUser = encoder.encode(user || "");
-  const encodedPassword = encoder.encode(password || "");
-
-  if (
-    encodedUser.length === expectedUser.length &&
-    encodedPassword.length === expectedPassword.length &&
-    timingSafeEqual(encodedUser, expectedUser) &&
-    timingSafeEqual(encodedPassword, expectedPassword)
-  ) {
-    return true;
+  try {
+    decoded = atob(match[1]);
+  } catch {
+    return false;
   }
 
-  return false;
+  const separator = decoded.indexOf(":");
+
+  if (separator === -1) {
+    return false;
+  }
+
+  const user = decoded.slice(0, separator);
+  const password = decoded.slice(separator + 1);
+
+  const encoder = new TextEncoder();
+  const expectedUser = encoder.encode(appConfig.basicAuthUsername || "");
+  const encodedUser = encoder.encode(user || "");
+
+  try {
+    if (!(await verify(appConfig.basicAuthPasswordHash || "", password))) {
+      return false;
+    }
+  } catch {
+    return false;
+  }
+
+  return (
+    encodedUser.length === expectedUser.length &&
+    timingSafeEqual(encodedUser, expectedUser)
+  );
 }
 
-export function basicAuth(request: Request, realm: string = "Restricted Area") {
+export async function basicAuth(
+  request: Request,
+  realm: string = "Restricted Area",
+) {
   const authHeader = request.headers.get("Authorization");
 
-  if (isValid(authHeader ?? "")) {
+  if (await isValid(authHeader ?? "")) {
     return;
   }
 

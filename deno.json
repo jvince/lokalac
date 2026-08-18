@@ -5,7 +5,7 @@
     "dev": "vite",
     "dev:debug": "deno run --inspect -A npm:vite",
     "build": "vite build",
-    "start": "deno serve -A _fresh/server.js",
+    "start": "deno serve --host 127.0.0.1 --port 8000 -A _fresh/server.js",
     "test": "deno test -A",
     "update": "deno run -A -r jsr:@fresh/update ."
   },
@@ -23,6 +23,7 @@
   "imports": {
     "@/": "./",
     "@es-toolkit/es-toolkit": "jsr:@es-toolkit/es-toolkit@^1.49.0",
+    "@felix/argon2": "jsr:@felix/argon2@^3.0.6",
     "@preact-icons/tb": "jsr:@preact-icons/tb@^1.0.14",
     "@std/assert": "jsr:@std/assert@^1.0.19",
     "@std/crypto": "jsr:@std/crypto@^1.1.0",
