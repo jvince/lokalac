@@ -82,31 +82,41 @@ export type IssueIndexProblem =
 
 type IssueInsertStore = Pick<Deno.Kv, "atomic">;
 type IssueUpdateStore = Pick<Deno.Kv, "atomic" | "get">;
+type IssueReadStore = Pick<Deno.Kv, "get" | "getMany" | "list">;
+
+export type IssueRelation = "community" | "category" | "type";
+
+export interface OrphanedIssueReference {
+  issueId: string;
+  relation: IssueRelation;
+  referencedId: string;
+}
+
+export interface IssueIntegrityReport {
+  orphanedReferences: OrphanedIssueReference[];
+  orphanedUploads: string[];
+}
+
+const GET_MANY_BATCH_SIZE = 10;
 
 async function processIterator<T, K>(
   iterator: Deno.KvListIterator<T>,
-  resolver: (item: T) => Promise<K | null>,
+  resolver: (items: T[]) => Promise<K[]>,
   limit: number | undefined = Number.POSITIVE_INFINITY,
 ) {
   let pageCursor = "";
-  const items: K[] = [];
+  const records: T[] = [];
 
   for await (const item of iterator) {
-    const resolved = await resolver(item.value);
-
-    if (resolved === null) {
-      continue;
+    if (records.length === limit) {
+      return { cursor: pageCursor, items: await resolver(records) };
     }
 
-    if (items.length === limit) {
-      return { cursor: pageCursor, items };
-    }
-
-    items.push(resolved);
+    records.push(item.value);
     pageCursor = iterator.cursor;
   }
 
-  return { cursor: "", items };
+  return { cursor: "", items: await resolver(records) };
 }
 
 function getIssueDirectory(
@@ -296,19 +306,20 @@ export async function deleteIssue(
 
 export async function getIssueById(
   id: string | undefined | null,
+  store: IssueReadStore = kv,
 ): Promise<IssueDTO | null> {
   if (!isValidUlid(id)) {
     return null;
   }
 
   const primaryKey = [IssueIndex, id];
-  const result = await kv.get<Issue>(primaryKey);
+  const result = await store.get<Issue>(primaryKey);
 
   if (!result.value || typeof result.value !== "object") {
     return null;
   }
 
-  return await resolve(result.value);
+  return (await resolveIssues([result.value], store))[0] ?? null;
 }
 
 export async function getIssuesByCommunity(
@@ -320,7 +331,7 @@ export async function getIssuesByCommunity(
     store.list<IssueIndexReference>({
       prefix: [IssueSecondaryIndex.ByCommunity, communityId],
     }, { ...options, limit: undefined }),
-    (reference) => resolveIssueReference(reference, store),
+    (references) => resolveIssueReferences(references, store),
     options?.limit,
   );
 }
@@ -334,7 +345,7 @@ export async function getIssuesByStatus(
     store.list<IssueIndexReference>({
       prefix: [IssueSecondaryIndex.ByIssueStatus, status],
     }, { ...options, limit: undefined }),
-    (reference) => resolveIssueReference(reference, store),
+    (references) => resolveIssueReferences(references, store),
     options?.limit,
   );
 }
@@ -375,7 +386,7 @@ export async function getIssuesByCommunityAndStatus(
         status,
       ],
     }, { ...options, limit: undefined }),
-    (reference) => resolveIssueReference(reference, store),
+    (references) => resolveIssueReferences(references, store),
     options?.limit,
   );
 }
@@ -389,36 +400,139 @@ export async function getIssues(
       { prefix: [IssueSecondaryIndex.ByUpdatedAt] },
       { ...options, limit: undefined },
     ),
-    (reference) => resolveIssueReference(reference, store),
+    (references) => resolveIssueReferences(references, store),
     options?.limit,
   );
 }
 
-async function resolve(obj: Issue, store: Deno.Kv = kv): Promise<IssueDTO> {
-  const data = await store.getMany<[LocalCommunity, IssueCategory, IssueType]>([
-    [LocalCommunityIndex, obj.communityId],
-    [IssueCategoryPrimaryKey, obj.categoryId],
-    [IssueTypePrimaryKey, obj.typeId],
-  ]);
+async function getManyInBatches(
+  keys: Deno.KvKey[],
+  store: IssueReadStore,
+): Promise<Deno.KvEntryMaybe<unknown>[]> {
+  const entries: Deno.KvEntryMaybe<unknown>[] = [];
 
-  return {
-    ...obj,
-    community: data[0].value as LocalCommunity,
-    category: data[1].value as IssueCategory,
-    type: data[2].value as IssueType,
-  };
-}
-
-async function resolveIssueReference(
-  reference: IssueIndexReference,
-  store: Deno.Kv = kv,
-): Promise<IssueDTO | null> {
-  if (!reference?.primaryKey) {
-    return null;
+  for (let index = 0; index < keys.length; index += GET_MANY_BATCH_SIZE) {
+    const batch = keys.slice(index, index + GET_MANY_BATCH_SIZE);
+    entries.push(...await store.getMany(batch));
   }
 
-  const entry = await store.get<Issue>(reference.primaryKey);
-  return entry.value === null ? null : await resolve(entry.value, store);
+  return entries;
+}
+
+function uniqueKeys(keys: Deno.KvKey[]): Deno.KvKey[] {
+  return [...new Map(keys.map((key) => [keyId(key), key])).values()];
+}
+
+async function resolveIssues(
+  issues: Issue[],
+  store: IssueReadStore,
+): Promise<IssueDTO[]> {
+  const relationKeys = uniqueKeys(issues.flatMap((issue) => [
+    [LocalCommunityIndex, issue.communityId],
+    [IssueCategoryPrimaryKey, issue.categoryId],
+    [IssueTypePrimaryKey, issue.typeId],
+  ]));
+  const relations = new Map(
+    (await getManyInBatches(relationKeys, store)).map((entry) => [
+      keyId(entry.key),
+      entry.value,
+    ]),
+  );
+
+  const resolved: IssueDTO[] = [];
+  for (const issue of issues) {
+    const community = relations.get(
+      keyId([LocalCommunityIndex, issue.communityId]),
+    ) as LocalCommunity | null;
+    const category = relations.get(
+      keyId([IssueCategoryPrimaryKey, issue.categoryId]),
+    ) as IssueCategory | null;
+    const type = relations.get(
+      keyId([IssueTypePrimaryKey, issue.typeId]),
+    ) as IssueType | null;
+
+    if (community === null || category === null || type === null) {
+      continue;
+    }
+
+    resolved.push({ ...issue, community, category, type });
+  }
+
+  return resolved;
+}
+
+async function resolveIssueReferences(
+  references: IssueIndexReference[],
+  store: IssueReadStore,
+): Promise<IssueDTO[]> {
+  const primaryKeys = uniqueKeys(
+    references.flatMap((reference) =>
+      reference?.primaryKey ? [reference.primaryKey] : []
+    ),
+  );
+  const issues = (await getManyInBatches(primaryKeys, store))
+    .flatMap((entry) => entry.value === null ? [] : [entry.value as Issue]);
+
+  return await resolveIssues(issues, store);
+}
+
+export async function inspectIssueIntegrity(
+  options: { store?: IssueReadStore; uploadDir?: string } = {},
+): Promise<IssueIntegrityReport> {
+  const { store = kv, uploadDir = appConfig.uploadDir } = options;
+  const issues = (await Array.fromAsync(
+    store.list<Issue>({ prefix: [IssueIndex] }),
+  )).map((entry) => entry.value);
+  const issueIds = new Set(issues.map((issue) => issue.id));
+  const relationKeys = uniqueKeys(issues.flatMap((issue) => [
+    [LocalCommunityIndex, issue.communityId],
+    [IssueCategoryPrimaryKey, issue.categoryId],
+    [IssueTypePrimaryKey, issue.typeId],
+  ]));
+  const existingRelations = new Set(
+    (await getManyInBatches(relationKeys, store))
+      .filter((entry) => entry.value !== null)
+      .map((entry) => keyId(entry.key)),
+  );
+  const orphanedReferences: OrphanedIssueReference[] = [];
+
+  for (const issue of issues) {
+    const references: Array<[IssueRelation, string, Deno.KvKey]> = [
+      ["community", issue.communityId, [
+        LocalCommunityIndex,
+        issue.communityId,
+      ]],
+      ["category", issue.categoryId, [
+        IssueCategoryPrimaryKey,
+        issue.categoryId,
+      ]],
+      ["type", issue.typeId, [IssueTypePrimaryKey, issue.typeId]],
+    ];
+
+    for (const [relation, referencedId, key] of references) {
+      if (!existingRelations.has(keyId(key))) {
+        orphanedReferences.push({ issueId: issue.id, relation, referencedId });
+      }
+    }
+  }
+
+  const orphanedUploads: string[] = [];
+  try {
+    for await (const entry of Deno.readDir(uploadDir)) {
+      if (!issueIds.has(entry.name)) {
+        orphanedUploads.push(entry.name);
+      }
+    }
+  } catch (error) {
+    if (!(error instanceof Deno.errors.NotFound)) {
+      throw error;
+    }
+  }
+
+  return {
+    orphanedReferences,
+    orphanedUploads: orphanedUploads.sort(),
+  };
 }
 
 export async function inspectIssueIndexes(
