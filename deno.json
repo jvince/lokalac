@@ -31,6 +31,8 @@
     "@std/fs": "jsr:@std/fs@^1.0.24",
     "@std/path": "jsr:@std/path@^1.1.6",
     "@std/ulid": "jsr:@std/ulid@^1.0.0",
+    "@turf/boolean-point-in-polygon": "npm:@turf/boolean-point-in-polygon@^7.4.0",
+    "@turf/helpers": "npm:@turf/helpers@^7.4.0",
     "@types/leaflet": "npm:@types/leaflet@^1.9.21",
     "@types/node": "npm:@types/node@^26.1.1",
     "@valibot/valibot": "jsr:@valibot/valibot@^1.4.2",

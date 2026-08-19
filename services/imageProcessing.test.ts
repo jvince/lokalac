@@ -1,7 +1,11 @@
 import { assertEquals, assertRejects } from "@std/assert";
 import { join } from "@std/path";
 import sharp from "sharp";
-import { processImages, processImagesAndPersist } from "./imageProcessing.ts";
+import {
+  ImageValidationError,
+  processImages,
+  processImagesAndPersist,
+} from "./imageProcessing.ts";
 
 async function pathExists(path: string) {
   try {
@@ -100,7 +104,7 @@ Deno.test("image processing", async (t) => {
             uploadDir,
             maxDimension: 32,
           }),
-        Error,
+        ImageValidationError,
         "error.image_dimensions_too_large",
       );
       assertEquals(await pathExists(join(uploadDir, id)), false);
@@ -110,11 +114,14 @@ Deno.test("image processing", async (t) => {
       const id = "pixels";
       const image = await createImageFile(40, 30);
 
-      await assertRejects(() =>
-        processImages(id, [image], {
-          uploadDir,
-          maxPixels: 1_000,
-        })
+      await assertRejects(
+        () =>
+          processImages(id, [image], {
+            uploadDir,
+            maxPixels: 1_000,
+          }),
+        ImageValidationError,
+        "error.image_invalid",
       );
       assertEquals(await pathExists(join(uploadDir, id)), false);
     });
@@ -126,10 +133,13 @@ Deno.test("image processing", async (t) => {
       });
       const valid = await createImageFile(10, 10);
 
-      await assertRejects(() =>
-        processImages(id, [valid, corrupt], {
-          uploadDir,
-        })
+      await assertRejects(
+        () =>
+          processImages(id, [valid, corrupt], {
+            uploadDir,
+          }),
+        ImageValidationError,
+        "error.image_invalid",
       );
       assertEquals(await pathExists(join(uploadDir, id)), false);
     });
