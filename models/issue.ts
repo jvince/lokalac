@@ -51,6 +51,14 @@ export interface IssueDTO extends Issue {
   type: IssueType;
 }
 
+export interface IssueSnapshot {
+  issue: IssueDTO;
+  versionstamp: string;
+}
+
+export class IssueNotFoundError extends Error {}
+export class IssueUpdateConflictError extends Error {}
+
 export enum IssueStatus {
   Open = "open",
   Reported = "reported",
@@ -214,12 +222,20 @@ export async function updateIssue(
   id: string,
   patch: Partial<Issue>,
   store: IssueUpdateStore = kv,
+  expectedVersionstamp?: string,
 ) {
   const key = getIssuePrimaryKey(id);
   const entry = await store.get<Issue>(key);
 
   if (entry.value === null) {
-    throw new Error(`Issue with ID ${id} does not exist`);
+    throw new IssueNotFoundError(`Issue with ID ${id} does not exist`);
+  }
+
+  if (
+    expectedVersionstamp !== undefined &&
+    entry.versionstamp !== expectedVersionstamp
+  ) {
+    throw new IssueUpdateConflictError(`Issue with ID ${id} was modified`);
   }
 
   const updatedIssue = { ...entry.value, ...patch, id };
@@ -247,6 +263,9 @@ export async function updateIssue(
   const result = await operation.commit();
 
   if (!result.ok) {
+    if (expectedVersionstamp !== undefined) {
+      throw new IssueUpdateConflictError(`Issue with ID ${id} was modified`);
+    }
     throw new Error(`Failed to update issue with ID ${id}`);
   }
 
@@ -320,6 +339,19 @@ export async function getIssueById(
   }
 
   return (await resolveIssues([result.value], store))[0] ?? null;
+}
+
+export async function getIssueSnapshot(
+  id: string | undefined | null,
+  store: IssueReadStore = kv,
+): Promise<IssueSnapshot | null> {
+  if (!isValidUlid(id)) return null;
+
+  const entry = await store.get<Issue>(getIssuePrimaryKey(id));
+  if (entry.value === null || entry.versionstamp === null) return null;
+
+  const issue = (await resolveIssues([entry.value], store))[0];
+  return issue ? { issue, versionstamp: entry.versionstamp } : null;
 }
 
 export async function getIssuesByCommunity(

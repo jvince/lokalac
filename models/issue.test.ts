@@ -13,6 +13,7 @@ import {
   type IssueIndexReference,
   IssueSecondaryIndex,
   IssueStatus,
+  IssueUpdateConflictError,
   repairIssueIndexes,
   updateIssue,
 } from "./issue.ts";
@@ -207,6 +208,23 @@ Deno.test("issue persistence keeps secondary indexes consistent", async (t) => {
       assertEquals(
         ["First", "Second"].includes(stored.value?.note ?? ""),
         true,
+      );
+    });
+
+    await t.step("rejects an update with a stale versionstamp", async () => {
+      const issue = createIssue(ulid());
+      await insertIssue(issue, store);
+      const entry = await store.get<Issue>(getIssuePrimaryKey(issue.id));
+      await updateIssue(issue.id, { note: "Newer" }, store);
+
+      await assertRejects(
+        () =>
+          updateIssue(issue.id, { note: "Stale" }, store, entry.versionstamp!),
+        IssueUpdateConflictError,
+      );
+      assertEquals(
+        (await store.get<Issue>(getIssuePrimaryKey(issue.id))).value?.note,
+        "Newer",
       );
     });
 
