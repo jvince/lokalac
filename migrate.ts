@@ -14,33 +14,74 @@ export interface MigrationValue {
 
 export type Migration = [string, MigrationHandler];
 
-function needsMigration(migrations: MigrationValue[], version: string) {
-  return !migrations.some((item) => item.version === version && item.done);
+export type MigrationFailureStage = "handler" | "commit";
+
+export class MigrationError extends Error {
+  constructor(
+    public readonly version: string,
+    public readonly stage: MigrationFailureStage,
+    message: string,
+    options?: ErrorOptions,
+  ) {
+    super(message, options);
+    this.name = "MigrationError";
+  }
 }
 
 export async function migrate(migrations: Migration[], kv: Deno.Kv) {
-  const migrationsResult =
-    (await Array.fromAsync(kv.list<MigrationValue>({ prefix: ["migration"] })))
-      .map((item) => item.value);
-
   for (const [version, handler] of migrations) {
-    if (needsMigration(migrationsResult, version)) {
-      const transaction = kv.atomic();
+    const migrationKey: Deno.KvKey = ["migration", version];
+    const state = await kv.get<MigrationValue>(migrationKey);
 
+    if (state.value?.done) {
+      continue;
+    }
+
+    console.log(`Running migration ${version}.`);
+
+    let handlerResult: Deno.KvMutation | Deno.KvMutation[];
+    try {
+      handlerResult = await handler(kv);
+    } catch (error) {
+      throw new MigrationError(
+        version,
+        "handler",
+        `Migration ${version} failed while preparing mutations.`,
+        { cause: error },
+      );
+    }
+
+    const mutations = Array.isArray(handlerResult)
+      ? handlerResult
+      : [handlerResult];
+    let expectedState = state;
+
+    // A failed check means another process changed this migration marker. If it
+    // completed the migration, our identical mutations do not need to run.
+    while (true) {
+      let result: Deno.KvCommitResult | Deno.KvCommitError;
       try {
-        console.log(`Running migration ${version}.`);
-        await kv.set(["migration", version], { version, done: false });
-        const handlerResult = await handler(kv);
-
-        transaction.mutate(
-          ...(Array.isArray(handlerResult) ? handlerResult : [handlerResult]),
-        );
-        await transaction.commit();
-        await kv.set(["migration", version], { version, done: true });
+        result = await kv.atomic()
+          .check(expectedState)
+          .mutate(...mutations)
+          .set(migrationKey, { version, done: true } satisfies MigrationValue)
+          .commit();
       } catch (error) {
-        console.error(`Migration ${version} failed. Error: ${error}`);
-        kv.close();
-        Deno.exit(1);
+        throw new MigrationError(
+          version,
+          "commit",
+          `Migration ${version} failed while committing mutations.`,
+          { cause: error },
+        );
+      }
+
+      if (result.ok) {
+        break;
+      }
+
+      expectedState = await kv.get<MigrationValue>(migrationKey);
+      if (expectedState.value?.done) {
+        break;
       }
     }
   }
