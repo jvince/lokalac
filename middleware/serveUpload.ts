@@ -1,16 +1,26 @@
 import { define } from "@/types/app.ts";
 import { textResponse } from "@/utils/http.ts";
+import {
+  FileSystemImageStorage,
+  type ImageStorage,
+  imageStorage,
+  UPLOAD_ROUTE,
+} from "@/services/imageStorage.ts";
 
 interface UploadServingOptions {
-  uploadDir: string;
+  storage?: ImageStorage;
+  uploadDir?: string;
   uploadRoot?: string;
 }
 
 export const serveUpload = (options: UploadServingOptions) =>
   define.middleware(async (ctx) => {
-    const { uploadDir, uploadRoot = uploadDir } = options;
+    const storage = options.storage ||
+      (options.uploadRoot || options.uploadDir
+        ? new FileSystemImageStorage(options.uploadRoot || options.uploadDir!)
+        : imageStorage);
     const pathname = ctx.url.pathname;
-    const uploadPrefix = `/${uploadDir}/`;
+    const uploadPrefix = `/${UPLOAD_ROUTE}/`;
 
     if (!pathname.startsWith(uploadPrefix)) {
       return ctx.next();
@@ -18,40 +28,28 @@ export const serveUpload = (options: UploadServingOptions) =>
 
     const relativePath = pathname.slice(uploadPrefix.length);
 
+    const parts = relativePath.split("/");
     if (
+      parts.length !== 2 ||
+      parts.some((part) => !part || part === "." || part === "..") ||
       relativePath.includes("..") ||
       relativePath.includes("\\") ||
-      !relativePath.endsWith(".webp")
+      !parts[1].endsWith(".webp")
     ) {
       return textResponse("Forbidden", 403);
     }
 
-    try {
-      const filePath = `${uploadRoot}/${relativePath}`;
-      const fileInfo = await Deno.stat(filePath);
+    const stored = await storage.get(parts[0], parts[1]);
+    if (!stored) return textResponse("Not Found", 404);
 
-      if (!fileInfo.isFile) {
-        return textResponse("Not Found", 404);
-      }
-
-      const headers = new Headers({
-        "Content-Type": "image/webp",
-        "Content-Length": String(fileInfo.size),
-        "Cache-Control": "public, max-age=31536000, immutable",
-        "X-Content-Type-Options": "nosniff",
-      });
-
-      const file = await Deno.open(filePath);
-
-      return new Response(file.readable, { headers });
-    } catch (error) {
-      if (
-        error instanceof Deno.errors.NotFound ||
-        error instanceof Deno.errors.NotADirectory
-      ) {
-        return textResponse("Not Found", 404);
-      }
-
-      throw error;
+    const headers = new Headers({
+      "Content-Type": stored.contentType,
+      "Cache-Control": "public, max-age=31536000, immutable",
+      "X-Content-Type-Options": "nosniff",
+    });
+    if (stored.contentLength !== undefined) {
+      headers.set("Content-Length", String(stored.contentLength));
     }
+
+    return new Response(stored.body, { headers });
   });

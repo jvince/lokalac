@@ -1,7 +1,11 @@
 import type { Semaphore } from "@/services/semaphore.ts";
 import { createSemaphore } from "@/services/semaphore.ts";
-import { ensureDir } from "@std/fs";
-import { join } from "@std/path";
+import {
+  FileSystemImageStorage,
+  type ImageStorage,
+  imageStorage,
+  imageUrl,
+} from "@/services/imageStorage.ts";
 import sharp, { type Metadata, type Sharp } from "sharp";
 
 export const MAX_IMAGE_PIXELS = 40_000_000;
@@ -23,16 +27,25 @@ export interface ImageProcessingOptions {
   queueTimeoutMs?: number;
   semaphore?: Semaphore;
   timeoutSeconds?: number;
-  uploadDir: string;
+  storage?: ImageStorage;
+  uploadDir?: string;
 }
 
-export async function removeProcessedImages(id: string, uploadDir: string) {
+function resolveStorage(options: ImageProcessingOptions): ImageStorage {
+  return options.storage ||
+    (options.uploadDir
+      ? new FileSystemImageStorage(options.uploadDir)
+      : imageStorage);
+}
+
+export async function removeProcessedImages(
+  id: string,
+  storage: ImageStorage,
+) {
   try {
-    await Deno.remove(join(uploadDir, id), { recursive: true });
+    await storage.deleteIssue(id);
   } catch (error) {
-    if (!(error instanceof Deno.errors.NotFound)) {
-      console.error(`Failed to clean up images for issue ${id}:`, error);
-    }
+    console.error(`Failed to clean up images for issue ${id}:`, error);
   }
 }
 
@@ -45,7 +58,7 @@ export async function processImages(
     queueTimeoutMs = IMAGE_PROCESSING_QUEUE_TIMEOUT_MS,
     semaphore = imageProcessingSemaphore,
     timeoutSeconds = IMAGE_PROCESSING_TIMEOUT_SECONDS,
-    uploadDir,
+    ...storageOptions
   }: ImageProcessingOptions,
 ) {
   if (!files.length) {
@@ -53,8 +66,7 @@ export async function processImages(
   }
 
   return await semaphore.run(async () => {
-    const issueDirectory = join(uploadDir, id);
-    await ensureDir(issueDirectory);
+    const storage = resolveStorage(storageOptions);
     const imageUrls: string[] = [];
 
     try {
@@ -97,13 +109,13 @@ export async function processImages(
           withoutEnlargement: true,
         }).timeout({ seconds: timeoutSeconds }).webp().toBuffer();
 
-        await Deno.writeFile(join(issueDirectory, fileName), buffer);
-        imageUrls.push(`/${uploadDir}/${id}/${fileName}`);
+        await storage.put(id, fileName, buffer);
+        imageUrls.push(imageUrl(id, fileName));
       }
 
       return imageUrls;
     } catch (error) {
-      await removeProcessedImages(id, uploadDir);
+      await removeProcessedImages(id, storage);
       throw error;
     }
   }, queueTimeoutMs);
@@ -115,11 +127,12 @@ export async function processImagesAndPersist<T>(
   options: ImageProcessingOptions,
   persist: (imageUrls: string[]) => Promise<T>,
 ): Promise<T> {
+  const storage = resolveStorage(options);
   try {
-    const imageUrls = await processImages(id, files, options);
+    const imageUrls = await processImages(id, files, { ...options, storage });
     return await persist(imageUrls);
   } catch (error) {
-    await removeProcessedImages(id, options.uploadDir);
+    await removeProcessedImages(id, storage);
     throw error;
   }
 }
