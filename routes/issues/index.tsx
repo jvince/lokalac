@@ -42,6 +42,7 @@ interface Data {
   issues: IssueDTO[];
   communities: LocalCommunity[];
   filter: FilterSort;
+  updated: boolean;
 }
 
 export const handler = define.handlers({
@@ -92,6 +93,7 @@ export const handler = define.handlers({
       },
       issues: result.items,
       communities,
+      updated: ctx.url.searchParams.get("updated") === "1",
     });
   },
 });
@@ -112,6 +114,9 @@ export default define.page<typeof handler>((ctx) => {
 
   return (
     <>
+      {data.updated && (
+        <div class="alert alert-success">{t("common.issue_updated")}</div>
+      )}
       <Form id="filter" lang={state.language.code} />
       <Table
         items={data.issues}
@@ -296,12 +301,14 @@ export default define.page<typeof handler>((ctx) => {
             cell: (item) => (
               <Link
                 as="btn"
-                color="warning"
-                href={`/issues/${item.id}/delete`}
+                color="secondary"
+                href={`/issues/${item.id}/edit?return_to=${
+                  encodeURIComponent(`${ctx.url.pathname}${ctx.url.search}`)
+                }`}
                 lang={state.language.code}
                 variant="soft"
               >
-                {t("common.delete")}
+                {t("common.edit")}
               </Link>
             ),
           },

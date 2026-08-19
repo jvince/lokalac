@@ -3,6 +3,7 @@
   "edit": "Uredi",
   "delete": "Obriši",
   "back": "Nazad",
+  "save": "Sačuvaj",
   "link": "Link",
   "close": "Zatvori",
   "submit": "Pošalji",
@@ -36,6 +37,9 @@
   "view_location": "Pogledaj lokaciju",
   "view_note": "Pogledaj napomenu",
   "view_more": "Pogledaj više",
+  "images": "Slike",
+  "issue_not_found": "Problem nije pronađen.",
+  "issue_updated": "Problem je uspešno ažuriran.",
   "error": {
     "invalid_form_submission": "Poslata prijava nije ispravna.",
     "request_body_too_large": "Poslati podaci su preveliki.",
@@ -58,6 +62,9 @@
     "image_invalid_type": "Format slike nije podržan.",
     "too_many_images": "Izabrano je previše slika.",
     "note_too_long": "Napomena je predugačka.",
-    "animated_image_not_allowed": "Animirane slike nisu dozvoljene."
+    "animated_image_not_allowed": "Animirane slike nisu dozvoljene.",
+    "issue_status_invalid": "Izabrani status nije ispravan.",
+    "issue_update_conflict": "Problem je u međuvremenu izmenjen. Pregledajte najnovije podatke i pokušajte ponovo.",
+    "issue_update_failed": "Ažuriranje problema nije uspelo. Pokušajte ponovo."
   }
 }

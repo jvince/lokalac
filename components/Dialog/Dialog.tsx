@@ -1,5 +1,3 @@
-import { computed, useSignal } from "@preact/signals";
-import { Show } from "@preact/signals/utils";
 import { clsx } from "clsx/lite";
 import {
   type ComponentChild,
@@ -9,7 +7,14 @@ import {
   toChildArray,
 } from "preact";
 import { createPortal } from "preact/compat";
-import { useCallback, useLayoutEffect, useMemo, useRef } from "preact/hooks";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "preact/hooks";
 import { DialogContextProvider, DialogContextValue } from "./dialogContext.ts";
 import { DialogTrigger } from "./DialogTrigger.tsx";
 
@@ -65,10 +70,8 @@ export function Dialog(props: DialogProps) {
   } = props;
 
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const isOpen = useSignal(defaultOpen);
-  const internalOpen = computed(() =>
-    open?.valueOf() as boolean ?? isOpen.value ?? false
-  );
+  const controlledOpen = open?.valueOf() as boolean | undefined;
+  const [isOpen, setIsOpen] = useState(controlledOpen ?? defaultOpen ?? false);
   const slots = getChildSlots(children);
 
   const className = clsx(
@@ -79,11 +82,11 @@ export function Dialog(props: DialogProps) {
   );
 
   const onRequestOpenChangeHandler = useCallback((e: DialogOpenChangeEvent) => {
-    if (internalOpen.value !== e.detail.open) {
+    if (isOpen !== e.detail.open) {
       onOpenChange?.(e);
     }
-    isOpen.value = e.detail.open;
-  }, []);
+    setIsOpen(e.detail.open);
+  }, [isOpen, onOpenChange]);
 
   const requestOpenChange = useCallback((e: DialogOpenChangeEvent) => {
     onRequestOpenChangeHandler(e);
@@ -94,10 +97,16 @@ export function Dialog(props: DialogProps) {
   }, []);
 
   const contextValue = useMemo<DialogContextValue>(() => ({
-    open: open?.valueOf() as boolean ?? isOpen.value ?? false,
+    open: isOpen,
     size,
     requestOpenChange,
   }), [isOpen, size, requestOpenChange]);
+
+  useEffect(() => {
+    if (controlledOpen !== undefined) {
+      setIsOpen(controlledOpen);
+    }
+  }, [controlledOpen]);
 
   useLayoutEffect(() => {
     const dialog = dialogRef.current;
@@ -106,33 +115,33 @@ export function Dialog(props: DialogProps) {
       return;
     }
 
-    if (internalOpen.value) {
+    if (isOpen && !dialog.open) {
       dialog.showModal();
-    } else {
+    } else if (!isOpen && dialog.open) {
       dialog.close();
     }
-  }, [internalOpen.value]);
+  }, [isOpen]);
+
+  const portalTarget = globalThis.document?.body;
 
   return (
     <DialogContextProvider value={contextValue}>
       {slots.triggerElement}
 
-      <Show when={internalOpen}>
-        {createPortal(
-          <dialog
-            {...restProps}
-            ref={dialogRef}
-            class={className}
-            onClose={onDialogCloseHandler}
-          >
-            {slots.children}
-            <form method="dialog" className="modal-backdrop">
-              <button type="submit">close</button>
-            </form>
-          </dialog>,
-          globalThis.document?.body,
-        )}
-      </Show>
+      {isOpen && portalTarget && createPortal(
+        <dialog
+          {...restProps}
+          ref={dialogRef}
+          class={className}
+          onClose={onDialogCloseHandler}
+        >
+          {slots.children}
+          <form method="dialog" className="modal-backdrop">
+            <button type="submit">close</button>
+          </form>
+        </dialog>,
+        portalTarget,
+      )}
     </DialogContextProvider>
   );
 }

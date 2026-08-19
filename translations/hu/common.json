@@ -4,6 +4,7 @@
   "edit": "Szerkesztés",
   "delete": "Törlés",
   "back": "Vissza",
+  "save": "Mentés",
   "close": "Bezárás",
   "submit": "Beküldés",
   "submitted_issues": "Bejelentett problémák",
@@ -36,6 +37,9 @@
   "view_location": "Helyszín megtekintése",
   "view_note": "Megjegyzés megtekintése",
   "view_more": "Továbbiak megtekintése",
+  "images": "Képek",
+  "issue_not_found": "A probléma nem található.",
+  "issue_updated": "A probléma sikeresen frissült.",
   "error": {
     "invalid_form_submission": "Érvénytelen beküldés.",
     "request_body_too_large": "A beküldött adatok túl nagyok.",
@@ -58,6 +62,9 @@
     "image_invalid_type": "A kép formátuma nem támogatott.",
     "too_many_images": "Túl sok kép lett kiválasztva.",
     "note_too_long": "A megjegyzés túl hosszú.",
-    "animated_image_not_allowed": "Animált képek feltöltése nem engedélyezett."
+    "animated_image_not_allowed": "Animált képek feltöltése nem engedélyezett.",
+    "issue_status_invalid": "A kiválasztott állapot érvénytelen.",
+    "issue_update_conflict": "A problémát időközben módosították. Tekintse át a legfrissebb adatokat, majd próbálja újra.",
+    "issue_update_failed": "A probléma frissítése sikertelen. Kérjük, próbálja újra."
   }
 }

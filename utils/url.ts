@@ -71,3 +71,35 @@ export function createLanguageSwitchUrl(
 
   return `${url.pathname}${url.search}${url.hash}`;
 }
+
+export function normalizeIssueListReturnUrl(
+  value: string | null | undefined,
+  languageCode: string,
+): string {
+  const fallback = createLanguageSwitchUrl("/issues", languageCode);
+  if (!value) return fallback;
+
+  try {
+    const url = new URL(value, "internal://domain");
+    if (
+      url.protocol !== "internal:" || url.host !== "domain" ||
+      url.pathname !== "/issues"
+    ) {
+      return fallback;
+    }
+
+    return `${url.pathname}${url.search}`;
+  } catch {
+    return fallback;
+  }
+}
+
+export function addQueryParameter(
+  path: string,
+  name: string,
+  value: string,
+): string {
+  const url = new URL(path, "internal://domain");
+  url.searchParams.set(name, value);
+  return `${url.pathname}${url.search}`;
+}

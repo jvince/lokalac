@@ -7,6 +7,7 @@ import { DialogContent } from "@/components/Dialog/DialogContent.tsx";
 import { Form } from "@/components/Form.tsx";
 import { Input } from "@/components/Input.tsx";
 import { Label } from "@/components/Label.tsx";
+import { Link } from "@/components/Link.tsx";
 import { LeafletMapSSR } from "@/components/LeafletMapSSR.tsx";
 import { MarkerSSR } from "@/components/MarkerSSR.ts";
 import { Select } from "@/components/Select.tsx";
@@ -20,6 +21,7 @@ import {
   MAX_ISSUE_NOTE_LENGTH,
 } from "@/models/issue-submission.ts";
 import type { IssueType } from "@/models/issue-type.ts";
+import type { IssueStatus } from "@/models/issue.ts";
 import type { LocalCommunity } from "@/models/local-community.ts";
 import type { WithI18nState } from "@/plugins/i18n/src/types.ts";
 import { useComputed, useSignal } from "@preact/signals";
@@ -32,19 +34,37 @@ import { useCallback } from "preact/hooks";
 import { IconMapPinOff, IconMapPinPlus } from "../icons.ts";
 import { ImageUpload } from "./ImageUpload.tsx";
 
-type IssueSubmissionFormValues = Partial<
-  Pick<
-    IssueSubmission,
-    "categoryId" | "typeId" | "communityId" | "location" | "note"
+const EDITABLE_ISSUE_STATUSES = [
+  "open",
+  "reported",
+  "resolved",
+  "rejected",
+] as const;
+
+type IssueSubmissionFormValues =
+  & Partial<
+    Pick<
+      IssueSubmission,
+      "categoryId" | "typeId" | "communityId" | "location" | "note"
+    >
   >
->;
+  & { status?: IssueStatus };
 
 interface IssueFormProps extends WithI18nState {
+  action?: string;
+  cancelHref?: string;
   categories: IssueCategory[];
   children?: ComponentChildren;
   communities: LocalCommunity[];
+  deleteHref?: string;
+  existingImages?: string[];
   issueTypes: IssueType[];
   formValues?: IssueSubmissionFormValues;
+  returnTo?: string;
+  showImageUpload?: boolean;
+  showStatus?: boolean;
+  submitLabel?: string;
+  versionstamp?: string;
 }
 
 interface IssueFormState {
@@ -116,13 +136,15 @@ export const IssueForm = withGlobalContext((props: IssueFormProps) => {
   return (
     <Form
       method="POST"
-      action="/issues/submit"
+      action={props.action ?? "/issues/submit"}
       lang={props.i18nState.language.code}
-      encType="multipart/form-data"
+      encType={props.showImageUpload === false
+        ? "application/x-www-form-urlencoded"
+        : "multipart/form-data"}
     >
       <fieldset class="fieldset gap-y-4">
         <Select
-          defaultValue={formState.localCommunity}
+          value={formState.localCommunity ?? ""}
           fullWidth
           label={t("common.local_community")}
           name="local_community"
@@ -130,18 +152,22 @@ export const IssueForm = withGlobalContext((props: IssueFormProps) => {
           size="lg"
           onChange={onChangeHandler("localCommunity")}
         >
-          <option disabled selected value="">
+          <option disabled selected={!formState.localCommunity} value="">
             {t("common.select_local_community")}
           </option>
           {props.communities.map((community) => (
-            <option value={community.id} key={community.id}>
+            <option
+              value={community.id}
+              key={community.id}
+              selected={formState.localCommunity === community.id}
+            >
               {fromObject(community, "name")}
             </option>
           ))}
         </Select>
 
         <Select
-          defaultValue={formState.issueCategory}
+          value={formState.issueCategory ?? ""}
           fullWidth
           label={t("common.issue_category")}
           name="issue_category"
@@ -149,18 +175,22 @@ export const IssueForm = withGlobalContext((props: IssueFormProps) => {
           size="lg"
           onChange={onChangeHandler("issueCategory")}
         >
-          <option disabled selected value="">
+          <option disabled selected={!formState.issueCategory} value="">
             {t("common.select_issue_category")}
           </option>
           {props.categories.map((category) => (
-            <option value={category.id} key={category.id}>
+            <option
+              value={category.id}
+              key={category.id}
+              selected={formState.issueCategory === category.id}
+            >
               {fromObject(category, "name")}
             </option>
           ))}
         </Select>
 
         <Select
-          defaultValue={formState.issueType}
+          value={formState.issueType ?? ""}
           fullWidth
           label={t("common.issue_type")}
           name="issue_type"
@@ -168,7 +198,7 @@ export const IssueForm = withGlobalContext((props: IssueFormProps) => {
           size="lg"
           onChange={onChangeHandler("issueType")}
         >
-          <option disabled selected value="">
+          <option disabled selected={!formState.issueType} value="">
             {t("common.select_issue_type")}
           </option>
           {props.issueTypes
@@ -176,7 +206,11 @@ export const IssueForm = withGlobalContext((props: IssueFormProps) => {
               issueType.category === formState.issueCategory
             )
             .map((issue) => (
-              <option value={issue.id} key={issue.id}>
+              <option
+                value={issue.id}
+                key={issue.id}
+                selected={formState.issueType === issue.id}
+              >
                 {fromObject(issue, "name")}
               </option>
             ))}
@@ -276,7 +310,35 @@ export const IssueForm = withGlobalContext((props: IssueFormProps) => {
           name="note"
         />
 
-        <ImageUpload />
+        {props.showStatus && (
+          <Select
+            defaultValue={formValues?.status}
+            fullWidth
+            label={t("common.status")}
+            name="status"
+            required
+            size="lg"
+          >
+            {EDITABLE_ISSUE_STATUSES.map((status) => (
+              <option key={status} value={status}>
+                {t(`common.status_${status}`)}
+              </option>
+            ))}
+          </Select>
+        )}
+
+        {!!props.existingImages?.length && (
+          <div>
+            <Label size="lg">{t("common.images")}</Label>
+            <div class="flex flex-wrap gap-2">
+              {props.existingImages.map((image) => (
+                <img class="max-h-40" key={image} src={image} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {props.showImageUpload !== false && <ImageUpload />}
 
         <Button
           color="primary"
@@ -284,14 +346,44 @@ export const IssueForm = withGlobalContext((props: IssueFormProps) => {
           size="lg"
           type="submit"
         >
-          {t("common.submit")}
+          {props.submitLabel ?? t("common.submit")}
         </Button>
+
+        {(props.cancelHref || props.deleteHref) && (
+          <div class="flex justify-between gap-2">
+            {props.cancelHref && (
+              <Link
+                as="btn"
+                href={props.cancelHref}
+                lang={props.i18nState.language.code}
+              >
+                {t("common.back")}
+              </Link>
+            )}
+            {props.deleteHref && (
+              <Link
+                as="btn"
+                color="warning"
+                href={props.deleteHref}
+                lang={props.i18nState.language.code}
+              >
+                {t("common.delete")}
+              </Link>
+            )}
+          </div>
+        )}
 
         <input
           type="hidden"
           name="location"
           value={locationFormValue}
         />
+        {props.versionstamp && (
+          <input type="hidden" name="versionstamp" value={props.versionstamp} />
+        )}
+        {props.returnTo && (
+          <input type="hidden" name="return_to" value={props.returnTo} />
+        )}
       </fieldset>
     </Form>
   );

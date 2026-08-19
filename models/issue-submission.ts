@@ -28,7 +28,7 @@ const IssueImageSchema = v.pipe(
   ),
 );
 
-const IssueLocationSchema = v.object({
+export const IssueLocationSchema = v.object({
   lat: v.pipe(
     v.number("error.location_invalid"),
     v.finite("error.location_invalid"),
@@ -43,7 +43,7 @@ const IssueLocationSchema = v.object({
   ),
 }, "error.location_invalid");
 
-export const IssueSubmissionSchema = v.object({
+export const IssueDetailsSchema = v.object({
   communityId: v.pipe(
     v.string("error.local_community_required"),
     v.minLength(1, "error.local_community_required"),
@@ -66,6 +66,10 @@ export const IssueSubmissionSchema = v.object({
     ),
   ),
   location: v.optional(IssueLocationSchema),
+});
+
+export const IssueSubmissionSchema = v.object({
+  ...IssueDetailsSchema.entries,
   images: v.pipe(
     v.array(IssueImageSchema, "error.images_invalid"),
     v.maxLength(

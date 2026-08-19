@@ -1,5 +1,9 @@
 import { assertEquals } from "@std/assert";
-import { createLanguageSwitchUrl } from "./url.ts";
+import {
+  addQueryParameter,
+  createLanguageSwitchUrl,
+  normalizeIssueListReturnUrl,
+} from "./url.ts";
 
 Deno.test("language switch URLs", async (t) => {
   await t.step("preserve query parameters while changing lang", () => {
@@ -28,4 +32,26 @@ Deno.test("language switch URLs", async (t) => {
       "/issues?status=resolved&lang=hu",
     );
   });
+});
+
+Deno.test("issue list return URLs are confined to the application", () => {
+  assertEquals(
+    normalizeIssueListReturnUrl(
+      "/issues?community=center&status=open&lang=hu",
+      "hu",
+    ),
+    "/issues?community=center&status=open&lang=hu",
+  );
+  assertEquals(
+    normalizeIssueListReturnUrl("https://example.com/issues", "hu"),
+    "/issues?lang=hu",
+  );
+  assertEquals(
+    normalizeIssueListReturnUrl("//example.com/issues", "sr-Latn-RS"),
+    "/issues",
+  );
+  assertEquals(
+    addQueryParameter("/issues?status=open", "updated", "1"),
+    "/issues?status=open&updated=1",
+  );
 });
