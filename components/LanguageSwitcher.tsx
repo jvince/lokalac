@@ -1,16 +1,8 @@
 import { useGlobalContext } from "@/globalContext.ts";
 import { useTranslation } from "@/hooks/useTranslation.ts";
 import { IconLanguage } from "@/icons.ts";
-import { defaultLanguage } from "@/languages.ts";
+import { createLanguageSwitchUrl } from "@/utils/url.ts";
 import clsx from "clsx";
-
-function getLanguageLinkProps(code: string, path: string) {
-  if (code === defaultLanguage.code) {
-    return path;
-  }
-
-  return `${path}?lang=${code}`;
-}
 
 export function LanguageSwitcher() {
   const { path } = useGlobalContext();
@@ -19,7 +11,6 @@ export function LanguageSwitcher() {
   return (
     <div data-language-switcher class="dropdown dropdown-end">
       <div
-        id="test"
         class="btn btn-square btn-soft"
         role="button"
         tabIndex={0}
@@ -30,9 +21,9 @@ export function LanguageSwitcher() {
 
       <ul class="menu dropdown-content bg-base-200 rounded-box z-1 w-52 p-2 gap-1.5 shadow-sm">
         {supportedLanguages.map((lang) => (
-          <li>
+          <li key={lang.code}>
             <a
-              href={getLanguageLinkProps(lang.code, path)}
+              href={createLanguageSwitchUrl(path, lang.code)}
               class={clsx(
                 lang.code === language.code && "menu-active",
               )}

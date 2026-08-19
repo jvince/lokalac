@@ -230,7 +230,7 @@ export default define.page<typeof handler>((ctx) => {
           baseURL: ctx.url.origin,
           language: state.language,
           translation: state.translation,
-          path: ctx.url.pathname,
+          path: `${ctx.url.pathname}${ctx.url.search}`,
         }}
         categories={data.categories}
         communities={data.communities}
