@@ -16,6 +16,7 @@ import { LocalCommunity, LocalCommunityIndex } from "./local-community.ts";
 export const IssueIndex = "issue";
 
 export enum IssueSecondaryIndex {
+  ByUpdatedAt = "issue_by_updated_at",
   ByCommunity = "issue_by_community",
   ByIssueStatus = "issue_by_status",
   ByCommunityAndStatus = "issue_by_community_and_status",
@@ -87,28 +88,25 @@ async function processIterator<T, K>(
   resolver: (item: T) => Promise<K | null>,
   limit: number | undefined = Number.POSITIVE_INFINITY,
 ) {
-  const _limit = limit - 1;
-  let _cursor = "";
+  let pageCursor = "";
   const items: K[] = [];
-  let count = 0;
 
   for await (const item of iterator) {
-    count += 1;
     const resolved = await resolver(item.value);
 
-    if (resolved !== null) {
-      items.push(resolved);
+    if (resolved === null) {
+      continue;
     }
 
-    if (count <= _limit) {
-      _cursor = iterator.cursor;
+    if (items.length === limit) {
+      return { cursor: pageCursor, items };
     }
+
+    items.push(resolved);
+    pageCursor = iterator.cursor;
   }
 
-  return {
-    cursor: count > _limit ? _cursor : "",
-    items: limit ? items.slice(0, _limit) : items,
-  };
+  return { cursor: "", items };
 }
 
 function getIssueDirectory(
@@ -139,17 +137,24 @@ export function getIssuePrimaryKey(id: string): IssuePrimaryKey {
 
 export function getIssueSecondaryKeys(issue: Issue): Deno.KvKey[] {
   return [[
+    IssueSecondaryIndex.ByUpdatedAt,
+    issue.updatedAt,
+    issue.id,
+  ], [
     IssueSecondaryIndex.ByCommunity,
     issue.communityId,
+    issue.updatedAt,
     issue.id,
   ], [
     IssueSecondaryIndex.ByIssueStatus,
     issue.status,
+    issue.updatedAt,
     issue.id,
   ], [
     IssueSecondaryIndex.ByCommunityAndStatus,
     issue.communityId,
     issue.status,
+    issue.updatedAt,
     issue.id,
   ]];
 }
@@ -314,7 +319,7 @@ export async function getIssuesByCommunity(
   return await processIterator(
     store.list<IssueIndexReference>({
       prefix: [IssueSecondaryIndex.ByCommunity, communityId],
-    }, options),
+    }, { ...options, limit: undefined }),
     (reference) => resolveIssueReference(reference, store),
     options?.limit,
   );
@@ -328,7 +333,7 @@ export async function getIssuesByStatus(
   return await processIterator(
     store.list<IssueIndexReference>({
       prefix: [IssueSecondaryIndex.ByIssueStatus, status],
-    }, options),
+    }, { ...options, limit: undefined }),
     (reference) => resolveIssueReference(reference, store),
     options?.limit,
   );
@@ -341,7 +346,14 @@ export async function getIssuesByCommunityAndStatus(
   store: Deno.Kv = kv,
 ) {
   if (
-    typeof communityId !== "string" || typeof status !== "string" ||
+    typeof communityId !== "string" || communityId.length === 0 ||
+    typeof status !== "string" ||
+    (status !== "all" && !isIssueStatus(status))
+  ) {
+    throw new TypeError("Invalid issue filters.");
+  }
+
+  if (
     (communityId === "all" && status === "all")
   ) {
     return await getIssues(options, store);
@@ -362,8 +374,9 @@ export async function getIssuesByCommunityAndStatus(
         communityId,
         status,
       ],
-    }, options),
+    }, { ...options, limit: undefined }),
     (reference) => resolveIssueReference(reference, store),
+    options?.limit,
   );
 }
 
@@ -372,8 +385,11 @@ export async function getIssues(
   store: Deno.Kv = kv,
 ) {
   return await processIterator(
-    store.list<Issue>({ prefix: [IssueIndex] }, options),
-    (issue) => resolve(issue, store),
+    store.list<IssueIndexReference>(
+      { prefix: [IssueSecondaryIndex.ByUpdatedAt] },
+      { ...options, limit: undefined },
+    ),
+    (reference) => resolveIssueReference(reference, store),
     options?.limit,
   );
 }

@@ -16,12 +16,17 @@ import {
 } from "@/icons.ts";
 import { DialogLocationView } from "@/islands/DialogLocationView.tsx";
 import { DialogNoteView } from "@/islands/DialogNotesView.tsx";
+import {
+  InvalidIssueListQueryError,
+  parseIssueListQuery,
+} from "@/models/issue-list-query.ts";
 import { getIssuesByCommunityAndStatus, IssueDTO } from "@/models/issue.ts";
 import {
   getLocalCommunities,
   LocalCommunity,
 } from "@/models/local-community.ts";
 import { define } from "@/types/app.ts";
+import { textResponse } from "@/utils/http.ts";
 import { page } from "fresh";
 
 const ITEMS_PER_PAGE = 50;
@@ -41,36 +46,52 @@ interface Data {
 
 export const handler = define.handlers({
   async GET(ctx) {
-    const community = ctx.url.searchParams.get("community") ?? "all";
-    const status = ctx.url.searchParams.get("status") ?? "all";
-    const cursor = ctx.url.searchParams.get("cursor") ?? "";
+    const communities = await Array.fromAsync(getLocalCommunities());
+    let query;
 
-    let updatedAt = ctx.url.searchParams.get("updatedAt") ?? "desc";
-    if (updatedAt !== "asc" && updatedAt !== "desc") {
-      updatedAt = "desc";
+    try {
+      query = parseIssueListQuery(
+        ctx.url.searchParams,
+        communities.map((community) => community.id),
+      );
+    } catch (error) {
+      if (error instanceof InvalidIssueListQueryError) {
+        return textResponse(error.message, 400);
+      }
+
+      throw error;
     }
 
     const options = {
-      cursor,
-      limit: ITEMS_PER_PAGE + 1,
-      reverse: updatedAt === "desc",
+      cursor: query.cursor,
+      limit: ITEMS_PER_PAGE,
+      reverse: query.updatedAt === "desc",
     };
-    const { cursor: newCursor, items: issues } =
-      await getIssuesByCommunityAndStatus(
-        community,
-        status,
+    let result;
+
+    try {
+      result = await getIssuesByCommunityAndStatus(
+        query.community,
+        query.status,
         options,
       );
+    } catch (error) {
+      if (query.cursor && error instanceof TypeError) {
+        return textResponse("Invalid pagination cursor.", 400);
+      }
+
+      throw error;
+    }
 
     return page({
-      cursor: newCursor,
+      cursor: result.cursor,
       filter: {
-        community,
-        status,
-        updatedAt: updatedAt as "asc" | "desc",
+        community: query.community,
+        status: query.status,
+        updatedAt: query.updatedAt,
       },
-      issues,
-      communities: await Array.fromAsync(getLocalCommunities()),
+      issues: result.items,
+      communities,
     });
   },
 });

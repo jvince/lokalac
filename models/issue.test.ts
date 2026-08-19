@@ -94,6 +94,7 @@ Deno.test("issue persistence keeps secondary indexes consistent", async (t) => {
         typeId: "street-light",
         status: IssueStatus.Resolved,
         note: "Repaired",
+        updatedAt: "2026-08-20T10:00:00Z",
       }, store);
       const reference = { primaryKey: getIssuePrimaryKey(original.id) };
 
@@ -244,7 +245,7 @@ Deno.test("issue persistence keeps secondary indexes consistent", async (t) => {
           { primaryKey: getIssuePrimaryKey(changed.id) },
         );
         assertEquals(
-          (await store.get(getIssueSecondaryKeys(original)[0])).value,
+          (await store.get(getIssueSecondaryKeys(original)[1])).value,
           null,
         );
         assertEquals((await store.get(unusedIndexKey)).value, null);
