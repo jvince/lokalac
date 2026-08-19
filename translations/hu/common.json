@@ -2,6 +2,8 @@
   "phone": "Telefon",
   "link": "Hivatkozás",
   "edit": "Szerkesztés",
+  "delete": "Törlés",
+  "back": "Vissza",
   "close": "Bezárás",
   "submit": "Beküldés",
   "submitted_issues": "Bejelentett problémák",
