@@ -2,10 +2,13 @@
   "nodeModulesDir": "manual",
   "tasks": {
     "check": "deno fmt --check . && deno lint . && deno check",
-    "dev": "vite",
-    "dev:debug": "deno run --inspect -A npm:vite",
+    "dev": "deno task migrate && vite",
+    "dev:debug": "deno task migrate && deno run --inspect -A npm:vite",
     "build": "vite build",
     "start": "deno serve --host 127.0.0.1 --port 8000 -A _fresh/server.js",
+    "migrate": "deno run -A scripts/migrate.ts",
+    "repair:indexes": "deno run -A scripts/repair-issue-indexes.ts",
+    "cleanup:images": "deno run -A scripts/retry-image-cleanup.ts",
     "test": "deno test -A",
     "update": "deno run -A -r jsr:@fresh/update ."
   },
@@ -35,6 +38,7 @@
     "@turf/helpers": "npm:@turf/helpers@^7.4.0",
     "@types/leaflet": "npm:@types/leaflet@^1.9.21",
     "@types/node": "npm:@types/node@^26.1.1",
+    "@aws-sdk/client-s3": "npm:@aws-sdk/client-s3@^3.864.0",
     "@valibot/valibot": "jsr:@valibot/valibot@^1.4.2",
     "clsx": "npm:clsx@^2.1.1",
     "daisyui": "npm:daisyui@^5.6.18",

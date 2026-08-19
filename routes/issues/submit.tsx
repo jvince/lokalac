@@ -1,4 +1,3 @@
-import { appConfig } from "@/config.ts";
 import { useTranslation } from "@/hooks/useTranslation.ts";
 import { IssueForm } from "@/islands/IssueForm.tsx";
 import { getIssueCategoriesAsArray } from "@/models/issue-category.ts";
@@ -147,7 +146,7 @@ export const handler = define.handlers({
       await processImagesAndPersist(
         id,
         input.output.images,
-        { uploadDir: appConfig.uploadDir },
+        {},
         async (images) => {
           await insertIssue({
             id,

@@ -1,7 +1,10 @@
-import { appConfig } from "@/config.ts";
+import {
+  FileSystemImageStorage,
+  type ImageStorage,
+  imageStorage,
+} from "@/services/imageStorage.ts";
 import { kv } from "@/services/kv.ts";
 import { isValidUlid } from "@/utils/ulid.ts";
-import { dirname, resolve as resolvePath } from "@std/path";
 
 import {
   IssueCategory,
@@ -14,6 +17,7 @@ import {
 import { LocalCommunity, LocalCommunityIndex } from "./local-community.ts";
 
 export const IssueIndex = "issue";
+export const IssueImageCleanupIndex = "issue_image_cleanup";
 
 export enum IssueSecondaryIndex {
   ByUpdatedAt = "issue_by_updated_at",
@@ -127,18 +131,14 @@ async function processIterator<T, K>(
   return { cursor: "", items: await resolver(records) };
 }
 
-function getIssueDirectory(
-  id: string,
-  uploadDir: string = appConfig.uploadDir,
-): string {
-  const uploadRoot = resolvePath(uploadDir);
-  const issueDirectory = resolvePath(uploadRoot, id);
-
-  if (dirname(issueDirectory) !== uploadRoot) {
-    throw new Error("Invalid issue directory path.");
-  }
-
-  return issueDirectory;
+function resolveImageStorage(options: {
+  storage?: ImageStorage;
+  uploadDir?: string;
+}): ImageStorage {
+  return options.storage ||
+    (options.uploadDir
+      ? new FileSystemImageStorage(options.uploadDir)
+      : imageStorage);
 }
 
 export function isIssueStatus(value: unknown): value is IssueStatus {
@@ -274,13 +274,18 @@ export async function updateIssue(
 
 export async function deleteIssue(
   id: string | undefined | null,
-  options: { store?: Deno.Kv; uploadDir?: string } = {},
+  options: {
+    store?: Deno.Kv;
+    storage?: ImageStorage;
+    uploadDir?: string;
+  } = {},
 ): Promise<DeleteIssueResult> {
   if (!isValidUlid(id)) {
     return { status: "invalid_id" };
   }
 
-  const { store = kv, uploadDir = appConfig.uploadDir } = options;
+  const { store = kv } = options;
+  const storage = resolveImageStorage(options);
   const primaryKey = getIssuePrimaryKey(id);
   const entry = await store.get<Issue>(primaryKey);
 
@@ -302,25 +307,50 @@ export async function deleteIssue(
     operation = operation.delete(secondaryKey);
   }
 
+  operation = operation.set([IssueImageCleanupIndex, id], {
+    issueId: id,
+    createdAt: new Date().toISOString(),
+  });
+
   const result = await operation.commit();
 
   if (!result.ok) {
     throw new Error(`Failed to delete issue with ID ${id}`);
   }
 
-  const issueDirectory = getIssueDirectory(id, uploadDir);
-
   try {
-    await Deno.remove(issueDirectory, { recursive: true });
+    await storage.deleteIssue(id);
+    await store.delete([IssueImageCleanupIndex, id]);
   } catch (error) {
-    if (!(error instanceof Deno.errors.NotFound)) {
-      throw new Error(`Failed to remove files for issue ${id}`, {
-        cause: error,
-      });
-    }
+    console.error(`Failed to remove images for issue ${id}:`, error);
   }
 
   return { status: "deleted" };
+}
+
+export async function retryIssueImageCleanup(
+  options: { store?: Deno.Kv; storage?: ImageStorage } = {},
+): Promise<{ cleaned: string[]; failed: string[] }> {
+  const { store = kv, storage = imageStorage } = options;
+  const cleaned: string[] = [];
+  const failed: string[] = [];
+
+  for await (
+    const entry of store.list({ prefix: [IssueImageCleanupIndex] })
+  ) {
+    const id = entry.key[1];
+    if (typeof id !== "string") continue;
+    try {
+      await storage.deleteIssue(id);
+      await store.delete(entry.key);
+      cleaned.push(id);
+    } catch (error) {
+      console.error(`Failed to retry image cleanup for issue ${id}:`, error);
+      failed.push(id);
+    }
+  }
+
+  return { cleaned, failed };
 }
 
 export async function getIssueById(
@@ -509,9 +539,14 @@ async function resolveIssueReferences(
 }
 
 export async function inspectIssueIntegrity(
-  options: { store?: IssueReadStore; uploadDir?: string } = {},
+  options: {
+    store?: IssueReadStore;
+    storage?: ImageStorage;
+    uploadDir?: string;
+  } = {},
 ): Promise<IssueIntegrityReport> {
-  const { store = kv, uploadDir = appConfig.uploadDir } = options;
+  const { store = kv } = options;
+  const storage = resolveImageStorage(options);
   const issues = (await Array.fromAsync(
     store.list<Issue>({ prefix: [IssueIndex] }),
   )).map((entry) => entry.value);
@@ -548,18 +583,9 @@ export async function inspectIssueIntegrity(
     }
   }
 
-  const orphanedUploads: string[] = [];
-  try {
-    for await (const entry of Deno.readDir(uploadDir)) {
-      if (!issueIds.has(entry.name)) {
-        orphanedUploads.push(entry.name);
-      }
-    }
-  } catch (error) {
-    if (!(error instanceof Deno.errors.NotFound)) {
-      throw error;
-    }
-  }
+  const orphanedUploads = (await storage.listIssueIds()).filter((id) =>
+    !issueIds.has(id)
+  );
 
   return {
     orphanedReferences,
