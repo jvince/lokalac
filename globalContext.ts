@@ -11,7 +11,7 @@ export const globalContext = () =>
       language: ctx.state.language,
       translation: ctx.state.translation,
       baseURL: ctx.url.origin,
-      path: ctx.url.pathname,
+      path: `${ctx.url.pathname}${ctx.url.search}`,
     };
 
     return await serverStorage.run(contextValue, async () => {

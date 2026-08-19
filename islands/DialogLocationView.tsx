@@ -8,6 +8,7 @@ import { LeafletMapSSR } from "@/components/LeafletMapSSR.tsx";
 import { MarkerSSR } from "@/components/MarkerSSR.ts";
 import { useTranslation } from "@/hooks/useClientTranslation.ts";
 import { IssueLocation } from "@/models/issue.ts";
+import { withGlobalContext } from "@/islands/withGlobalContext.tsx";
 import { Suspense } from "preact/compat";
 import { IconMap2 } from "../icons.ts";
 
@@ -15,7 +16,9 @@ export interface DialogLocationView {
   location: IssueLocation;
 }
 
-export function DialogLocationView(props: DialogLocationView) {
+export const DialogLocationView = withGlobalContext(function DialogLocationView(
+  props: DialogLocationView,
+) {
   const { t } = useTranslation();
 
   return (
@@ -54,4 +57,4 @@ export function DialogLocationView(props: DialogLocationView) {
       </DialogBody>
     </Dialog>
   );
-}
+});

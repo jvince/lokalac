@@ -99,6 +99,12 @@ export const handler = define.handlers({
 export default define.page<typeof handler>((ctx) => {
   const { data, state } = ctx;
   const { fromObject, t } = useTranslation();
+  const islandContext = {
+    baseURL: ctx.url.origin,
+    language: state.language,
+    translation: state.translation,
+    path: `${ctx.url.pathname}${ctx.url.search}`,
+  };
 
   const searchParams = new URLSearchParams(
     data.filter as Record<string, string>,
@@ -155,6 +161,7 @@ export default define.page<typeof handler>((ctx) => {
             cell: (item) =>
               item.location && (
                   <DialogLocationView
+                    _ctx={islandContext}
                     location={item.location}
                   />
                 ) || "N/A",
@@ -165,6 +172,7 @@ export default define.page<typeof handler>((ctx) => {
             cell: (item) =>
               item.note && (
                   <DialogNoteView
+                    _ctx={islandContext}
                     note={item.note}
                   />
                 ) || "N/A",

@@ -6,11 +6,15 @@ import { DialogContent } from "@/components/Dialog/DialogContent.tsx";
 import { DialogTrigger } from "@/components/Dialog/DialogTrigger.tsx";
 import { useTranslation } from "@/hooks/useClientTranslation.ts";
 import { IconNotes } from "@/icons.ts";
-interface DialogNoteView {
+import { withGlobalContext } from "@/islands/withGlobalContext.tsx";
+
+interface DialogNoteViewProps {
   note?: string;
 }
 
-export function DialogNoteView(props: DialogNoteView) {
+export const DialogNoteView = withGlobalContext(function DialogNoteView(
+  props: DialogNoteViewProps,
+) {
   const { note } = props;
   const { t } = useTranslation();
 
@@ -39,4 +43,4 @@ export function DialogNoteView(props: DialogNoteView) {
       </DialogBody>
     </Dialog>
   );
-}
+});
