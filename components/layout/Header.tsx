@@ -1,5 +1,5 @@
-import { useTranslation } from "$hooks/useTranslation.ts";
-import { LanguageSwitcher } from "../LanugageSwitcher.tsx";
+import { useTranslation } from "@/hooks/useTranslation.ts";
+import { LanguageSwitcher } from "../LanguageSwitcher.tsx";
 import { Link } from "../Link.tsx";
 import { Container } from "./Container.tsx";
 

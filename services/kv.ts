@@ -1,9 +1,9 @@
-import { resolve } from "node:path";
-import { appConfig } from "../config.ts";
+import { resolve } from "@std/path";
+import { appConfig } from "@/config.ts";
 
 const path = resolve(
-  import.meta.dirname as string,
-  `../${appConfig.kvStorageDir}`,
+  // import.meta.dirname as string,
+  `./${appConfig.kvStorageDir}`,
 );
 
 try {

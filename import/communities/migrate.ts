@@ -1,7 +1,7 @@
 import {
   LocalCommunityIndex,
   LocalCommunityPolygonIndex,
-} from "$models/local-community.ts";
+} from "@/models/local-community.ts";
 import { has } from "@es-toolkit/es-toolkit/compat";
 
 interface Feature {

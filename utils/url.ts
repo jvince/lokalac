@@ -1,4 +1,4 @@
-import { defaultLanguage } from "../languages.ts";
+import { defaultLanguage } from "@/languages.ts";
 
 export function isRelativeUrl(url: string): boolean {
   return url.startsWith("/");
@@ -55,4 +55,19 @@ export function toNormalizedUrl(
   return toRelativeUrl(
     createLanguageUrl(createInternalUrl(url), languageCode),
   );
+}
+
+export function createLanguageSwitchUrl(
+  path: string,
+  languageCode: string,
+): string {
+  const url = new URL(path, "internal://domain");
+
+  if (languageCode === defaultLanguage.code) {
+    url.searchParams.delete("lang");
+  } else {
+    url.searchParams.set("lang", languageCode);
+  }
+
+  return `${url.pathname}${url.search}${url.hash}`;
 }

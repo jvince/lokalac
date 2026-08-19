@@ -1,33 +1,24 @@
-import { Table } from "$components/Table/Table.tsx";
-import { TableBody } from "$components/Table/TableBody.tsx";
-import { TableCell } from "$components/Table/TableCell.tsx";
-import { TableHeader } from "$components/Table/TableHeader.tsx";
-import { TableRow } from "$components/Table/TableRow.tsx";
-import type { Handlers, PageProps } from "$fresh/server.ts";
-import { useTranslation } from "$hooks/useTranslation.ts";
-import {
-  getLocalCommunities,
-  type LocalCommunity,
-} from "$models/local-community.ts";
-import type { AppState } from "$types/app.ts";
-import { Link } from "../components/Link.tsx";
-import { IconExternalLink } from "../icons.ts";
+import { Link } from "@/components/Link.tsx";
+import { Table } from "@/components/Table/Table.tsx";
+import { TableBody } from "@/components/Table/TableBody.tsx";
+import { TableCell } from "@/components/Table/TableCell.tsx";
+import { TableHeader } from "@/components/Table/TableHeader.tsx";
+import { TableRow } from "@/components/Table/TableRow.tsx";
+import { useTranslation } from "@/hooks/useTranslation.ts";
+import { IconExternalLink } from "@/icons.ts";
+import { getLocalCommunities } from "@/models/local-community.ts";
+import { define } from "@/types/app.ts";
+import { page } from "fresh";
 
-interface Data {
-  communities: LocalCommunity[];
-}
-
-export const handler: Handlers<Data, AppState> = {
-  async GET(_, ctx) {
+export const handler = define.handlers({
+  async GET() {
     const communities = await Array.fromAsync(getLocalCommunities());
 
-    return await ctx.render({ communities });
+    return page({ communities });
   },
-};
+});
 
-export default function LocalCommunitiesPage(
-  props: PageProps<Data, AppState>,
-) {
+export default define.page<typeof handler>((props) => {
   const { data } = props;
   const { t, fromObject } = useTranslation();
 
@@ -86,4 +77,4 @@ export default function LocalCommunitiesPage(
       </TableBody>
     </Table>
   );
-}
+});

@@ -1,7 +1,7 @@
-import { colorsUI, sizesUI, variantsUI } from "$types/daisyui.ts";
-import { defineThemeProps, withTheme } from "$utils/theme.tsx";
+import { colorsUI, sizesUI, variantsUI } from "@/types/daisyui.ts";
+import { defineThemeProps, withTheme } from "@/utils/theme.tsx";
 import { clsx } from "clsx/lite";
-import type { JSX } from "preact";
+import type { ButtonHTMLAttributes } from "preact";
 
 /**
  * @fileoverview
@@ -26,7 +26,7 @@ import type { JSX } from "preact";
  * - btn-xl
  */
 
-interface ButtonProps extends JSX.ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   fullWidth?: boolean;
   iconOnly?: boolean;
   shape?: "circle" | "square";

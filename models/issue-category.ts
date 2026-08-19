@@ -1,4 +1,4 @@
-import { kv } from "$services/kv.ts";
+import { kv } from "@/services/kv.ts";
 
 export const IssueCategoryIndex = "issue_category";
 
@@ -17,4 +17,8 @@ export async function* getIssueCategories(options?: Deno.KvListOptions) {
   for await (const item of result) {
     yield item.value;
   }
+}
+
+export function getIssueCategoriesAsArray(options?: Deno.KvListOptions) {
+  return Array.fromAsync(getIssueCategories(options));
 }

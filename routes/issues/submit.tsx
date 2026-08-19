@@ -1,81 +1,38 @@
-import { Handlers, PageProps } from "$fresh/server.ts";
-import { IssueForm, IssueFormValues } from "$islands/IssueForm.tsx";
+import { appConfig } from "@/config.ts";
+import { useTranslation } from "@/hooks/useTranslation.ts";
+import { IssueForm } from "@/islands/IssueForm.tsx";
+import { getIssueCategoriesAsArray } from "@/models/issue-category.ts";
+import { formDataToIssue } from "@/models/issue-submission.ts";
+import { getIssueTypesAsArray } from "@/models/issue-type.ts";
+import { insertIssue, IssueStatus } from "@/models/issue.ts";
 import {
-  getIssueCategories,
-  type IssueCategory,
-} from "$models/issue-category.ts";
-import { getIssueTypes, type IssueType } from "$models/issue-type.ts";
-import { insertIssue, type IssueLocation, IssueStatus } from "$models/issue.ts";
-import {
-  getLocalCommunities,
+  getLocalCommunitiesAsArray,
   getLocalCommunityPolygonById,
-  type LocalCommunity,
-} from "$models/local-community.ts";
-import { AppState } from "$types/app.ts";
-import { ensureDir } from "@std/fs";
-import { ulid } from "@std/ulid";
+} from "@/models/local-community.ts";
+import {
+  ImageValidationError,
+  processImagesAndPersist,
+} from "@/services/imageProcessing.ts";
+import {
+  readLimitedFormData,
+  RequestBodyTooLargeError,
+} from "@/services/requestBody.ts";
+import { SemaphoreTimeoutError } from "@/services/semaphore.ts";
+import { submissionQuota } from "@/services/submissionQuota.ts";
+import { validateIssueSubmissionDomain } from "@/services/issueSubmission.ts";
+import { define } from "@/types/app.ts";
+import { textResponse } from "@/utils/http.ts";
+import { getRemoteAddr } from "@/utils/net.ts";
+import { monotonicUlid } from "@std/ulid";
+import { page } from "fresh";
 import type { LatLngTuple } from "leaflet";
-import sharp, { type Metadata as ImageMetadata } from "sharp";
-import { appConfig } from "../../config.ts";
 
-interface PageData {
-  categories: IssueCategory[];
-  communities: LocalCommunity[];
-  issueTypes: IssueType[];
-  errors?: string[];
-  formValues?: IssueFormValues;
-}
-
-type ImageOrientation = "landscape" | "portrait";
-
-function getOrientation(metadata: ImageMetadata): ImageOrientation {
-  if (typeof metadata.orientation === "number") {
-    return metadata.orientation >= 5 ? "landscape" : "portrait";
-  }
-
-  return metadata.width > metadata.height ? "landscape" : "portrait";
-}
-
-async function processImages(id: string, data: FormData) {
-  const files = data.getAll("images[]");
-
-  if (!files.length) {
-    return [];
-  }
-
-  const uploadDir = `./${appConfig.uploadDir}/${id}`;
-  await ensureDir(uploadDir);
-  const imageUrls: string[] = [];
-
-  try {
-    for await (const file of files) {
-      if (file instanceof File) {
-        const fileName = `${crypto.randomUUID()}.webp`;
-        const uploadPath = `/${uploadDir}/${fileName}`;
-
-        const image = sharp(await file.bytes());
-        const metadata = await image.metadata();
-        const isLandscape = getOrientation(metadata) === "landscape";
-        const size = isLandscape ? { width: 1920 } : { height: 1080 };
-        const buffer = await image.resize(size).webp().toBuffer();
-
-        await Deno.writeFile(`.${uploadPath}`, buffer);
-        imageUrls.push(uploadPath);
-      }
-    }
-  } catch (error) {
-    console.error("Error processing images:", error);
-    await Deno.remove(uploadDir, { recursive: true });
-    throw error;
-  }
-
-  return imageUrls;
-}
+export const MAX_SUBMISSION_BODY_SIZE = 52 * 1024 * 1024;
 
 async function loadData() {
-  const communities = await Array.fromAsync(getLocalCommunities());
-  const categories = await Array.fromAsync(getIssueCategories());
-  const issueTypes = await Array.fromAsync(getIssueTypes());
+  const communities = await getLocalCommunitiesAsArray();
+  const categories = await getIssueCategoriesAsArray();
+  const issueTypes = await getIssueTypesAsArray();
 
   return { categories, communities, issueTypes };
 }
@@ -109,156 +66,172 @@ export function getLatLngBounds(polygon: LatLngTuple[] | undefined | null) {
   return [southWest, northEast];
 }
 
-/**
- * @todo: Implement more robust location validation.
- */
-async function isLocationInPolygon(
-  location: IssueLocation | undefined,
-  community: LocalCommunity | undefined,
-) {
-  if (!location || !community) {
-    return false;
-  }
-
-  const polygon = await getLocalCommunityPolygonById(community.id);
-  const [southWest, northEast] = getLatLngBounds(polygon);
-
-  return (
-    location.lat >= southWest[0] && location.lat <= northEast[0] &&
-    location.lng >= southWest[1] && location.lng <= northEast[1]
-  );
-}
-
-export const handler: Handlers<PageData, AppState> = {
-  async GET(_req, ctx) {
-    return ctx.render(await loadData());
+export const handler = define.handlers({
+  async GET() {
+    return page({ ...await loadData(), errors: [], formValues: {} });
   },
 
-  async POST(req, ctx) {
-    const formData = await req.formData();
-    const { categories, communities, issueTypes } = await loadData();
-
-    let community: LocalCommunity | undefined;
-    let category: IssueCategory | undefined;
-    let issueType: IssueType | undefined;
-    let note: string | undefined;
-    let location: IssueLocation | undefined;
-    const errors: string[] = [];
+  async POST(ctx) {
+    let remoteAddr: string;
 
     try {
-      for (const [key, value] of formData.entries()) {
-        if (key === "local_community") {
-          community = communities.find((c) => c.id === value);
-          if (!community) {
-            errors.push("error.local_community_not_found");
-          }
-        }
-        if (key === "issue_category") {
-          category = categories.find((c) => c.id === value);
-          if (!category) {
-            errors.push("error.issue_category_not_found");
-          }
-        }
-        if (key === "issue_type") {
-          issueType = issueTypes.find((i) => i.id === value);
-          if (!issueType) {
-            errors.push("error.issue_type_not_found");
-          }
-        }
-        if (
-          key === "location" && typeof value === "string" && value.length > 0
-        ) {
-          try {
-            const locationValue = JSON.parse(value);
-            if (
-              typeof locationValue === "object" &&
-              "lat" in locationValue &&
-              "lng" in locationValue &&
-              typeof locationValue.lat === "number" &&
-              typeof locationValue.lng === "number"
-            ) {
-              location = {
-                lat: locationValue.lat,
-                lng: locationValue.lng,
-              };
-            }
-          } catch {
-            throw new Error("error.invalid_location_format");
-          }
-
-          if (!(await isLocationInPolygon(location, community))) {
-            throw new Error("error.location_not_in_community_polygon");
-          }
-        }
-
-        if (key === "note" && typeof value === "string") {
-          note = value.slice(0, 512);
-        }
-      }
-
-      if (community && category && issueType) {
-        const id = ulid();
-        const createdAt = Temporal.Now.zonedDateTimeISO().toString();
-
-        await insertIssue({
-          id,
-          communityId: community.id,
-          categoryId: category.id,
-          typeId: issueType.id,
-          status: IssueStatus.Open,
-          location,
-          note,
-          createdAt,
-          updatedAt: createdAt,
-          images: await processImages(id, formData),
-        });
-
-        console.log(
-          `Reported issue ${issueType.name} in category ${category.name} for community ${community.name}`,
-        );
-
-        return new Response(null, {
-          status: 303,
-          headers: {
-            Location: `/issues?lang=${formData.get("lang")}`,
-          },
-        });
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        errors.push(error.message);
-      }
+      remoteAddr = getRemoteAddr(ctx);
+    } catch {
+      return textResponse("Unable to identify the requesting client.", 500);
     }
 
-    return ctx.render({
+    const quotaResponse = submissionQuota(remoteAddr);
+
+    if (quotaResponse) {
+      return quotaResponse;
+    }
+
+    let formData: FormData;
+
+    try {
+      formData = await readLimitedFormData(
+        ctx.req,
+        MAX_SUBMISSION_BODY_SIZE,
+      );
+    } catch (error) {
+      if (error instanceof RequestBodyTooLargeError) {
+        return page({
+          ...await loadData(),
+          errors: ["error.request_body_too_large"],
+          formValues: {},
+        }, { status: 413 });
+      }
+
+      return page({
+        ...await loadData(),
+        errors: ["error.invalid_form_submission"],
+        formValues: {},
+      }, { status: 400 });
+    }
+
+    const { input, formValues } = formDataToIssue(formData);
+    const { categories, communities, issueTypes } = await loadData();
+    if (!input.success) {
+      return page({
+        categories,
+        communities,
+        issueTypes,
+        errors: input.issues.map((issue) => issue.message),
+        formValues,
+      }, { status: 400 });
+    }
+
+    const polygon = input.output.location
+      ? await getLocalCommunityPolygonById(input.output.communityId)
+      : null;
+    const errors = validateIssueSubmissionDomain(input.output, {
       categories,
       communities,
       issueTypes,
-      errors,
-      formValues: {
-        localCommunity: community?.id,
-        issueCategory: category?.id,
-        issueType: issueType?.id,
-        location,
-        note,
+      polygon,
+    });
+
+    if (errors.length > 0) {
+      return page({
+        categories,
+        communities,
+        issueTypes,
+        errors,
+        formValues,
+      }, { status: 400 });
+    }
+    const id = monotonicUlid();
+    const createdAt = Temporal.Now.zonedDateTimeISO().toString();
+
+    try {
+      await processImagesAndPersist(
+        id,
+        input.output.images,
+        { uploadDir: appConfig.uploadDir },
+        async (images) => {
+          await insertIssue({
+            id,
+            communityId: input.output.communityId,
+            categoryId: input.output.categoryId,
+            typeId: input.output.typeId,
+            status: IssueStatus.Open,
+            location: input.output.location,
+            note: input.output.note,
+            createdAt,
+            updatedAt: createdAt,
+            images,
+          });
+        },
+      );
+    } catch (error) {
+      console.error(`Failed to submit issue ${id}:`, error);
+
+      if (error instanceof SemaphoreTimeoutError) {
+        return new Response("Image processing is busy. Try again shortly.", {
+          status: 503,
+          headers: {
+            "Content-Type": "text/plain; charset=utf-8",
+            "Retry-After": "5",
+            "X-Content-Type-Options": "nosniff",
+          },
+        });
+      }
+
+      if (error instanceof ImageValidationError) {
+        return page({
+          categories,
+          communities,
+          issueTypes,
+          errors: [error.message],
+          formValues,
+        }, { status: 400 });
+      }
+
+      return page({
+        categories,
+        communities,
+        issueTypes,
+        errors: ["error.issue_submission_failed"],
+        formValues,
+      }, { status: 500 });
+    }
+
+    console.log(
+      `Reported issue ${input.output.typeId} in category ${input.output.categoryId} for community ${input.output.communityId}`,
+    );
+
+    return new Response(null, {
+      status: 303,
+      headers: {
+        Location: `/issues?lang=${formData.get("lang")}`,
       },
     });
   },
-};
+});
 
-export default function SubmitIssuePage(
-  { data, state }: PageProps<PageData, AppState>,
-) {
+export default define.page<typeof handler>((ctx) => {
+  const { data, state } = ctx;
+  const { t } = useTranslation();
+
   return (
     <>
       {(data.errors ?? []).map((error) => {
         return (
           <div class="alert alert-error">
-            <span>{error}</span>
+            <span>
+              {error.startsWith("error.") ? t(`common.${error}`) : error}
+            </span>
           </div>
         );
       })}
+
       <IssueForm
+        _ctx={{
+          baseURL: ctx.url.origin,
+          language: state.language,
+          translation: state.translation,
+          path: `${ctx.url.pathname}${ctx.url.search}`,
+        }}
         categories={data.categories}
         communities={data.communities}
         formValues={data.formValues}
@@ -267,4 +240,4 @@ export default function SubmitIssuePage(
       />
     </>
   );
-}
+});

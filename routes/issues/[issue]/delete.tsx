@@ -1,26 +1,22 @@
-import { Button } from "$components/Button.tsx";
-import { Form } from "$components/Form.tsx";
-import { Link } from "$components/Link.tsx";
-import { Handlers } from "$fresh/server.ts";
-import { useTranslation } from "$hooks/useTranslation.ts";
-import { deleteIssue, getIssueById } from "$models/issue.ts";
-import { WithAuthorization } from "../../../auth/withAuthorization.ts";
-import { IssuePageProps } from "./types.ts";
+import { WithAuthorization } from "@/auth/withAuthorization.ts";
+import { Button } from "@/components/Button.tsx";
+import { Form } from "@/components/Form.tsx";
+import { Link } from "@/components/Link.tsx";
+import { useTranslation } from "@/hooks/useTranslation.ts";
+import { deleteIssue, getIssueById, IssueDTO } from "@/models/issue.ts";
+import { define } from "@/types/app.ts";
+import { page } from "fresh";
 
-export const handler: Handlers = {
-  GET: WithAuthorization(async (_, ctx) => {
+export const handler = define.handlers({
+  GET: WithAuthorization(async (ctx) => {
     const issue = await getIssueById(ctx.params.issue);
 
-    return await ctx.render({ issue });
+    return page({ issue });
   }),
 
-  POST: WithAuthorization(async (req, ctx) => {
-    const formData = await req.formData();
-    const id = formData.get("id");
-
-    if (typeof id !== "string") {
-      return ctx.render({ issue: null });
-    }
+  POST: WithAuthorization(async (ctx) => {
+    const formData = await ctx.req.formData();
+    const id = ctx.params.issue;
 
     const lang = formData.get("lang");
     const searchParams = new URLSearchParams();
@@ -29,42 +25,53 @@ export const handler: Handlers = {
       searchParams.set("lang", lang);
     }
 
-    await deleteIssue(id);
+    const result = await deleteIssue(id);
 
-    return new Response(null, {
-      status: 303,
-      headers: {
-        Location: `/issues?${searchParams.toString()}`,
-      },
-    });
+    switch (result.status) {
+      case "invalid_id":
+      case "not_found": {
+        return new Response(null, {
+          status: 404,
+        });
+      }
+      case "deleted": {
+        return new Response(null, {
+          status: 303,
+          headers: {
+            Location: `/issues?${searchParams.toString()}`,
+          },
+        });
+      }
+    }
   }),
-};
+});
 
-export default function DeletePage(props: IssuePageProps) {
-  const { data } = props;
-  const { t, language } = useTranslation();
+export default define.page<typeof handler, { issue?: IssueDTO }>(
+  (props) => {
+    const { data } = props;
+    const { t, language } = useTranslation();
 
-  if (!data.issue) {
-    return <div>{t("common.issue_not_found")}</div>;
-  }
+    if (!data.issue) {
+      return <div>{t("common.issue_not_found")}</div>;
+    }
 
-  return (
-    <Form
-      lang={language.code}
-      method="POST"
-    >
-      <Link
-        as="btn"
-        href={`/issues/${data.issue.id}/edit`}
+    return (
+      <Form
         lang={language.code}
+        method="POST"
       >
-        {t("common.back")}
-      </Link>
+        <Link
+          as="btn"
+          href={`/issues/${data.issue.id}/edit`}
+          lang={language.code}
+        >
+          {t("common.back")}
+        </Link>
 
-      <Button type="submit" color="warning">
-        <input name="id" value={data.issue.id} type="hidden" />
-        {t("common.delete")}
-      </Button>
-    </Form>
-  );
-}
+        <Button type="submit" color="warning">
+          {t("common.delete")}
+        </Button>
+      </Form>
+    );
+  },
+);

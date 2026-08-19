@@ -1,7 +1,7 @@
-import { IssueCategoryIndex } from "$models/issue-category.ts";
-import { IssueTypeIndex } from "$models/issue-type.ts";
-import { createCommunityMigration } from "./import/communities/migrate.ts";
-import type { Migration } from "./migrate.ts";
+import { createCommunityMigration } from "@/import/communities/migrate.ts";
+import type { Migration } from "@/migrate.ts";
+import { IssueCategoryIndex } from "@/models/issue-category.ts";
+import { IssueTypeIndex } from "@/models/issue-type.ts";
 
 export default [
   [

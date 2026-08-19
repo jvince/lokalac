@@ -1,9 +1,9 @@
-import { toNormalizedUrl } from "$utils/url.ts";
-import type { JSX } from "preact";
-import { forwardRef } from "react-dom";
-import { defaultLanguage } from "../languages.ts";
+import { defaultLanguage } from "@/languages.ts";
+import { toNormalizedUrl } from "@/utils/url.ts";
+import type { FormHTMLAttributes } from "preact";
+import { forwardRef } from "preact/compat";
 
-interface FormProps extends JSX.FormHTMLAttributes<HTMLFormElement> {
+interface FormProps extends FormHTMLAttributes<HTMLFormElement> {
   method?: "GET" | "POST";
 }
 

@@ -1,21 +1,11 @@
-import type { Plugin } from "$fresh/server.ts";
+import type { Middleware } from "fresh";
 import { createHandler } from "./handler.ts";
 import type { i18nLanguage, i18nPluginConfig, i18nState } from "./types.ts";
 
-function i18n<T extends readonly i18nLanguage[]>(
+function i18n<T extends readonly i18nLanguage[], State extends i18nState>(
   config: i18nPluginConfig<T>,
-): Plugin<i18nState> {
-  return {
-    name: "i18n",
-    middlewares: [
-      {
-        "path": "/",
-        middleware: {
-          handler: createHandler(config),
-        },
-      },
-    ],
-  };
+): Middleware<State> {
+  return createHandler(config);
 }
 
 export { i18n };

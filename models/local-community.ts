@@ -1,4 +1,4 @@
-import { kv } from "$services/kv.ts";
+import { kv } from "@/services/kv.ts";
 import type { LatLngTuple } from "leaflet";
 
 export const LocalCommunityIndex = "local_community";
@@ -33,6 +33,10 @@ export async function* getLocalCommunities(options?: Deno.KvListOptions) {
   for await (const item of communities) {
     yield item.value;
   }
+}
+
+export function getLocalCommunitiesAsArray(options?: Deno.KvListOptions) {
+  return Array.fromAsync(getLocalCommunities(options));
 }
 
 export async function getLocalCommunityPolygonById(id: string) {

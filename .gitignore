@@ -7,10 +7,10 @@
 
 # Fresh build directory
 _fresh/
-# npm dependencies
+# npm + other dependencies
 node_modules/
+vendor/
 
-# Ignore the kv database
+# Local application data
 data/*
-
 upload/*

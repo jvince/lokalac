@@ -1,4 +1,4 @@
-import { getBounds } from "$utils/geometry.ts";
+import { getBounds } from "@/utils/geometry.ts";
 import type {
   LatLngLiteral,
   LatLngTuple,

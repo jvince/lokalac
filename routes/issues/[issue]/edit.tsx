@@ -1,18 +1,18 @@
-import { Link } from "$components/Link.tsx";
-import { Handlers } from "$fresh/server.ts";
-import { useTranslation } from "$hooks/useTranslation.ts";
-import { getIssueById } from "$models/issue.ts";
-import { WithAuthorization } from "../../../auth/withAuthorization.ts";
-import { IssuePageProps } from "./types.ts";
+import { WithAuthorization } from "@/auth/withAuthorization.ts";
+import { Link } from "@/components/Link.tsx";
+import { useTranslation } from "@/hooks/useTranslation.ts";
+import { getIssueById } from "@/models/issue.ts";
+import { define } from "@/types/app.ts";
+import { page } from "fresh";
 
-export const handler: Handlers = {
-  GET: WithAuthorization(async (_, ctx) => {
+export const handler = define.handlers({
+  GET: WithAuthorization(async (ctx) => {
     const issue = await getIssueById(ctx.params.issue);
-    return await ctx.render({ issue });
+    return page({ issue });
   }),
-};
+});
 
-export default function EditPage(props: IssuePageProps) {
+export default define.page<typeof handler>((props) => {
   const { data } = props;
   const { t, language } = useTranslation();
 
@@ -35,4 +35,4 @@ export default function EditPage(props: IssuePageProps) {
       </Link>
     </div>
   );
-}
+});

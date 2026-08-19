@@ -1,23 +1,25 @@
-import { Button } from "$components/Button.tsx";
-import { Dialog } from "$components/Dialog/Dialog.tsx";
-import { DialogActions } from "$components/Dialog/DialogActions.tsx";
-import { DialogBody } from "$components/Dialog/DialogBody.tsx";
-import { DialogContent } from "$components/Dialog/DialogContent.tsx";
-import { DialogTrigger } from "$components/Dialog/DialogTrigger.tsx";
-import { LeafletMapSSR } from "$components/LeafletMapSSR.tsx";
-import { MarkerSSR } from "$components/MarkerSSR.ts";
-import { useTranslation } from "$hooks/useTranslation.ts";
-import { IssueLocation } from "$models/issue.ts";
-import type { WithI18nState } from "$plugins/i18n/src/types.ts";
-import { Suspense } from "react-dom";
+import { Button } from "@/components/Button.tsx";
+import { Dialog } from "@/components/Dialog/Dialog.tsx";
+import { DialogActions } from "@/components/Dialog/DialogActions.tsx";
+import { DialogBody } from "@/components/Dialog/DialogBody.tsx";
+import { DialogContent } from "@/components/Dialog/DialogContent.tsx";
+import { DialogTrigger } from "@/components/Dialog/DialogTrigger.tsx";
+import { LeafletMapSSR } from "@/components/LeafletMapSSR.tsx";
+import { MarkerSSR } from "@/components/MarkerSSR.ts";
+import { useTranslation } from "@/hooks/useClientTranslation.ts";
+import { IssueLocation } from "@/models/issue.ts";
+import { withGlobalContext } from "@/islands/withGlobalContext.tsx";
+import { Suspense } from "preact/compat";
 import { IconMap2 } from "../icons.ts";
 
-export interface DialogLocationView extends WithI18nState {
+export interface DialogLocationView {
   location: IssueLocation;
 }
 
-export function DialogLocationView(props: DialogLocationView) {
-  const { t } = useTranslation(props.i18nState);
+export const DialogLocationView = withGlobalContext(function DialogLocationView(
+  props: DialogLocationView,
+) {
+  const { t } = useTranslation();
 
   return (
     <Dialog size="lg">
@@ -55,4 +57,4 @@ export function DialogLocationView(props: DialogLocationView) {
       </DialogBody>
     </Dialog>
   );
-}
+});

@@ -1,7 +1,7 @@
-import { lazy } from "react-dom";
+import { lazy } from "preact/compat";
 
 export const CommunityVectorLayerSSR = lazy(() =>
-  import("$components/CommunityVectorLayer.tsx").then(
+  import("@/components/CommunityVectorLayer.tsx").then(
     (mod) => mod.CommunityVectorLayer,
   )
 );

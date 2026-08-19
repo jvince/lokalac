@@ -1,28 +1,33 @@
-import { Button } from "$components/Button.tsx";
-import { Form } from "$components/Form.tsx";
-import { Link } from "$components/Link.tsx";
-import { Select } from "$components/Select.tsx";
-import { Table } from "$components/Table/Table.tsx";
-import { TableBody } from "$components/Table/TableBody.tsx";
-import { TableCell } from "$components/Table/TableCell.tsx";
-import { TableHeader } from "$components/Table/TableHeader.tsx";
-import { TableRow } from "$components/Table/TableRow.tsx";
-import { Handlers, PageProps } from "$fresh/server.ts";
-import { useTranslation } from "$hooks/useTranslation.ts";
-import { DialogLocationView } from "$islands/DialogLocationView.tsx";
-import { DialogNoteView } from "$islands/DialogNotesView.tsx";
-import { getIssuesByCommunityAndStatus, IssueDTO } from "$models/issue.ts";
-import {
-  getLocalCommunities,
-  LocalCommunity,
-} from "$models/local-community.ts";
-import { AppState } from "$types/app.ts";
+import { Button } from "@/components/Button.tsx";
+import { Form } from "@/components/Form.tsx";
+import { Link } from "@/components/Link.tsx";
+import { Select } from "@/components/Select.tsx";
+import { Table } from "@/components/Table/Table.tsx";
+import { TableBody } from "@/components/Table/TableBody.tsx";
+import { TableCell } from "@/components/Table/TableCell.tsx";
+import { TableHeader } from "@/components/Table/TableHeader.tsx";
+import { TableRow } from "@/components/Table/TableRow.tsx";
+import { useTranslation } from "@/hooks/useTranslation.ts";
 import {
   IconFilter,
   IconFilterCancel,
   IconSortAscending2,
   IconSortDescending2,
-} from "../../icons.ts";
+} from "@/icons.ts";
+import { DialogLocationView } from "@/islands/DialogLocationView.tsx";
+import { DialogNoteView } from "@/islands/DialogNotesView.tsx";
+import {
+  InvalidIssueListQueryError,
+  parseIssueListQuery,
+} from "@/models/issue-list-query.ts";
+import { getIssuesByCommunityAndStatus, IssueDTO } from "@/models/issue.ts";
+import {
+  getLocalCommunities,
+  LocalCommunity,
+} from "@/models/local-community.ts";
+import { define } from "@/types/app.ts";
+import { textResponse } from "@/utils/http.ts";
+import { page } from "fresh";
 
 const ITEMS_PER_PAGE = 50;
 
@@ -39,49 +44,72 @@ interface Data {
   filter: FilterSort;
 }
 
-export const handler: Handlers<Data, AppState> = {
-  async GET(_, ctx) {
-    const community = ctx.url.searchParams.get("community") ?? "all";
-    const status = ctx.url.searchParams.get("status") ?? "all";
-    const cursor = ctx.url.searchParams.get("cursor") ?? "";
+export const handler = define.handlers({
+  async GET(ctx) {
+    const communities = await Array.fromAsync(getLocalCommunities());
+    let query;
 
-    let updatedAt = ctx.url.searchParams.get("updatedAt") ?? "desc";
-    if (updatedAt !== "asc" && updatedAt !== "desc") {
-      updatedAt = "desc";
+    try {
+      query = parseIssueListQuery(
+        ctx.url.searchParams,
+        communities.map((community) => community.id),
+      );
+    } catch (error) {
+      if (error instanceof InvalidIssueListQueryError) {
+        return textResponse(error.message, 400);
+      }
+
+      throw error;
     }
 
     const options = {
-      cursor,
-      limit: ITEMS_PER_PAGE + 1,
-      reverse: updatedAt === "desc",
+      cursor: query.cursor,
+      limit: ITEMS_PER_PAGE,
+      reverse: query.updatedAt === "desc",
     };
-    const { cursor: newCursor, items: issues } =
-      await getIssuesByCommunityAndStatus(
-        community,
-        status,
+    let result;
+
+    try {
+      result = await getIssuesByCommunityAndStatus(
+        query.community,
+        query.status,
         options,
       );
+    } catch (error) {
+      if (query.cursor && error instanceof TypeError) {
+        return textResponse("Invalid pagination cursor.", 400);
+      }
 
-    return await ctx.render({
-      cursor: newCursor,
+      throw error;
+    }
+
+    return page({
+      cursor: result.cursor,
       filter: {
-        community,
-        status,
-        updatedAt: updatedAt as "asc" | "desc",
+        community: query.community,
+        status: query.status,
+        updatedAt: query.updatedAt,
       },
-      issues,
-      communities: await Array.fromAsync(getLocalCommunities()),
+      issues: result.items,
+      communities,
     });
   },
-};
+});
 
-export default function Page(props: PageProps<Data, AppState>) {
-  const { data, state } = props;
+export default define.page<typeof handler>((ctx) => {
+  const { data, state } = ctx;
   const { fromObject, t } = useTranslation();
+  const islandContext = {
+    baseURL: ctx.url.origin,
+    language: state.language,
+    translation: state.translation,
+    path: `${ctx.url.pathname}${ctx.url.search}`,
+  };
 
   const searchParams = new URLSearchParams(
     data.filter as Record<string, string>,
   );
+
   return (
     <>
       <Form id="filter" lang={state.language.code} />
@@ -104,6 +132,7 @@ export default function Page(props: PageProps<Data, AppState>) {
                     <option
                       key={community.id}
                       value={community.id}
+                      selected={data.filter.community === community.id}
                     >
                       {fromObject(community, "name")}
                     </option>
@@ -132,8 +161,8 @@ export default function Page(props: PageProps<Data, AppState>) {
             cell: (item) =>
               item.location && (
                   <DialogLocationView
+                    _ctx={islandContext}
                     location={item.location}
-                    i18nState={state}
                   />
                 ) || "N/A",
           },
@@ -143,7 +172,7 @@ export default function Page(props: PageProps<Data, AppState>) {
             cell: (item) =>
               item.note && (
                   <DialogNoteView
-                    i18nState={state}
+                    _ctx={islandContext}
                     note={item.note}
                   />
                 ) || "N/A",
@@ -152,7 +181,9 @@ export default function Page(props: PageProps<Data, AppState>) {
             id: "images",
             header: t("common.images"),
             cell: (item) => (
-              (item.images ?? []).map((image) => <img src={image} />)
+              (item.images ?? []).map((image) => (
+                <img key={image} src={image} />
+              ))
             ),
           },
           {
@@ -214,14 +245,25 @@ export default function Page(props: PageProps<Data, AppState>) {
                   name="status"
                 >
                   <option value="all">{t("common.all")}</option>
-                  <option value="open">{t("common.status_open")}</option>
-                  <option value="reported">
+                  <option value="open" selected={data.filter.status === "open"}>
+                    {t("common.status_open")}
+                  </option>
+                  <option
+                    value="reported"
+                    selected={data.filter.status === "reported"}
+                  >
                     {t("common.status_reported")}
                   </option>
-                  <option value="resolved">
+                  <option
+                    value="resolved"
+                    selected={data.filter.status === "resolved"}
+                  >
                     {t("common.status_resolved")}
                   </option>
-                  <option value="rejected">
+                  <option
+                    value="rejected"
+                    selected={data.filter.status === "rejected"}
+                  >
                     {t("common.status_rejected")}
                   </option>
                 </Select>
@@ -297,4 +339,4 @@ export default function Page(props: PageProps<Data, AppState>) {
       )}
     </>
   );
-}
+});

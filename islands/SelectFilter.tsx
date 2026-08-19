@@ -1,6 +1,6 @@
-import { Form } from "$components/Form.tsx";
-import { Select } from "$components/Select.tsx";
-import type { JSX } from "preact";
+import { Form } from "@/components/Form.tsx";
+import { Select } from "@/components/Select.tsx";
+import type { FormHTMLAttributes } from "preact";
 import { useCallback, useRef } from "preact/hooks";
 
 interface OptionData {
@@ -8,8 +8,9 @@ interface OptionData {
   label: string;
 }
 
-interface SelectFilterProps extends JSX.FormHTMLAttributes<HTMLElement> {
+interface SelectFilterProps extends FormHTMLAttributes<HTMLElement> {
   defaultValue?: string;
+  method?: "GET" | "POST";
   options?: OptionData[];
 }
 

@@ -33,5 +33,29 @@
   "filter_and_sort_reset": "Ukloni filtere i sortiranje",
   "view_location": "Pogledaj lokaciju",
   "view_note": "Pogledaj napomenu",
-  "view_more": "Pogledaj više"
+  "view_more": "Pogledaj više",
+  "error": {
+    "invalid_form_submission": "Poslata prijava nije ispravna.",
+    "request_body_too_large": "Poslati podaci su preveliki.",
+    "local_community_required": "Izbor mesne zajednice je obavezan.",
+    "issue_category_required": "Izbor kategorije problema je obavezan.",
+    "issue_type_required": "Izbor vrste problema je obavezan.",
+    "location_invalid": "Izabrana lokacija nije ispravna.",
+    "note_invalid": "Napomena nije ispravna.",
+    "images_invalid": "Poslate slike nisu ispravne.",
+    "image_invalid": "Izabrana slika nije ispravna.",
+    "local_community_not_found": "Mesna zajednica nije pronađena.",
+    "issue_category_not_found": "Kategorija problema nije pronađena.",
+    "issue_type_not_found": "Vrsta problema nije pronađena.",
+    "issue_type_not_in_category": "Izabrana vrsta problema ne pripada izabranoj kategoriji.",
+    "location_not_in_community_polygon": "Izabrana lokacija nije unutar mesne zajednice.",
+    "issue_submission_failed": "Slanje prijave nije uspelo. Pokušajte ponovo.",
+    "image_empty": "Izabrana slika je prazna.",
+    "image_too_large": "Izabrana slika je prevelika.",
+    "image_dimensions_too_large": "Dimenzije izabrane slike su prevelike.",
+    "image_invalid_type": "Format slike nije podržan.",
+    "too_many_images": "Izabrano je previše slika.",
+    "note_too_long": "Napomena je predugačka.",
+    "animated_image_not_allowed": "Animirane slike nisu dozvoljene."
+  }
 }

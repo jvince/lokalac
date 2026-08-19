@@ -1,11 +1,11 @@
-import { Button } from "$components/Button.tsx";
-import { FileInput } from "$components/FileInput.tsx";
-import { Label } from "$components/Label.tsx";
+import { Button } from "@/components/Button.tsx";
+import { FileInput } from "@/components/FileInput.tsx";
+import { Label } from "@/components/Label.tsx";
+import { IconPhoto, IconX } from "@/icons.ts";
 import { useComputed, useSignal } from "@preact/signals";
 import { JSX } from "preact";
 import { useCallback } from "preact/hooks";
 import { v4 as uuid } from "uuid";
-import { IconPhoto, IconX } from "../icons.ts";
 
 interface ImageListItemProps
   extends Pick<JSX.InputHTMLAttributes<HTMLInputElement>, "accept" | "name"> {

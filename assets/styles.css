@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+@plugin "daisyui" {
+  themes: light, dark --prefersdark, winter --default;
+}
+
+[aria-current="page"]:not([data-language-switcher] a) {
+  @apply underline;
+}
