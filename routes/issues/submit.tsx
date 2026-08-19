@@ -196,10 +196,6 @@ export const handler = define.handlers({
       }, { status: 500 });
     }
 
-    console.log(
-      `Reported issue ${input.output.typeId} in category ${input.output.categoryId} for community ${input.output.communityId}`,
-    );
-
     return new Response(null, {
       status: 303,
       headers: {

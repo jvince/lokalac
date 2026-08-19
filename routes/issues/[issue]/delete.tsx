@@ -62,7 +62,7 @@ export default define.page<typeof handler, { issue?: IssueDTO }>(
       >
         <Link
           as="btn"
-          href={`/issues/${data.issue.id}/edit`}
+          href="/issues"
           lang={language.code}
         >
           {t("common.back")}

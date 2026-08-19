@@ -273,7 +273,7 @@ export default define.page<typeof handler>((ctx) => {
             cell: (item) => t(`common.status_${item.status}`),
           },
           {
-            id: "edit",
+            id: "actions",
             header: (
               <div class="flex items-center gap-2">
                 <Button
@@ -296,12 +296,12 @@ export default define.page<typeof handler>((ctx) => {
             cell: (item) => (
               <Link
                 as="btn"
-                color="secondary"
-                href={`/issues/${item.id}/edit`}
+                color="warning"
+                href={`/issues/${item.id}/delete`}
                 lang={state.language.code}
                 variant="soft"
               >
-                {t("common.edit")}
+                {t("common.delete")}
               </Link>
             ),
           },

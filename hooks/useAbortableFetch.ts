@@ -43,9 +43,7 @@ export function useAbortableFetch<T = unknown>(
         setLoading(false);
       })
       .catch((err) => {
-        if (signal.aborted) {
-          console.log("Fetch aborted");
-        } else {
+        if (!signal.aborted) {
           setError(err);
           setLoading(false);
         }

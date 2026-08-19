@@ -1,31 +1,110 @@
-# Fresh project
+# Lokalac
 
-Your new Fresh project is ready to go. You can follow the Fresh "Getting
-Started" guide here: https://fresh.deno.dev/docs/getting-started
+Lokalac is a multilingual Fresh 2 application for reporting and reviewing
+local-community issues. It stores issue data in Deno KV and processed WebP
+images on the local filesystem.
 
-### Usage
+## Requirements
 
-Make sure to install Deno:
-https://docs.deno.com/runtime/getting_started/installation
+- Deno 2
+- A filesystem location writable by the application
+- An HTTPS reverse proxy such as Caddy for production
 
-Then start the project in development mode:
+Install the locked dependencies:
 
+```sh
+deno install --frozen
 ```
+
+## Configuration
+
+Copy the example environment file and replace every authentication placeholder:
+
+```sh
+cp .env.example .env
+```
+
+| Variable                   | Purpose                                       | Default  |
+| -------------------------- | --------------------------------------------- | -------- |
+| `KV_STORAGE_DIR`           | Directory containing the Deno KV SQLite files | `data`   |
+| `UPLOAD_DIR`               | Directory containing processed issue images   | `upload` |
+| `BASIC_AUTH_USERNAME`      | Username for protected administrative routes  | Required |
+| `BASIC_AUTH_PASSWORD_HASH` | Argon2id hash for the administrator password  | Required |
+
+The storage directory names should be relative to the application's working
+directory. Environment variables override values loaded from `.env`. Local
+environment files, database files, and uploads are excluded from Git.
+
+Generate the password hash interactively so the plaintext password is neither a
+command-line argument nor stored in shell history:
+
+```sh
+deno run -A scripts/hash-password.ts
+```
+
+Copy the resulting Argon2id string into `BASIC_AUTH_PASSWORD_HASH`. Basic Auth
+credentials are only encoded in transit, so production administrative traffic
+must use HTTPS.
+
+## Storage and migrations
+
+Issue records, indexes, categories, types, and community data are stored below
+`KV_STORAGE_DIR`. Uploaded images are validated, converted to WebP, and stored
+below `UPLOAD_DIR` in one directory per issue.
+
+Migrations run automatically before the server starts. Each migration commits
+its mutations and completion marker atomically. Completed migrations are safe to
+run again, and concurrent application startups converge on the same state.
+Startup also inspects and repairs issue secondary indexes.
+
+Do not start an older application release against storage that has already been
+migrated by a newer release unless that release explicitly documents rollback
+compatibility.
+
+## Development
+
+After configuring `.env`, start the Vite development server:
+
+```sh
 deno task dev
 ```
 
-This will watch the project directory and restart as necessary.
+The root URL redirects to `/issues`. Supported interface languages are Serbian
+Latin, Serbian Cyrillic, and Hungarian.
 
-## Production HTTPS with Caddy
+## Tests and quality checks
 
-Administrative routes use HTTP Basic authentication. Basic authentication only
-encodes credentials; it does not encrypt them. Production traffic must therefore
-reach the application through HTTPS.
+Run the same checks enforced independently by CI:
 
-[Caddy](https://caddyserver.com/) can terminate TLS in front of the application,
-automatically obtain and renew certificates, and redirect HTTP traffic to HTTPS.
-Replace `lokalac.example.com` with a hostname whose DNS records point to the
-server:
+```sh
+deno fmt --check .
+deno lint .
+deno check
+deno task test
+deno task build
+```
+
+The test suite uses temporary KV databases and upload directories. It covers
+authentication, submission validation, persistence and pagination, upload
+confinement and cleanup, translation parity, and migration recovery.
+
+## Deployment
+
+Build the client and server bundles, then start the generated server bound to
+the loopback interface:
+
+```sh
+deno install --frozen
+deno task build
+deno task start
+```
+
+Run those commands from the same working directory used to resolve the storage
+paths. Persist `.env`, `KV_STORAGE_DIR`, and `UPLOAD_DIR` across deployments.
+The process must have read/write access to both storage directories.
+
+Terminate TLS with a reverse proxy and do not expose port 8000 publicly. A
+minimal Caddy configuration is:
 
 ```caddyfile
 lokalac.example.com {
@@ -33,23 +112,8 @@ lokalac.example.com {
 }
 ```
 
-Build the application and bind Deno only to the loopback interface so clients
-cannot bypass Caddy and send credentials over plain HTTP:
-
-```sh
-deno task build
-deno task start
-```
-
-Only Caddy's ports 80 and 443 should be exposed by the server firewall. Port 80
-is needed for Caddy's automatic HTTP-to-HTTPS redirect and may also be used for
-certificate validation; port 8000 must not be publicly reachable. Caddy sets
-forwarding headers, including `X-Forwarded-Proto`, automatically. The
-application must trust those headers only when the direct connection comes from
-the trusted local reverse proxy.
-
-After HTTPS has been verified and there is no need to serve the hostname over
-plain HTTP, HTTP Strict Transport Security can be enabled:
+Point the hostname to the server and expose only ports 80 and 443. After HTTPS
+and every relevant subdomain have been verified, HSTS can be enabled:
 
 ```caddyfile
 lokalac.example.com {
@@ -58,6 +122,34 @@ lokalac.example.com {
 }
 ```
 
-Only add `includeSubDomains` when every subdomain is permanently available over
-HTTPS. Removing the header does not immediately undo a policy already cached by
-browsers.
+Only use `includeSubDomains` when every subdomain is permanently HTTPS-capable.
+
+## Backup
+
+The KV database and uploads form one logical dataset and must be backed up
+together.
+
+1. Stop the application to prevent database writes and image changes.
+2. Copy the entire `KV_STORAGE_DIR`, including SQLite sidecar files.
+3. Copy the entire `UPLOAD_DIR` into the same timestamped backup set.
+4. Record the deployed Git revision with the backup.
+5. Restart the application and verify `/issues` loads.
+
+Use filesystem permissions and encrypted off-host storage appropriate for the
+submitted issue data. Regularly test that backups can be restored.
+
+## Recovery
+
+1. Stop the application.
+2. Move the damaged storage directories aside; do not overwrite the only copy.
+3. Restore both the KV and upload directories from the same backup set.
+4. Restore the recorded application revision, or a compatible newer revision.
+5. Confirm ownership and read/write permissions.
+6. Start the application. Startup migrations and index inspection run
+   automatically.
+7. Verify issue listing, image loading, authentication, and a test submission
+   before returning the service to traffic.
+
+If startup reports a migration error, stop and preserve the restored data and
+logs. Resolve the underlying filesystem, capacity, or data problem before
+retrying; do not manually mark a migration as complete.
