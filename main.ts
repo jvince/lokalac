@@ -5,6 +5,7 @@ import { globalContext } from "@/globalContext.ts";
 import supportedLanguages, { defaultLanguage } from "@/languages.ts";
 import { migrate } from "@/migrate.ts";
 import migrations from "@/migrations.ts";
+import { repairIssueIndexes } from "@/models/issue.ts";
 import { i18n } from "@/plugins/i18n/mod.ts";
 import { kv } from "@/services/kv.ts";
 
@@ -16,6 +17,7 @@ import { App, cors, csrf, staticFiles } from "fresh";
 export const app = new App<AppState>();
 
 await migrate(migrations, kv);
+await repairIssueIndexes(kv);
 await ensureDir(appConfig.uploadDir);
 
 app.use(cors());

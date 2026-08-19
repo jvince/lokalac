@@ -17,11 +17,14 @@ export const IssueIndex = "issue";
 
 export enum IssueSecondaryIndex {
   ByCommunity = "issue_by_community",
-  ByCategory = "issue_by_category",
-  ByIssueType = "issue_by_type",
   ByIssueStatus = "issue_by_status",
   ByCommunityAndStatus = "issue_by_community_and_status",
 }
+
+const LegacyIssueSecondaryIndexes = [
+  "issue_by_category",
+  "issue_by_type",
+] as const;
 
 export type IssueLocation = {
   lat: number;
@@ -59,9 +62,29 @@ export type DeleteIssueResult =
   | { status: "not_found" }
   | { status: "invalid_id" };
 
+export type IssuePrimaryKey = [typeof IssueIndex, string];
+
+export interface IssueIndexReference {
+  primaryKey: IssuePrimaryKey;
+}
+
+export type IssueIndexProblem =
+  | {
+    type: "missing" | "invalid_value";
+    key: Deno.KvKey;
+    reference: IssueIndexReference;
+  }
+  | {
+    type: "orphaned";
+    key: Deno.KvKey;
+  };
+
+type IssueInsertStore = Pick<Deno.Kv, "atomic">;
+type IssueUpdateStore = Pick<Deno.Kv, "atomic" | "get">;
+
 async function processIterator<T, K>(
   iterator: Deno.KvListIterator<T>,
-  resolver: (item: T) => Promise<K>,
+  resolver: (item: T) => Promise<K | null>,
   limit: number | undefined = Number.POSITIVE_INFINITY,
 ) {
   const _limit = limit - 1;
@@ -71,7 +94,11 @@ async function processIterator<T, K>(
 
   for await (const item of iterator) {
     count += 1;
-    items.push(await resolver(item.value));
+    const resolved = await resolver(item.value);
+
+    if (resolved !== null) {
+      items.push(resolved);
+    }
 
     if (count <= _limit) {
       _cursor = iterator.cursor;
@@ -84,8 +111,11 @@ async function processIterator<T, K>(
   };
 }
 
-function getIssueDirectory(id: string): string {
-  const uploadRoot = resolvePath(appConfig.uploadDir);
+function getIssueDirectory(
+  id: string,
+  uploadDir: string = appConfig.uploadDir,
+): string {
+  const uploadRoot = resolvePath(uploadDir);
   const issueDirectory = resolvePath(uploadRoot, id);
 
   if (dirname(issueDirectory) !== uploadRoot) {
@@ -103,68 +133,122 @@ export function isIssueStatus(value: unknown): value is IssueStatus {
   return Object.values(IssueStatus).includes(value as IssueStatus);
 }
 
-export async function insertIssue(issue: Issue, store: Deno.Kv = kv) {
-  const primaryKey = [IssueIndex, issue.id];
-  const byCommunityKey = [
+export function getIssuePrimaryKey(id: string): IssuePrimaryKey {
+  return [IssueIndex, id];
+}
+
+export function getIssueSecondaryKeys(issue: Issue): Deno.KvKey[] {
+  return [[
     IssueSecondaryIndex.ByCommunity,
     issue.communityId,
     issue.id,
-  ];
-
-  const byStatusKey = [
+  ], [
     IssueSecondaryIndex.ByIssueStatus,
     issue.status,
     issue.id,
-  ];
-
-  const byCommunityAndStatusKey = [
+  ], [
     IssueSecondaryIndex.ByCommunityAndStatus,
     issue.communityId,
     issue.status,
     issue.id,
-  ];
+  ]];
+}
 
-  const result = await store.atomic()
+function createIssueIndexReference(id: string): IssueIndexReference {
+  return { primaryKey: getIssuePrimaryKey(id) };
+}
+
+function keyId(key: Deno.KvKey): string {
+  return JSON.stringify(key);
+}
+
+function isIssueIndexReference(
+  value: unknown,
+  reference: IssueIndexReference,
+): boolean {
+  if (!value || typeof value !== "object" || !("primaryKey" in value)) {
+    return false;
+  }
+
+  return keyId((value as IssueIndexReference).primaryKey) ===
+    keyId(reference.primaryKey);
+}
+
+export async function insertIssue(
+  issue: Issue,
+  store: IssueInsertStore = kv,
+) {
+  const primaryKey = getIssuePrimaryKey(issue.id);
+  const reference = createIssueIndexReference(issue.id);
+  let operation = store.atomic()
     .check({ key: primaryKey, versionstamp: null })
-    .check({ key: byCommunityKey, versionstamp: null })
-    .set(primaryKey, issue)
-    .set(byCommunityKey, issue)
-    .set(byStatusKey, issue)
-    .set(byCommunityAndStatusKey, issue)
-    .commit();
+    .set(primaryKey, issue);
+
+  for (const secondaryKey of getIssueSecondaryKeys(issue)) {
+    operation = operation.set(secondaryKey, reference);
+  }
+
+  const result = await operation.commit();
 
   if (!result.ok) {
     throw new Error(`Failed to insert issue with ID ${issue.id}`);
   }
 }
 
-export async function updateIssue(id: string, issue: Partial<Issue>) {
-  const key = [IssueIndex, id];
-  const entry = await kv.get<Issue>([IssueIndex, id]);
+export async function updateIssue(
+  id: string,
+  patch: Partial<Issue>,
+  store: IssueUpdateStore = kv,
+) {
+  const key = getIssuePrimaryKey(id);
+  const entry = await store.get<Issue>(key);
 
-  if (!entry) {
+  if (entry.value === null) {
     throw new Error(`Issue with ID ${id} does not exist`);
   }
 
-  const result = await kv.atomic()
+  const updatedIssue = { ...entry.value, ...patch, id };
+  const previousKeys = new Map(
+    getIssueSecondaryKeys(entry.value).map((key) => [keyId(key), key]),
+  );
+  const updatedKeys = new Map(
+    getIssueSecondaryKeys(updatedIssue).map((key) => [keyId(key), key]),
+  );
+  const reference = createIssueIndexReference(id);
+  let operation = store.atomic()
     .check({ key, versionstamp: entry.versionstamp })
-    .set(key, { ...entry.value, ...issue })
-    .commit();
+    .set(key, updatedIssue);
+
+  for (const [keyIdentifier, previousKey] of previousKeys) {
+    if (!updatedKeys.has(keyIdentifier)) {
+      operation = operation.delete(previousKey);
+    }
+  }
+
+  for (const updatedKey of updatedKeys.values()) {
+    operation = operation.set(updatedKey, reference);
+  }
+
+  const result = await operation.commit();
 
   if (!result.ok) {
-    console.log(result);
     throw new Error(`Failed to update issue with ID ${id}`);
   }
+
+  return updatedIssue;
 }
 
 export async function deleteIssue(
   id: string | undefined | null,
+  options: { store?: Deno.Kv; uploadDir?: string } = {},
 ): Promise<DeleteIssueResult> {
   if (!isValidUlid(id)) {
     return { status: "invalid_id" };
   }
 
-  const entry = await kv.get<Issue>([IssueIndex, id]);
+  const { store = kv, uploadDir = appConfig.uploadDir } = options;
+  const primaryKey = getIssuePrimaryKey(id);
+  const entry = await store.get<Issue>(primaryKey);
 
   if (entry.value === null) {
     return { status: "not_found" };
@@ -176,7 +260,21 @@ export async function deleteIssue(
     );
   }
 
-  const issueDirectory = getIssueDirectory(id);
+  let operation = store.atomic()
+    .check({ key: primaryKey, versionstamp: entry.versionstamp })
+    .delete(primaryKey);
+
+  for (const secondaryKey of getIssueSecondaryKeys(entry.value)) {
+    operation = operation.delete(secondaryKey);
+  }
+
+  const result = await operation.commit();
+
+  if (!result.ok) {
+    throw new Error(`Failed to delete issue with ID ${id}`);
+  }
+
+  const issueDirectory = getIssueDirectory(id, uploadDir);
 
   try {
     await Deno.remove(issueDirectory, { recursive: true });
@@ -187,8 +285,6 @@ export async function deleteIssue(
       });
     }
   }
-
-  await kv.delete([IssueIndex, id]);
 
   return { status: "deleted" };
 }
@@ -213,12 +309,13 @@ export async function getIssueById(
 export async function getIssuesByCommunity(
   communityId: string,
   options?: Deno.KvListOptions,
+  store: Deno.Kv = kv,
 ) {
   return await processIterator(
-    kv.list<Issue>({
+    store.list<IssueIndexReference>({
       prefix: [IssueSecondaryIndex.ByCommunity, communityId],
     }, options),
-    resolve,
+    (reference) => resolveIssueReference(reference, store),
     options?.limit,
   );
 }
@@ -226,12 +323,13 @@ export async function getIssuesByCommunity(
 export async function getIssuesByStatus(
   status: IssueStatus,
   options?: Deno.KvListOptions,
+  store: Deno.Kv = kv,
 ) {
   return await processIterator(
-    kv.list<Issue>({
+    store.list<IssueIndexReference>({
       prefix: [IssueSecondaryIndex.ByIssueStatus, status],
     }, options),
-    resolve,
+    (reference) => resolveIssueReference(reference, store),
     options?.limit,
   );
 }
@@ -240,44 +338,48 @@ export async function getIssuesByCommunityAndStatus(
   communityId?: string,
   status?: string | null,
   options?: Deno.KvListOptions,
+  store: Deno.Kv = kv,
 ) {
   if (
     typeof communityId !== "string" || typeof status !== "string" ||
     (communityId === "all" && status === "all")
   ) {
-    return await getIssues(options);
+    return await getIssues(options, store);
   }
 
   if (communityId !== "all" && status === "all") {
-    return await getIssuesByCommunity(communityId, options);
+    return await getIssuesByCommunity(communityId, options, store);
   }
 
   if (communityId === "all" && status !== "all" && isIssueStatus(status)) {
-    return await getIssuesByStatus(status, options);
+    return await getIssuesByStatus(status, options, store);
   }
 
   return await processIterator(
-    kv.list<Issue>({
+    store.list<IssueIndexReference>({
       prefix: [
         IssueSecondaryIndex.ByCommunityAndStatus,
         communityId,
         status,
       ],
     }, options),
-    resolve,
+    (reference) => resolveIssueReference(reference, store),
   );
 }
 
-export async function getIssues(options?: Deno.KvListOptions) {
+export async function getIssues(
+  options?: Deno.KvListOptions,
+  store: Deno.Kv = kv,
+) {
   return await processIterator(
-    kv.list<Issue>({ prefix: [IssueIndex] }, options),
-    resolve,
+    store.list<Issue>({ prefix: [IssueIndex] }, options),
+    (issue) => resolve(issue, store),
     options?.limit,
   );
 }
 
-async function resolve(obj: Issue): Promise<IssueDTO> {
-  const data = await kv.getMany<[LocalCommunity, IssueCategory, IssueType]>([
+async function resolve(obj: Issue, store: Deno.Kv = kv): Promise<IssueDTO> {
+  const data = await store.getMany<[LocalCommunity, IssueCategory, IssueType]>([
     [LocalCommunityIndex, obj.communityId],
     [IssueCategoryPrimaryKey, obj.categoryId],
     [IssueTypePrimaryKey, obj.typeId],
@@ -289,4 +391,84 @@ async function resolve(obj: Issue): Promise<IssueDTO> {
     category: data[1].value as IssueCategory,
     type: data[2].value as IssueType,
   };
+}
+
+async function resolveIssueReference(
+  reference: IssueIndexReference,
+  store: Deno.Kv = kv,
+): Promise<IssueDTO | null> {
+  if (!reference?.primaryKey) {
+    return null;
+  }
+
+  const entry = await store.get<Issue>(reference.primaryKey);
+  return entry.value === null ? null : await resolve(entry.value, store);
+}
+
+export async function inspectIssueIndexes(
+  store: Deno.Kv = kv,
+): Promise<IssueIndexProblem[]> {
+  const expected = new Map<
+    string,
+    { key: Deno.KvKey; reference: IssueIndexReference }
+  >();
+
+  for await (const entry of store.list<Issue>({ prefix: [IssueIndex] })) {
+    const reference = createIssueIndexReference(entry.value.id);
+
+    for (const secondaryKey of getIssueSecondaryKeys(entry.value)) {
+      expected.set(keyId(secondaryKey), { key: secondaryKey, reference });
+    }
+  }
+
+  const problems: IssueIndexProblem[] = [];
+
+  const indexes = [
+    ...Object.values(IssueSecondaryIndex),
+    ...LegacyIssueSecondaryIndexes,
+  ];
+
+  for (const index of indexes) {
+    for await (const entry of store.list({ prefix: [index] })) {
+      const id = keyId(entry.key);
+      const expectedEntry = expected.get(id);
+
+      if (!expectedEntry) {
+        problems.push({ type: "orphaned", key: entry.key });
+        continue;
+      }
+
+      if (!isIssueIndexReference(entry.value, expectedEntry.reference)) {
+        problems.push({
+          type: "invalid_value",
+          key: entry.key,
+          reference: expectedEntry.reference,
+        });
+      }
+
+      expected.delete(id);
+    }
+  }
+
+  for (const { key, reference } of expected.values()) {
+    problems.push({ type: "missing", key, reference });
+  }
+
+  return problems;
+}
+
+export async function repairIssueIndexes(
+  store: Deno.Kv = kv,
+): Promise<IssueIndexProblem[]> {
+  const problems = await inspectIssueIndexes(store);
+
+  for (const problem of problems) {
+    if (problem.type === "orphaned") {
+      await store.delete(problem.key);
+    } else {
+      await store.set(problem.key, problem.reference);
+    }
+  }
+
+  return problems;
 }
