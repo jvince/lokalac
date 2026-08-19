@@ -3,6 +3,7 @@ import * as v from "@valibot/valibot";
 import {
   formDataToIssue,
   IssueSubmissionSchema,
+  issueTypeBelongsToCategory,
   MAX_ISSUE_IMAGE_SIZE,
   MAX_ISSUE_IMAGES,
   MAX_ISSUE_NOTE_LENGTH,
@@ -201,5 +202,26 @@ Deno.test("issue submission validation", async (t) => {
     formData.append("images[]", "not-a-file");
 
     assertEquals(formDataToIssue(formData).input.success, false);
+  });
+});
+
+Deno.test("issue type category membership", async (t) => {
+  const issueType = {
+    id: "type-1",
+    name: "Pothole",
+    description: "Damaged road surface",
+    category: "roads",
+  };
+
+  await t.step("accepts a type in the selected category", () => {
+    assertEquals(issueTypeBelongsToCategory(issueType, "roads"), true);
+  });
+
+  await t.step("rejects a type from another category", () => {
+    assertEquals(issueTypeBelongsToCategory(issueType, "lighting"), false);
+  });
+
+  await t.step("rejects a missing issue type", () => {
+    assertEquals(issueTypeBelongsToCategory(undefined, "roads"), false);
   });
 });

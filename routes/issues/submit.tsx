@@ -4,23 +4,22 @@ import { IssueForm } from "@/islands/IssueForm.tsx";
 import { getIssueCategoriesAsArray } from "@/models/issue-category.ts";
 import { formDataToIssue } from "@/models/issue-submission.ts";
 import { getIssueTypesAsArray } from "@/models/issue-type.ts";
-import { processImagesAndPersist } from "@/services/imageProcessing.ts";
-import { SemaphoreTimeoutError } from "@/services/semaphore.ts";
+import { insertIssue, IssueStatus } from "@/models/issue.ts";
+import {
+  getLocalCommunitiesAsArray,
+  getLocalCommunityPolygonById,
+} from "@/models/local-community.ts";
+import {
+  ImageValidationError,
+  processImagesAndPersist,
+} from "@/services/imageProcessing.ts";
 import {
   readLimitedFormData,
   RequestBodyTooLargeError,
 } from "@/services/requestBody.ts";
+import { SemaphoreTimeoutError } from "@/services/semaphore.ts";
 import { submissionQuota } from "@/services/submissionQuota.ts";
-import {
-  insertIssue,
-  type IssueLocation,
-  IssueStatus,
-} from "@/models/issue.ts";
-import {
-  getLocalCommunitiesAsArray,
-  getLocalCommunityPolygonById,
-  type LocalCommunity,
-} from "@/models/local-community.ts";
+import { validateIssueSubmissionDomain } from "@/services/issueSubmission.ts";
 import { define } from "@/types/app.ts";
 import { textResponse } from "@/utils/http.ts";
 import { getRemoteAddr } from "@/utils/net.ts";
@@ -67,26 +66,6 @@ export function getLatLngBounds(polygon: LatLngTuple[] | undefined | null) {
   return [southWest, northEast];
 }
 
-/**
- * @todo: Implement more robust location validation.
- */
-async function isLocationInPolygon(
-  location: IssueLocation | undefined,
-  community: LocalCommunity | undefined,
-) {
-  if (!location || !community) {
-    return false;
-  }
-
-  const polygon = await getLocalCommunityPolygonById(community.id);
-  const [southWest, northEast] = getLatLngBounds(polygon);
-
-  return (
-    location.lat >= southWest[0] && location.lat <= northEast[0] &&
-    location.lng >= southWest[1] && location.lng <= northEast[1]
-  );
-}
-
 export const handler = define.handlers({
   async GET() {
     return page({ ...await loadData(), errors: [], formValues: {} });
@@ -116,16 +95,22 @@ export const handler = define.handlers({
       );
     } catch (error) {
       if (error instanceof RequestBodyTooLargeError) {
-        return textResponse("Request body too large.", 413);
+        return page({
+          ...await loadData(),
+          errors: ["error.request_body_too_large"],
+          formValues: {},
+        }, { status: 413 });
       }
 
-      return textResponse("Invalid form submission.", 400);
+      return page({
+        ...await loadData(),
+        errors: ["error.invalid_form_submission"],
+        formValues: {},
+      }, { status: 400 });
     }
 
     const { input, formValues } = formDataToIssue(formData);
     const { categories, communities, issueTypes } = await loadData();
-    const errors: string[] = [];
-
     if (!input.success) {
       return page({
         categories,
@@ -133,34 +118,18 @@ export const handler = define.handlers({
         issueTypes,
         errors: input.issues.map((issue) => issue.message),
         formValues,
-      });
+      }, { status: 400 });
     }
 
-    const issueType = issueTypes.find((i) => i.id === input.output.typeId);
-
-    if (!communities.find((c) => c.id === input.output.communityId)) {
-      errors.push("error.local_community_not_found");
-    }
-
-    if (!categories.find((c) => c.id === input.output.categoryId)) {
-      errors.push("error.issue_category_not_found");
-    }
-
-    if (!issueType) {
-      errors.push("error.issue_type_not_found");
-    } else if (issueType.category !== input.output.categoryId) {
-      errors.push("error.issue_type_not_in_category");
-    }
-
-    if (
-      input.output.location &&
-      !(await isLocationInPolygon(
-        input.output.location,
-        communities.find((c) => c.id === input.output.communityId),
-      ))
-    ) {
-      errors.push("error.location_not_in_community_polygon");
-    }
+    const polygon = input.output.location
+      ? await getLocalCommunityPolygonById(input.output.communityId)
+      : null;
+    const errors = validateIssueSubmissionDomain(input.output, {
+      categories,
+      communities,
+      issueTypes,
+      polygon,
+    });
 
     if (errors.length > 0) {
       return page({
@@ -169,7 +138,7 @@ export const handler = define.handlers({
         issueTypes,
         errors,
         formValues,
-      });
+      }, { status: 400 });
     }
     const id = monotonicUlid();
     const createdAt = Temporal.Now.zonedDateTimeISO().toString();
@@ -208,13 +177,23 @@ export const handler = define.handlers({
         });
       }
 
+      if (error instanceof ImageValidationError) {
+        return page({
+          categories,
+          communities,
+          issueTypes,
+          errors: [error.message],
+          formValues,
+        }, { status: 400 });
+      }
+
       return page({
         categories,
         communities,
         issueTypes,
         errors: ["error.issue_submission_failed"],
         formValues,
-      });
+      }, { status: 500 });
     }
 
     console.log(

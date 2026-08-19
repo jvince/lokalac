@@ -53,6 +53,8 @@
     "npm:@prefresh/vite@^2.4.8": "2.4.12_preact@10.29.7__preact-render-to-string@6.7.0_vite@7.3.6__@types+node@26.1.1_@types+node@26.1.1",
     "npm:@remix-run/node-fetch-server@0.12": "0.12.0",
     "npm:@tailwindcss/vite@^4.1.12": "4.3.3_vite@7.3.6__@types+node@26.1.1_@types+node@26.1.1",
+    "npm:@turf/boolean-point-in-polygon@^7.4.0": "7.4.0",
+    "npm:@turf/helpers@^7.4.0": "7.4.0",
     "npm:@types/babel__core@^7.20.5": "7.20.5",
     "npm:@types/leaflet@^1.9.21": "1.9.21",
     "npm:@types/node@^26.1.1": "26.1.1",
@@ -1168,6 +1170,31 @@
         "vite"
       ]
     },
+    "@turf/boolean-point-in-polygon@7.4.0": {
+      "integrity": "sha512-GQrHc6WSDHhf32GB/b9AGyOeC05AQ3nGN7ooWTrlCYefKn7X9/2wG9BNexF47AuyDq5jPdOvITVR26BLFWV+mA==",
+      "dependencies": [
+        "@turf/helpers",
+        "@turf/invariant",
+        "@types/geojson",
+        "point-in-polygon-hao",
+        "tslib"
+      ]
+    },
+    "@turf/helpers@7.4.0": {
+      "integrity": "sha512-7PAwLZqOdRzTI5g9bHvUwlloAXPDH/mlajtryk0tw4ZwGMtmXsAyF4QundsAMfy4u48Fyd3AUqMXY0SMxqJGWg==",
+      "dependencies": [
+        "@types/geojson",
+        "tslib"
+      ]
+    },
+    "@turf/invariant@7.4.0": {
+      "integrity": "sha512-OAsc3qdNx+tRqzWmMNFMnVlWWACIqnYqIejZKvb2oKkKPYJJrURPXZ6OdrGD58ljJMolLoqwIZGSx3VndaEjxg==",
+      "dependencies": [
+        "@turf/helpers",
+        "@types/geojson",
+        "tslib"
+      ]
+    },
     "@types/babel__core@7.20.5": {
       "integrity": "sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==",
       "dependencies": [
@@ -1498,6 +1525,12 @@
     "picomatch@4.0.5": {
       "integrity": "sha512-RvwwcruNjI1ncT5xRakeyS9Lf8lcItv34KD+aif+VH9kduAyfYBipGh12274xtenIPZ119/R9BdTBa8gAwSh0A=="
     },
+    "point-in-polygon-hao@1.2.4": {
+      "integrity": "sha512-x2pcvXeqhRHlNRdhLs/tgFapAbSSe86wa/eqmj1G6pWftbEs5aVRJhRGM6FYSUERKu0PjekJzMq0gsI2XyiclQ==",
+      "dependencies": [
+        "robust-predicates"
+      ]
+    },
     "postcss@8.5.20": {
       "integrity": "sha512-lW616l85ucIQL+FocMmL7pQFPqBmwejrCMg+iPxyImlrANNJG9NHq/RkyCZopDhd8C3LA03PHRJDjkbGu8vvug==",
       "dependencies": [
@@ -1543,6 +1576,9 @@
       "dependencies": [
         "loose-envify"
       ]
+    },
+    "robust-predicates@3.0.3": {
+      "integrity": "sha512-NS3levdsRIUOmiJ8FZWCP7LG3QpJyrs/TE0Zpf1yvZu8cAJJ6QMW92H1c7kWpdIHo8RvmLxN/o2JXTKHp74lUA=="
     },
     "rollup@4.62.2": {
       "integrity": "sha512-RFnrW4lhXA3s3eqHDZvN654g8OTjzRfqpIRJYczCGB6HzphckVAi/Qh4tbPUbRuDi7s1Llv8g/NspLkttY3gTA==",
@@ -1720,6 +1756,8 @@
       "jsr:@valibot/valibot@^1.4.2",
       "npm:@preact/signals@^2.9.0",
       "npm:@tailwindcss/vite@^4.1.12",
+      "npm:@turf/boolean-point-in-polygon@^7.4.0",
+      "npm:@turf/helpers@^7.4.0",
       "npm:@types/babel__core@^7.20.5",
       "npm:@types/leaflet@^1.9.21",
       "npm:@types/node@^26.1.1",

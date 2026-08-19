@@ -2,7 +2,7 @@ import type { Semaphore } from "@/services/semaphore.ts";
 import { createSemaphore } from "@/services/semaphore.ts";
 import { ensureDir } from "@std/fs";
 import { join } from "@std/path";
-import sharp from "sharp";
+import sharp, { type Metadata, type Sharp } from "sharp";
 
 export const MAX_IMAGE_PIXELS = 40_000_000;
 export const MAX_IMAGE_DIMENSION = 12_000;
@@ -14,6 +14,8 @@ const ALLOWED_FORMATS = new Set(["jpeg", "png", "webp"]);
 const imageProcessingSemaphore = createSemaphore(
   MAX_CONCURRENT_IMAGE_SUBMISSIONS,
 );
+
+export class ImageValidationError extends Error {}
 
 export interface ImageProcessingOptions {
   maxDimension?: number;
@@ -57,17 +59,24 @@ export async function processImages(
 
     try {
       for (const file of files) {
-        const image = sharp(await file.bytes(), {
-          limitInputPixels: maxPixels,
-        });
-        const metadata = await image.metadata();
+        let image: Sharp;
+        let metadata: Metadata;
+
+        try {
+          image = sharp(await file.bytes(), {
+            limitInputPixels: maxPixels,
+          });
+          metadata = await image.metadata();
+        } catch (cause) {
+          throw new ImageValidationError("error.image_invalid", { cause });
+        }
 
         if (!metadata.format || !ALLOWED_FORMATS.has(metadata.format)) {
-          throw new Error("error.image_invalid_type");
+          throw new ImageValidationError("error.image_invalid_type");
         }
 
         if (metadata.pages && metadata.pages > 1) {
-          throw new Error("error.animated_image_not_allowed");
+          throw new ImageValidationError("error.animated_image_not_allowed");
         }
 
         if (
@@ -77,7 +86,7 @@ export async function processImages(
           metadata.height > maxDimension ||
           metadata.width * metadata.height > maxPixels
         ) {
-          throw new Error("error.image_dimensions_too_large");
+          throw new ImageValidationError("error.image_dimensions_too_large");
         }
 
         const fileName = `${crypto.randomUUID()}.webp`;

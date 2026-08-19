@@ -103,7 +103,7 @@ export function isIssueStatus(value: unknown): value is IssueStatus {
   return Object.values(IssueStatus).includes(value as IssueStatus);
 }
 
-export async function insertIssue(issue: Issue) {
+export async function insertIssue(issue: Issue, store: Deno.Kv = kv) {
   const primaryKey = [IssueIndex, issue.id];
   const byCommunityKey = [
     IssueSecondaryIndex.ByCommunity,
@@ -124,7 +124,7 @@ export async function insertIssue(issue: Issue) {
     issue.id,
   ];
 
-  const result = await kv.atomic()
+  const result = await store.atomic()
     .check({ key: primaryKey, versionstamp: null })
     .check({ key: byCommunityKey, versionstamp: null })
     .set(primaryKey, issue)
