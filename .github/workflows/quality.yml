@@ -8,6 +8,10 @@ on:
 permissions:
   contents: read
 
+env:
+  BASIC_AUTH_USERNAME: test
+  BASIC_AUTH_PASSWORD_HASH: "$argon2id$v=19$m=4096,t=3,p=1$5jaCLPecde+XF3q5n3sAT/ZqZiDx$FQ8THOm28zf4Q+SpWkwJRB7FrPjixgvACd5uErllMVY"
+
 jobs:
   format:
     name: Formatting
